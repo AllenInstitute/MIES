@@ -252,15 +252,6 @@ static Function CHI_CheckShortcuts(STRUCT CHI_InstallationState &state)
 
 	WAVE/Z/T leftOvers = GrepTextWave(allFiles, "(?i).*(\.lnk|:About Igor Pro User Files\.txt|User Files:Python Scripts.*)$", invert = 1)
 
-#ifdef AUTOMATED_TESTING
-	if(WaveExists(leftOvers))
-		// ignore some more paths when we have an installation using the installer in CI, see tools/clean_mies_installation.sh for the paths
-		// and https://gitforwindows.org/symbolic-links.html for why we don't use mklink on Windows
-		WAVE/Z/T leftOversTesting = GrepTextWave(leftOvers, "(?i).*:(ipf:.*|Conversion:.*|tests:.*|igortest.*\.ipf|unit-testing\.ipf)$", invert = 1)
-		WAVE/Z/T leftOvers        = leftOversTesting
-	endif
-#endif // AUTOMATED_TESTING
-
 	err = WaveExists(leftOvers)
 
 	resultString = SelectString(err, " " + U+2205 + " (Nice!)", "\r - \"" + TextWaveToList(leftOvers, ", ", trailSep = 0) + "\" (Very Bad)")
