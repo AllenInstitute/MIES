@@ -4178,34 +4178,37 @@ End
 static Function AB_AddTagToSelectedExperiments()
 
 	variable idx
-	string newTag, sanTag
+	string   newTag
 
 	newTag = GetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_tagname")
 	if(IsEmpty(newTag))
 		return 0
 	endif
-	sanTag = AB_SanitizeTag(newTag)
+
 	WAVE/Z indices = AB_GetSelectedExperimentsIndices()
 	if(!WaveExists(indices))
 		return NaN
 	endif
 	for(idx : indices)
-		AB_AddTagToRow(idx, sanTag)
+		AB_AddTagToRow(idx, {newTag})
 	endfor
 End
 
 /// @brief Adds a tag to the tag list columns in a row in the experiment list
 ///        The tag list is sorted and contains only unique tags
-static Function AB_AddTagToRow(variable idx, string newTag)
+static Function AB_AddTagToRow(variable idx, WAVE/T newTags)
 
 	string oldTags, tagList
 	variable mapIndex
 
+	Duplicate/FREE/T newTags, newTagsClean
+	newTagsClean[] = AB_SanitizeTag(newTags[p])
+
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	oldTags = expBrowserList[idx][%Tags][0]
 	WAVE/T tags = ListToTextWave(oldTags, AB_TAG_SEPARATOR)
-	Redimension/N=(DimSize(tags, ROWS) + 1) tags
-	tags[Inf] = newTag
+
+	Concatenate/NP=(ROWS)/T {newTagsClean}, tags
 	WAVE/T uniqueTags = GetUniqueEntries(tags, dontDuplicate = 1)
 	Sort/A uniqueTags, uniqueTags
 	tagList                       = TextWaveToList(uniqueTags, AB_TAG_SEPARATOR)

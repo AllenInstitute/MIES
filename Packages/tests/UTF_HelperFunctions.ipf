@@ -1325,7 +1325,7 @@ static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
 	ASSERT(numTags <= DimSize(indizes, ROWS), "More tags than experiments in the analysis browser")
 
 	for(i = 0; i < numTags; i += 1)
-		MIES_AB#AB_AddTagToRow(indizes[i], tagList[i])
+		MIES_AB#AB_AddTagToRow(indizes[i], {tagList[i]})
 	endfor
 End
 
