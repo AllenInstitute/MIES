@@ -934,6 +934,35 @@ End
 
 /// @}
 
+/// StringStartsWith
+/// @{
+
+Function SSW_Works()
+
+	CHECK(StringStartsWith("test", "te"))
+	CHECK(StringStartsWith("test", "test"))
+	CHECK(StringStartsWith("hello world hello", "hello"))
+	CHECK(!StringStartsWith("test", "st"))
+	CHECK(!StringStartsWith("hello", "world"))
+	CHECK(StringStartsWith("test", "TEST"))
+	CHECK(StringStartsWith("TEST", "test"))
+End
+
+Function SSW_WorksWithEmptyStrings()
+
+	string nullStr
+
+	CHECK(!StringStartsWith("", ""))
+	CHECK(!StringStartsWith("test", ""))
+	CHECK(!StringStartsWith("", "test"))
+	CHECK(!StringStartsWith(nullStr, "test"))
+	CHECK(!StringStartsWith("test", nullStr))
+	CHECK(!StringStartsWith(nullStr, nullStr))
+	CHECK_RTE(185)
+End
+
+/// @}
+
 /// ListHasOnlyOneUniqueEntry
 /// @{
 

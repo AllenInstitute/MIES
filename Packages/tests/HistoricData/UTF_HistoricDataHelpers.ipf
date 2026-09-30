@@ -208,3 +208,31 @@ static Function/WAVE GetHistoricDataLoadUserComment()
 
 	return files
 End
+
+/// @brief Returns a wave with 100 NWBv2 files with each 10 sweeps
+static Function/WAVE GetManyHistoricDataFiles()
+
+	string inputPath, src, dest
+	variable i, numFiles
+
+	Make/FREE/T files = {"10-ShortSweeps.nwb"}
+	DownloadFilesIfRequired(files)
+
+	inputPath = GetInputPath()
+	src       = inputPath + files[0]
+
+	numFiles = 100
+	Redimension/N=(numFiles) files
+	for(i = 0; i < numFiles; i += 1)
+
+		sprintf dest, "%s%04d-%s", inputPath, i, files[0]
+		if(!FileExists(dest))
+			CopyFile src as dest
+		endif
+		files[i] = GetFile(dest)
+	endfor
+
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
+
+	return files
+End

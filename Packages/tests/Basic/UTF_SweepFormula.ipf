@@ -2751,6 +2751,10 @@ static Function TestAllowedStringContent()
 
 	ExecuteSweepFormulaCode(win, code)
 	CHECK_NO_RTE()
+
+	code = "\"\\\" vs 0"
+	ExecuteSweepFormulaCode(win, code)
+	CHECK_NO_RTE()
 End
 
 static Function TestKeepsUnitsWhenMappingMultipleYToOne()
