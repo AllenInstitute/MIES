@@ -1259,6 +1259,8 @@ static Function/WAVE ControlTypesWhichOnlyAcceptVar()
 
 	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "button_ctrl", "listbox_ctrl"}
 
+	SetDimensionLabelsFromWaveContents(wv)
+
 	return wv
 End
 
@@ -1267,12 +1269,16 @@ static Function/WAVE ControlTypesWhichRequireOneParameter()
 	// all except button
 	Make/T/FREE wv = {"checkbox_ctrl_mode_checkbox", "slider_ctrl", "tab_ctrl", "valdisp_ctrl", "popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl", "listbox_ctrl"}
 
+	SetDimensionLabelsFromWaveContents(wv)
+
 	return wv
 End
 
 static Function/WAVE ControlTypesWhichOnlyAcceptVarOrStr()
 
 	Make/T/FREE wv = {"popup_ctrl", "setvar_str_ctrl", "setvar_num_ctrl"}
+
+	SetDimensionLabelsFromWaveContents(wv)
 
 	return wv
 End

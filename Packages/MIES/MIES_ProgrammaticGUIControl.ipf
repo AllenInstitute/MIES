@@ -141,31 +141,50 @@ End
 /// @param mode      [optional, defaults to #PGC_MODE_ASSERT_ON_DISABLED] One of @ref PGC_MODES.
 ///                  Allows to fine tune the behaviour for disabled controls.
 ///
+/// @param eventCode [optional, see below for the defaults] Event code to send
 /// PopupMenus:
 /// - Only one of `val` or `str` can be supplied
 /// - `val` is 0-based
 /// - `str` must be the name of an entry, can include `*` using wildcard syntax.
 ///
-/// ValDisp:
-/// - Setting this control always changes its mode from 'internal number' to 'global expression'
+/// Button:
+/// - Event code: 2
+///
+/// Popup Menu:
+/// - Event code: 2
+///
+/// Checkbox:
+/// - Event code: 2
+///
+/// Tab:
+/// - Event code: 2
 ///
 /// SetVariable:
+/// - Event code: 2
 /// - Both `str` and `val` are accepted and converted to the target type.
 ///   Read-only controls can only be set with `mode = PGC_MODE_FORCE_ON_DISABLED`.
 ///
+/// ValDisp:
+/// - Setting this control always changes its mode from 'internal number' to 'global expression'
+///
+/// Slider:
+/// - Event code: 1
+///
 /// ListBox:
-/// - Setting the column is not supported
-/// - Simulated event code is 3 (double click)
+/// - Event code: 3
+/// - The value `val` is used as row index for writing into the first column of the selection wave (when present),
+///   pass #LISTBOX_CLEAR_SELECTION to clear the selection in all rows.
+/// - Column is fixed to 0
 ///
 /// @return 1 if the numeric value was modified by control limits, 0 if not (only relevant for SetVariable controls)
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable mode])
+Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable mode, variable eventCode])
 
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
-	variable isCheckbox, checkBoxMode, popupMenuType, index
+	variable isCheckbox, checkBoxMode, popupMenuType, index, listboxMode
 
 	PerformSubsystemEntry()
 
@@ -221,7 +240,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMButtonAction ba
 			ba.ctrlName  = control
 			ba.win       = win
-			ba.eventCode = 2
+			ba.eventCode = ParamIsDefault(eventCode) ? 2 : eventCode
 
 			FUNCREF PGC_ButtonControlProcedure ButtonProc = $procedure
 			ButtonProc(ba)
@@ -264,7 +283,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMPopupAction pa
 			pa.ctrlName  = control
 			pa.win       = win
-			pa.eventCode = 2
+			pa.eventCode = ParamIsDefault(eventCode) ? 2 : eventCode
 
 			pa.popNum = val + 1
 			pa.popStr = StringFromList(val, popupMenuList)
@@ -294,7 +313,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMCheckBoxAction cba
 			cba.ctrlName  = control
 			cba.win       = win
-			cba.eventCode = 2
+			cba.eventCode = ParamIsDefault(eventCode) ? 2 : eventCode
 			cba.checked   = val
 
 			FUNCREF PGC_CheckboxControlProcedure CheckboxProc = $procedure
@@ -313,7 +332,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMTabControlAction tca
 			tca.ctrlName  = control
 			tca.win       = win
-			tca.eventCode = 2
+			tca.eventCode = ParamIsDefault(eventCode) ? 2 : eventCode
 			tca.tab       = val
 
 			FUNCREF PGC_TabControlProcedure TabProc = $procedure
@@ -364,7 +383,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMSetVariableAction sva
 			sva.ctrlName  = control
 			sva.win       = win
-			sva.eventCode = 2
+			sva.eventCode = ParamIsDefault(eventCode) ? 2 : eventCode
 			sva.sval      = str
 			sva.dval      = limitedVal
 			sva.isStr     = (variableType == SET_VARIABLE_BUILTIN_STR)
@@ -390,7 +409,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMSliderAction sla
 			sla.ctrlName  = control
 			sla.win       = win
-			sla.eventCode = 1
+			sla.eventCode = ParamIsDefault(eventCode) ? 1 : eventCode
 			sla.curval    = val
 
 			FUNCREF PGC_SliderControlProcedure SliderProc = $procedure
@@ -402,14 +421,37 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			WAVE/Z/T listWave = $GetValueFromRecMacro("listWave", S_recreation)
 			ASSERT(WaveExists(listWave), "Can't call ListBox without list wave")
 
+			listBoxMode = str2num(GetValueFromRecMacro("mode", S_recreation))
+
 			// all optional
 			WAVE/Z   selWave   = $GetValueFromRecMacro("selWave", S_recreation)
 			WAVE/Z   colorWave = $GetValueFromRecMacro("colorWave", S_recreation)
 			WAVE/Z/T titleWave = $GetValueFromRecMacro("titleWave", S_recreation)
 
-			ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
-
-			ListBox $control, win=$win, row=val, selRow=val
+			switch(listBoxMode)
+				case 0:
+					break
+				case 1: // fallthrough
+				case 2: // fallthrough
+				case 9:
+					ListBox $control, win=$win, row=val, selRow=val
+					if(WaveExists(selWave))
+						if(val >= 0)
+							ASSERT(val >= 0 && val < DimSize(listWave, ROWS), "val is out of range")
+							// workaround WM bug #8733 and use fixed indices on the RHS
+							selWave[val][0] = selWave[val][0] | LISTBOX_SELECTED
+						elseif(val == LISTBOX_CLEAR_SELECTION)
+							// clear both possible selections
+							selWave[][0] = selWave[p][0] & ~LISTBOX_SELECT_OR_SHIFT_SELECTION
+						else
+							FATAL_ERROR("Unsupported value")
+						endif
+					endif
+					break
+				default:
+					FATAL_ERROR("Unsupported ListBox mode: " + num2str(listboxMode))
+					break
+			endswitch
 
 			if(IsEmpty(procedure))
 				break
@@ -418,13 +460,13 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			STRUCT WMListBoxAction lba
 			lba.ctrlName  = control
 			lba.win       = win
-			lba.eventCode = 3 // double click
+			lba.eventCode = ParamIsDefault(eventCode) ? 3 : eventCode
 			WAVE/Z   lba.colorWave = colorWave
 			WAVE/Z/T lba.listWave  = listWave
 			WAVE/Z   lba.selWave   = selWave
 			WAVE/Z/T lba.titleWave = titleWave
 			lba.row = val
-			lba.col = -1
+			lba.col = 0
 
 			FUNCREF PGC_ListBoxControlProcedure ListProc = $procedure
 			ListProc(lba)

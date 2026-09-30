@@ -5,7 +5,7 @@
 
 static Function TestSelectWithSeltag()
 
-	string abWin, sweepBrowsers, sweepBrowser, str
+	string abWin, sweepBrowsers, sweepBrowser, str, tagControlWin
 
 	WAVE/T files = HistoricDataHelpers#GetHistoricDataFilesSweepFormulaIVSCCAPFreq()
 
@@ -13,15 +13,17 @@ static Function TestSelectWithSeltag()
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 0)
 
-	WAVE expBrowserSel = GetExperimentBrowserGUISel()
 	PGC_SetAndActivateControl(abWin, "button_show_tagcontrol")
 
-	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
-	SetSetVariableString(MIES_AB#AB_GetTagControlName(), "setvar_tagcontrol_tagname", "myTag1")
-	PGC_SetAndActivateControl(MIES_AB#AB_GetTagControlName(), "button_tagcontrol_addtag")
-	expBrowserSel[0][0][0] = expBrowserSel[0][0][0] | LISTBOX_SELECTED
-	SetSetVariableString(MIES_AB#AB_GetTagControlName(), "setvar_tagcontrol_tagname", "myTag2")
-	PGC_SetAndActivateControl(MIES_AB#AB_GetTagControlName(), "button_tagcontrol_addtag")
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 0, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+
+	tagControlWin = MIES_AB#AB_GetTagControlName()
+
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag1")
+	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
+
+	PGC_SetAndActivateControl(tagControlWin, "setvar_tagcontrol_tagname", str = "myTag2")
+	PGC_SetAndActivateControl(tagControlWin, "button_tagcontrol_addtag")
 
 	sweepBrowser = LoadSweepsFromAllExperimentsFromAB(abWin)
 
