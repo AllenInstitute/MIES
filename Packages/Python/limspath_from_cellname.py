@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 import pg8000
 from pg8000.native import literal
