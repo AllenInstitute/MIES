@@ -36,8 +36,7 @@ def limspath_from_cellname(
 
             result = cur.fetchone()
 
-            if result is not None:
-                paths.append(result[0])
+            paths.append(result[0])
 
     return paths
 
