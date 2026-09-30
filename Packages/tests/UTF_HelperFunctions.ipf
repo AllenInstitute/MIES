@@ -1218,12 +1218,19 @@ End
 /// @param absolutePaths        [optional, default 0] treat entries in files as absolute paths instead of relative to the symbolic path `home`
 /// @param multipleSweepBrowser [optional, default 1] load sweeps of each experiment into its own SweepBrowser instead of combining all experiments into a single, shared SweepBrowser
 /// @param tagList              [optional] list of tags, one per experiment
-Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser, WAVE/T tagList])
+/// @param restoreSettings      [optional, default 0] restore the list of previously loaded files and folders
+/// @param refresh              [optional, default 1] refresh the list of loaded files and folders after adding them
+Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/Z/T files, [variable loadSweeps, variable loadStimsets, variable absolutePaths, variable multipleSweepBrowser, WAVE/T tagList, variable restoreSettings, variable refresh])
 
 	variable idx
 	string filePath, fullFilePath
 
+	refresh = ParamIsDefault(refresh) ? 1 : !!refresh
+
+	restoreSettings = ParamIsDefault(restoreSettings) ? 0 : !!restoreSettings
+
 	absolutePaths = ParamIsDefault(absolutePaths) ? 0 : !!absolutePaths
+
 	if(ParamIsDefault(loadSweeps))
 		loadSweeps = 0
 	else
@@ -1237,24 +1244,28 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/T files, 
 		WAVE/Z/T tagList = $""
 	endif
 
-	if(absolutePaths)
-		WAVE/T filesWithPath = files
-	else
-		PathInfo home
-
-		Duplicate/FREE/T files, filesWithPath
-		filesWithPath[] = S_path + GetHFSPath(files[p])
-	endif
-
-	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
+	abWin = AB_OpenAnalysisBrowser(restoreSettings = restoreSettings)
 	SetCheckBoxState(abWin, "check_load_pxp", CHECKBOX_SELECTED)
 	SetCheckBoxState(abWin, "check_load_nwb", CHECKBOX_SELECTED)
 
-	for(fullFilePath : filesWithPath)
-		MIES_AB#AB_AddElementToSourceList(fullFilePath)
-	endfor
+	if(WaveExists(files))
+		if(absolutePaths)
+			WAVE/T filesWithPath = files
+		else
+			PathInfo home
 
-	PGC_SetAndActivateControl(abWin, "button_AB_refresh")
+			Duplicate/FREE/T files, filesWithPath
+			filesWithPath[] = S_path + GetHFSPath(files[p])
+		endif
+
+		for(fullFilePath : filesWithPath)
+			MIES_AB#AB_AddElementToSourceList(fullFilePath)
+		endfor
+	endif
+
+	if(refresh)
+		PGC_SetAndActivateControl(abWin, "button_AB_refresh")
+	endif
 
 	TagExperimentsInAnalysisBrowser(tagList)
 
