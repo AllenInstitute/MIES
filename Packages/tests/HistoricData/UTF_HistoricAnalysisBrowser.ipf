@@ -353,21 +353,6 @@ static Function TestCheckIfCollapsed()
 	CheckIfABCollapsed_IGNORE()
 End
 
-static Function/S AnalysisBrowserShowAllAndRefresh_IGNORE([variable restoreSettings])
-
-	string abWin
-
-	restoreSettings = ParamIsDefault(restoreSettings) ? 0 : !!restoreSettings
-
-	abWin = AB_OpenAnalysisBrowser(restoreSettings = restoreSettings)
-
-	SetCheckBoxState(abWin, "check_load_nwb", CHECKBOX_SELECTED)
-	SetCheckBoxState(abWin, "check_load_pxp", CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(abWin, "button_AB_refresh")
-
-	return abWin
-End
-
 static Function CheckRestoreSettings()
 
 	string abWin, sweepBrowsers
@@ -380,8 +365,7 @@ static Function CheckRestoreSettings()
 	KillWindow/Z $abWin
 
 	// restore settings works
-
-	abWin = AnalysisBrowserShowAllAndRefresh_IGNORE(restoreSettings = 1)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser($"", restoreSettings = 1)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	CHECK_EQUAL_VAR(DimSize(list, ROWS), 1)
@@ -390,7 +374,7 @@ static Function CheckRestoreSettings()
 	KillWindow/Z $abWin
 
 	// and not restoring as well
-	abWin = AnalysisBrowserShowAllAndRefresh_IGNORE(restoreSettings = 0)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser($"", restoreSettings = 0)
 
 	WAVE/T list = GetExperimentBrowserGUIList()
 	CHECK_EQUAL_VAR(DimSize(list, ROWS), 0)
