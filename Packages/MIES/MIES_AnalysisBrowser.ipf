@@ -3554,10 +3554,6 @@ static Function AB_AddEntriesFromParseResult(string win, WAVE/Z/WAVE results)
 		return NaN
 	endif
 
-	//	print note(results[%File])
-	//	print note(results[%Folder])
-	//	print note(results[%CellName])
-
 	AB_AddEntriesFromParseResultImpl(win, results[%File])
 	AB_AddEntriesFromParseResultImpl(win, results[%Folder])
 
