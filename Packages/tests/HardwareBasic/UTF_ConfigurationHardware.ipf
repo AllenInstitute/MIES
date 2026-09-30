@@ -450,6 +450,10 @@ static Function/S CreateModifiedConfiguration_IGNORE(string device, string name,
 	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, device)
 
+	// the modifications can restore headstage 0 without amplifier, which is only
+	// possible without requiring the amplifier connection
+	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+
 	CONF_SaveWindow(fName)
 
 	[jsonID, rewrittenConfig] = FixupJSONConfig_IGNORE(fName, device)
