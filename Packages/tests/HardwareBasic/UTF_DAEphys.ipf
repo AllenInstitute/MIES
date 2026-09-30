@@ -640,3 +640,74 @@ static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 		CHECK_EQUAL_VAR(forward * backward, 1)
 	endfor
 End
+
+static Function CheckZeroAmps_preAcq(string device)
+
+	variable ret
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 0, sendToAll = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 1, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 30, sendToAll = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+End
+
+/// AI_ZeroAmps corrects the pipette offset by the baseline current of the running test pulse,
+/// but only for headstages with a baseline current above the zero tolerance
+///
+/// See ZeroAmpsAndStopTP_IGNORE() for the used test pulse results.
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#ZeroAmpsHeadstageSelection
+static Function CheckZeroAmps([STRUCT IUTF_MDATA &md])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                       \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" \
+	                                                           + "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+
+	variable/G root:zeroAmpsAllHeadstages = md.v0
+
+	CtrlNamedBackGround ZeroAmps, start=(ticks + 180), period=30, proc=ZeroAmpsAndStopTP_IGNORE
+
+	ACD_AcquireData(s, md.s0)
+End
+
+static Function CheckZeroAmps_REENTRY([STRUCT IUTF_MDATA &md])
+
+	variable delta, expected, headstage, ret, storedOffsetVC, storedOffsetIC
+	string rowLabel, device
+
+	device = md.s0
+
+	WAVE/Z results = root:zeroAmpsResults
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	Duplicate/FREE results, zeroAmpsResults
+	KillWaves results
+	KillVariables root:zeroAmpsAllHeadstages
+
+	// the offset of headstage 1 is set in both clamp modes
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel       = AI_MapFunctionConstantToName(MCC_PIPETTEOFFSET_FUNC, V_CLAMP_MODE)
+	storedOffsetVC = ampStorageWave[%$rowLabel][0][1]
+	rowLabel       = AI_MapFunctionConstantToName(MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE)
+	storedOffsetIC = ampStorageWave[%$rowLabel][0][1]
+
+	// reset the amplifier
+	for(headstage = 0; headstage < 2; headstage += 1)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 0, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+	endfor
+
+	// headstage 0 is unchanged
+	CHECK_CLOSE_VAR(zeroAmpsResults[%OffsetAfter][0], zeroAmpsResults[%OffsetBefore][0], tol = 1e-3)
+
+	// headstage 1 is corrected, see AI_MIESAutoPipetteOffset
+	headstage = 1
+	delta     = zeroAmpsResults[%Baseline][headstage] * PICO_TO_ONE * zeroAmpsResults[%Resistance][headstage] * MEGA_TO_ONE * ONE_TO_MILLI
+	expected  = zeroAmpsResults[%OffsetBefore][headstage] - delta
+	CHECK_CLOSE_VAR(expected, 10, tol = 1e-3)
+
+	CHECK_CLOSE_VAR(zeroAmpsResults[%OffsetAfter][headstage], expected, tol = 0.1)
+	CHECK_CLOSE_VAR(storedOffsetVC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
+	CHECK_CLOSE_VAR(storedOffsetIC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
+End

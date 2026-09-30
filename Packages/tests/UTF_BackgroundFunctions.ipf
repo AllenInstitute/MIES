@@ -182,6 +182,61 @@ Function AutoPipetteOffsetAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 	return 1
 End
 
+/// Call AI_ZeroAmps for headstage 1 or all headstages, see `root:zeroAmpsAllHeadstages`, with
+/// running test pulse and stop the test pulse afterwards
+///
+/// The test pulse results used by AI_ZeroAmps depend on the hardware setup, e.g. a loopback has no
+/// baseline current, so they are replaced by defined ones before: headstage 0 below and headstage 1
+/// above the zero tolerance of AI_ZeroAmps.
+///
+/// Stores the test pulse results and the pipette offset before and after of headstage 0 and 1
+/// in `root:zeroAmpsResults`.
+Function ZeroAmpsAndStopTP_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	variable headstage
+	variable numHeadstages = 2
+
+	SVAR   devices = $GetLockedDevices()
+	string device  = StringFromList(0, devices)
+
+	WAVE TPResults = GetTPResults(device)
+	for(headstage = 0; headstage < numHeadstages; headstage += 1)
+		if(!IsFinite(TPResults[%BaselineSteadyState][headstage]))
+			// wait for the test pulse results
+			return 0
+		endif
+	endfor
+
+	// no new test pulse results can arrive until AI_ZeroAmps is called, as both run in the main thread
+	TPResults[%BaselineSteadyState][0]                      = 0
+	TPResults[%BaselineSteadyState][1]                      = 200
+	TPResults[%ResistanceSteadyState][0, numHeadstages - 1] = 100
+
+	Make/O/D/N=(4, numHeadstages) root:zeroAmpsResults/WAVE=results
+	SetDimensionLabels(results, "Baseline;Resistance;OffsetBefore;OffsetAfter", ROWS)
+
+	for(headstage = 0; headstage < numHeadstages; headstage += 1)
+		results[%Baseline][headstage]     = TPResults[%BaselineSteadyState][headstage]
+		results[%Resistance][headstage]   = TPResults[%ResistanceSteadyState][headstage]
+		results[%OffsetBefore][headstage] = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC)
+	endfor
+
+	NVAR allHeadstages = root:zeroAmpsAllHeadstages
+	if(allHeadstages)
+		AI_ZeroAmps(device)
+	else
+		AI_ZeroAmps(device, headStage = 1)
+	endif
+
+	for(headstage = 0; headstage < numHeadstages; headstage += 1)
+		results[%OffsetAfter][headstage] = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC)
+	endfor
+
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StopTP_IGNORE(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
