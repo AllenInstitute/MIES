@@ -65,11 +65,6 @@ if __name__ == "__main__":
         args.db_user, args.db_password, args.db_host, args.db_name, args.cellnames
     )
 
-    for p in paths:
-        if p is None:
-            print("One of the returned paths is None")
-            sys.exit(1)
-
     print(paths)
 
     # @todo Can't return zero here due to WM bug #8570
