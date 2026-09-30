@@ -136,10 +136,6 @@ End
 ///        Allen Institute for Brain Science' Lab Information System (LIMS)
 Function/WAVE PY_FetchFilesFromLims(WAVE/T cellnames)
 
-#if defined(MACINTOSH)
-	FATAL_ERROR("Not yet supported on macosx")
-#endif
-
 	string list, loc, packageName
 	variable ret
 
