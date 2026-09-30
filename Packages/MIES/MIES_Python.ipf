@@ -42,6 +42,7 @@ static Function/S PY_CreateVirtEnv(string packageName)
 	toolsFolder = PY_GetToolsDiscLocation()
 	uv          = toolsFolder + "uv.exe"
 	req_txt     = toolsFolder + packageName + ":requirements.txt"
+	ASSERT(FileExists(req_txt), "Requirements file does not exist: " + req_txt)
 	// Security support ends on 31st Oct 2030
 	pyVersion = "3.14"
 
