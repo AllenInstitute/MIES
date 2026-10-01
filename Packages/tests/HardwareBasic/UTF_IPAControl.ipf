@@ -55,6 +55,64 @@ static Function IPAIsInitialized([string str])
 	CHECK_EQUAL_VAR(IPA_MIES_IsInitialized(), 0)
 End
 
+/// Locking the device resets the settings of the previous session and the GUI shows the reset state
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAResetOnLock([string str])
+
+	string unlockedDevice
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	// settings with and without GUI control, the package stores them when unlocking
+	CHECK_EQUAL_VAR(AI_WriteToAmplifier(str, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, 20), 0)
+	CHECK_EQUAL_VAR(AI_WriteToAmplifier(str, 0, V_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1), 0)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, "Filter", 1000), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, "IGain", 25e9), 1)
+
+	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
+	unlockedDevice = GetCurrentWindow()
+	ACD_CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
+
+	// package defaults
+	CHECK_EQUAL_VAR(IPA_MIES_GetValue(IPA_PROBE, "VHold"), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, "VHoldOn"), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, "Filter"), 5000)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, "IGain"), 5e9)
+	// stored in single precision
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, "ECompMag"), 0.1e-12, tol = 1e-6)
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(str)
+	CHECK_EQUAL_VAR(AmpStorageWave[%HoldingPotential][0][0], 0)
+	CHECK_EQUAL_VAR(AmpStorageWave[%HoldingPotentialEnable][0][0], 0)
+
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_Hold_VC"), 0)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DatAcq_HoldEnableVC"), 0)
+End
+
+/// The reset to the package defaults keeps the DAC offset trim of the hardware
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAResetKeepsDACOffset([string str])
+
+	variable dacOffset
+
+	STRUCT IPASeries SIPA
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	IPAControl#GetStructure(SIPA)
+	dacOffset                            = SIPA.ipa.HS[IPA_PROBE - 1].DACOffset
+	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset + 1
+	IPAControl#SaveStructure(SIPA)
+
+	CHECK_EQUAL_VAR(IPA_MIES_ResetToDefaults(), 1)
+
+	IPAControl#GetStructure(SIPA)
+	CHECK_EQUAL_VAR(SIPA.ipa.HS[IPA_PROBE - 1].DACOffset, dacOffset + 1)
+
+	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset
+	IPAControl#SaveStructure(SIPA)
+End
+
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function IPAClampModeKeywords([string str])
 

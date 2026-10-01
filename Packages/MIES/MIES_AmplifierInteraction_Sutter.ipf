@@ -327,8 +327,16 @@ Function AISU_Initialize(string device)
 		return 1
 	endif
 
-	// the stored control values of the package do not reflect the state of
-	// the amplifiers, so send the state of MIES
+	// the package stores its control values in its preferences, start with a defined
+	// state instead of applying the settings of the previous session
+	if(!IPA_MIES_ResetToDefaults())
+		printf "(%s) Could not reset the Sutter amplifiers to their default settings.\r", device
+		ControlWindowToFront()
+		// refuse the amplifier selection, as the amplifier settings are undefined
+		AISU_Shutdown(device)
+		return 1
+	endif
+
 	numProbes = AISU_GetNumberOfProbes()
 	for(i = 0; i < numProbes; i += 1)
 		if(AI_GetAmplifierType(device, i) != AMPLIFIER_TYPE_SUTTER)
@@ -337,9 +345,40 @@ Function AISU_Initialize(string device)
 
 		clampMode = DAG_GetHeadstageMode(device, i)
 		AISU_SetClampMode(device, i, clampMode)
+
+		AISU_UpdateAmpStorageFromAmplifier(device, i)
 	endfor
 
 	return 0
+End
+
+/// @brief Set the amplifier settings in the amp storage wave and the GUI to the stored values of the
+///        IPA control package
+///
+/// Only the settings with a GUI control are updated, settings of MIES only, like the autobias, are kept.
+/// The values of both clamp modes are read from the package, which AISU_SendToAmp() can not do as it
+/// only supports the current clamp mode.
+static Function AISU_UpdateAmpStorageFromAmplifier(string device, variable headstage)
+
+	variable i, numEntries, prefixScale, unitScale, clampMode
+	string setting, rowLabel
+
+	Make/FREE/D funcs = {MCC_HOLDING_FUNC, MCC_HOLDINGENABLE_FUNC, MCC_PIPETTEOFFSET_FUNC, MCC_WHOLECELLCOMPENABLE_FUNC, MCC_WHOLECELLCOMPCAP_FUNC, MCC_WHOLECELLCOMPRESIST_FUNC, MCC_RSCOMPENABLE_FUNC, MCC_RSCOMPCORRECTION_FUNC, MCC_RSCOMPPREDICTION_FUNC, MCC_HOLDING_FUNC, MCC_HOLDINGENABLE_FUNC, MCC_PIPETTEOFFSET_FUNC, MCC_BRIDGEBALENABLE_FUNC, MCC_BRIDGEBALRESIST_FUNC, MCC_NEUTRALIZATIONENABL_FUNC, MCC_NEUTRALIZATIONCAP_FUNC}
+	Make/FREE/D clampModes = {V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, V_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE, I_CLAMP_MODE}
+	ASSERT(DimSize(funcs, ROWS) == DimSize(clampModes, ROWS), "Non matching function and clamp mode list")
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+
+	numEntries = DimSize(funcs, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		clampMode                         = clampModes[i]
+		[setting, prefixScale, unitScale] = AISU_GetSetting(funcs[i], clampMode)
+		rowLabel                          = AI_MapFunctionConstantToName(funcs[i], clampMode)
+
+		AmpStorageWave[%$rowLabel][0][headstage] = IPA_MIES_GetValue(headstage + 1, setting) / (prefixScale * unitScale)
+	endfor
+
+	AI_SyncAmpStorageToGUI(device, headstage)
 End
 
 /// @brief Shutdown the Sutter amplifiers

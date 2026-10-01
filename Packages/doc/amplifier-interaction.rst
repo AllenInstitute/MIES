@@ -83,8 +83,16 @@ Initialization
 
 :cpp:func:`AI_InitializeAmplifiers` and :cpp:func:`AI_ShutdownAmplifiers` are called when locking and unlocking a
 device. MCC amplifiers are independent of the device and need no initialization. For Sutter devices the IPA
-control procedures are initialized, switched to live mode and the clamp modes of MIES are sent, as the
-stored control values of the package do not reflect the amplifier state.
+control procedures are initialized and switched to live mode. As the package stores its control values in
+its preferences on disk, they are then reset to the package defaults with ``IPA_MIES_ResetToDefaults`` and
+sent to the amplifiers, otherwise the settings of the previous session would be applied. Afterwards the
+clamp modes of MIES are sent and the amp storage wave and the DA_Ephys GUI are updated to the reset values,
+so that MIES and the amplifier have the same state.
+
+A failing initialization does not abort locking, as for MCC amplifiers without a running MultiClamp
+Commander. ``AISU_SelectMultiClamp`` then returns ``AMPLIFIER_CONNECTION_MCC_FAILED``, so test pulse and data
+acquisition on these headstages are refused, and unlocking still works, as ``AISU_Shutdown`` only shuts down
+an initialized package.
 
 Settings and labnotebook
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -125,8 +133,9 @@ possible to the original:
   index over all IPA devices, or ``IPA_MIES_SetValue``/``IPA_MIES_GetValue``.
 - The package addresses the headstages by the one based probe number over all IPA devices, MIES uses the
   zero based headstage number.
-- The package stores its control values, including gain and filter, in its package preferences. These
-  survive restarts of Igor Pro and are not reset by MIES or the tests.
+- The package stores its control values, including gain and filter, in its package preferences, which
+  survive restarts of Igor Pro. MIES resets them when locking a device, see above. The values set while a
+  device is locked, e.g. on the command line, are kept until the next lock.
 - The file is only included with the Sutter XOP present, so all MIES code calling it must be guarded with
   ``#if exists("SutterDAQScanWave")``. The CI has no Sutter XOP and no Sutter hardware.
 - The file is excluded from the doxygen documentation.
@@ -139,8 +148,9 @@ Testing
 - ``UTF_IPAControl.ipf`` tests the functions of ``IPA_Control.ipf`` which MIES does not use directly.
 - As the CI has no Sutter hardware, changes to the Sutter support or to shared amplifier, configuration or
   analysis function code must be tested locally with an IPA.
-- Check the gain and filter of the IPA control procedures before a test run, see above. With a large
-  current clamp gain the input is clipped, e.g. to +/-20 mV with ``VGain`` 500.
+- Each test case locks the device and therefore starts with the default amplifier settings. Settings
+  changed outside of a test, e.g. on the command line, stay active until the next lock, with a large current
+  clamp gain the input is clipped, e.g. to +/-20 mV with ``VGain`` 500.
 
 Amplifier feature comparison
 ----------------------------
