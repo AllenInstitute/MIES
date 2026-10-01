@@ -23,6 +23,7 @@ Table of Contents
   epoch_information
   mies-concepts
   daq-details
+  amplifier-interaction
   analysis-function-writing
 
 The user documentation can be reached at :ref:`user documentation`, developer documentation is everything else.
