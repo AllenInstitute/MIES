@@ -10,6 +10,7 @@ User documentation
   databrowser
   wavebuilder
   daephys
+  sutter_amplifier
   testpulse
   auto_testpulse_tuning
   SweepFormula
