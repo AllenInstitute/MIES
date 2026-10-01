@@ -585,7 +585,7 @@ Function/WAVE SFOS_OperationSelectTag(STRUCT SF_ExecutionData &exd)
 
 	string opShort = SF_OP_SELECTTAG
 
-	SFH_CheckArgumentCount(exd, opShort, 0, maxArgs = 1)
+	SFH_CheckArgumentCount(exd, opShort, 1, maxArgs = 1)
 
 	WAVE/T tags = SFH_GetArgumentAsWave(exd, SF_OP_SELECTTAG, 0, singleResult = 1, expectedMajorType = IGOR_TYPE_TEXT_WAVE, copy = 1)
 	tags[] = SelectString(IsEmpty(tags[p]), CleanupName(tags[p], 0), "")
@@ -851,7 +851,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 	numSweeps     = DimSize(sweeps, ROWS)
 	numInChannels = DimSize(channels, ROWS)
 
-	WAVE selectData = SFH_NewSelectDataWave(numSweeps, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS + NUM_DA_TTL_CHANNELS)
+	WAVE selectData = SFH_NewSelectDataWave(MINIMUM_WAVE_SIZE, NUM_DA_TTL_CHANNELS + NUM_AD_CHANNELS + NUM_DA_TTL_CHANNELS)
 	if(!fromDisplayed)
 		dimPosSweep         = FindDimLabel(selectData, COLS, "SWEEP")
 		dimPosChannelType   = FindDimLabel(selectData, COLS, "CHANNELTYPE")
@@ -918,6 +918,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 								continue
 							endif
 
+							EnsureLargeEnoughWave(selectData, indexShouldExist = outIndex, dimension = ROWS, initialValue = NaN)
 							selectData[outIndex][dimPosSweep]         = sweepNo
 							selectData[outIndex][dimPosChannelType]   = channelType
 							selectData[outIndex][dimPosChannelNumber] = selectDisplayed[l][dimPosChannelNumber]
@@ -953,6 +954,7 @@ static Function/WAVE SFOS_GetSelectData(string graph, STRUCT SF_SelectParameters
 								continue
 							endif
 
+							EnsureLargeEnoughWave(selectData, indexShouldExist = outIndex, dimension = ROWS, initialValue = NaN)
 							selectData[outIndex][dimPosSweep]         = sweepNo
 							selectData[outIndex][dimPosChannelType]   = channelType
 							selectData[outIndex][dimPosChannelNumber] = l

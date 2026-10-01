@@ -82,8 +82,16 @@ Function TestAnalysisBrowserAddingFiles()
 	PGC_SetAndActivateControl(abWin, "button_AB_Remove")
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
 
-	AB_AddFilesAndFolders(abWin, {fileToReadd})
+	AB_AddFilesAndFolders(abWin, {fileToReadd}, {"tagA", "tagB"})
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(map, NOTE_INDEX), DimSize(files, ROWS))
+
+	WAVE/T list = GetExperimentBrowserGUIList()
+	PGC_SetAndActivateControl(abWin, "button_expand_all")
+
+	Duplicate/FREE/RMD=[][FindDimLabel(list, COLS, "Tags")][0] list, tags
+	Redimension/N=(numpnts(tags)) tags
+	RemoveTextWaveEntry1D(tags, "", all = 1)
+	CHECK_EQUAL_TEXTWAVES(tags, {"tagA,tagB,"}, mode = WAVE_DATA)
 End
 
 Function TestDashboardDependentControlHandling()

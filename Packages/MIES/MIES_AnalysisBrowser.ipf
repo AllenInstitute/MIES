@@ -250,7 +250,7 @@ End
 ///
 /// @return 0 if the file was loaded, or 1 if not (usually due to an error
 ///         or because it was already loaded)
-static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable loadOpts)
+static Function AB_AddFile(string win, string discLocation, string sourceEntry, variable loadOpts, WAVE/Z/T tags)
 
 	variable mapIndex
 	variable firstMapped, lastMapped
@@ -278,6 +278,11 @@ static Function AB_AddFile(string win, string discLocation, string sourceEntry, 
 	if(lastMapped >= firstMapped)
 		list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
 		list[firstMapped, lastMapped][%type][1] = sourceEntry
+
+		if(WaveExists(tags))
+			// we display the tags only in the experiment/file row
+			AB_AddTagToRow(firstMapped, tags)
+		endif
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 		return 1
@@ -2693,7 +2698,7 @@ static Function AB_GetLoadSettings(string win)
 	return (loadResults * AB_LOADOPT_RESULTS) | (loadComments * AB_LOADOPT_COMMENTS)
 End
 
-static Function AB_AddExperimentEntries(string win, WAVE/T entries)
+static Function AB_AddExperimentEntries(string win, WAVE/T entries, WAVE/Z/T tags)
 
 	string entry, symbPath, fName, panel
 	string pxpList, uxpList, nwbList, title
@@ -2720,6 +2725,11 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 			endif
 			if(GetCheckBoxState(win, "check_load_nwb"))
 				WAVE/Z/T nwbs = GetAllFilesRecursivelyFromPath(symbPath, regex = "(?i)\.nwb$")
+
+				if(WaveExists(nwbs))
+					WAVE/Z/T nwbs_clean = GrepTextWave(nwbs, "(?i)_spikes\.nwb$", invert = 1)
+					WAVE/Z/T nwbs       = nwbs_clean
+				endif
 			endif
 			KillPath/Z $symbPath
 
@@ -2753,7 +2763,7 @@ static Function AB_AddExperimentEntries(string win, WAVE/T entries)
 				DoWindow/T $panel, title
 				sTime = stopMSTimer(-2) * MICRO_TO_ONE + 1
 			endif
-			AB_AddFile(win, fName, entry, loadOpts)
+			AB_AddFile(win, fName, entry, loadOpts, tags)
 		endfor
 	endfor
 	DoWindow/T $panel, panel
@@ -2816,7 +2826,6 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	WAVE/T folderList      = GetAnalysisBrowserGUIFolderList()
 	WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
 	WAVE   folderColors    = GetAnalysisBrowserGUIFolderColors()
-	WAVE   tagsColors      = GetAnalysisBrowserTagsColors()
 	if(restoreSettings)
 		NVAR   JSONid        = $GetSettingsJSONid()
 		WAVE/T oldFolderList = JSON_GetTextWave(jsonID, SETTINGS_AB_FOLDER)
@@ -2842,17 +2851,17 @@ Function/S AB_OpenAnalysisBrowser([variable restoreSettings])
 	WAVE   sel  = GetExperimentBrowserGUISel()
 	ListBox list_experiment_contents, win=$panel, listWave=list, selWave=sel
 
+	WAVE/T list   = GetAnalysisBrowserTagsList()
+	WAVE   sel    = GetAnalysisBrowserTagsSelection()
+	WAVE   colors = GetAnalysisBrowserTagsColors()
+	ListBox list_tagcontrol_taglist, win=$(panel + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME), listWave=list, selWave=sel, colorWave=colors
+
 	PS_InitCoordinates(JSONid, panel)
 	SetWindow $panel, hook(cleanup)=AB_WindowHook
 	AB_SetTagControlHideState(1)
 	// Hiding the subwindow while the AB is not yet shown moves the focus to the previous window,
 	// so we need to change the focus back
 	DoWindow/F $panel
-
-	if(restoreSettings)
-		DoUpdate/W=$panel
-		PGC_SetAndActivateControl(panel, "button_AB_refresh")
-	endif
 
 	return panel
 End
@@ -2890,6 +2899,8 @@ Function AB_BrowserStartupSettings()
 
 	ListBox list_experiment_contents, win=$panel, listWave=$"", selWave=$"", colorWave=$""
 	ListBox listbox_AB_Folders, win=$panel, listWave=$"", selWave=$"", colorWave=$""
+	ListBox list_tagcontrol_taglist, win=$(panel + "#" + ANALYSIS_BROWSER_TAGCONTROL_NAME), listWave=$"", selWave=$"", colorWave=$""
+
 	SetCheckBoxState(panel, "check_load_nwb", CHECKBOX_SELECTED)
 	SetCheckBoxState(panel, "check_load_pxp", CHECKBOX_UNSELECTED)
 	SetCheckBoxState(panel, "check_load_results", CHECKBOX_UNSELECTED)
@@ -3046,7 +3057,7 @@ Function AB_ButtonProc_Refresh(STRUCT WMButtonAction &ba) : ButtonControl
 			endfor
 			Duplicate/FREE/T refreshList, refreshInverted
 			refreshInverted = refreshList[refreshIndex - 1 - p]
-			AB_AddExperimentEntries(ba.win, refreshInverted)
+			AB_AddExperimentEntries(ba.win, refreshInverted, $"")
 
 			AB_UpdateColors()
 			AB_CollapseAll()
@@ -3152,7 +3163,7 @@ Function AB_ButtonProc_AddFolder(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 
-			AB_AddFilesAndFolders(ba.win, {folder})
+			AB_AddFilesAndFolders(ba.win, {folder}, $"")
 			AB_CollapseAll()
 			break
 		default:
@@ -3193,7 +3204,7 @@ Function AB_ButtonProc_AddFiles(STRUCT WMButtonAction &ba) : ButtonControl
 				break
 			endif
 			WAVE/T selFiles = ListToTextWave(fileList, "\r")
-			AB_AddFilesAndFolders(ba.win, selFiles)
+			AB_AddFilesAndFolders(ba.win, selFiles, $"")
 			AB_CheckFileTypeCheckbox(ba.win, selFiles)
 			AB_CollapseAll()
 			break
@@ -3247,7 +3258,8 @@ End
 /// @param win     analysis browser window
 /// @param entries text wave with absolute folder paths containing pxps/nwbs/uxps or absolute paths to files
 ///                of that type (backslashes need escaping)
-Function AB_AddFilesAndFolders(string win, WAVE/T entries)
+/// @param tags    tags to add to the new entries
+Function AB_AddFilesAndFolders(string win, WAVE/T entries, WAVE/Z/T tags)
 
 	variable i, index, size
 
@@ -3266,7 +3278,7 @@ Function AB_AddFilesAndFolders(string win, WAVE/T entries)
 	endfor
 	Redimension/N=(index) newEntries
 
-	AB_AddExperimentEntries(win, newEntries)
+	AB_AddExperimentEntries(win, newEntries, tags)
 End
 
 static Function AB_AddElementToSourceList(string entry)
@@ -3900,7 +3912,7 @@ static Function BeforeFileOpenHook(variable refNum, string file, string pathName
 		return 1
 	endif
 
-	if(AB_AddFile(win, entry, entry, loadOpts))
+	if(AB_AddFile(win, entry, entry, loadOpts, $""))
 		// already loaded or error
 		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
@@ -4183,34 +4195,37 @@ End
 static Function AB_AddTagToSelectedExperiments()
 
 	variable idx
-	string newTag, sanTag
+	string   newTag
 
 	newTag = GetSetVariableString(AB_GetTagControlName(), "setvar_tagcontrol_tagname")
 	if(IsEmpty(newTag))
 		return 0
 	endif
-	sanTag = AB_SanitizeTag(newTag)
+
 	WAVE/Z indices = AB_GetSelectedExperimentsIndices()
 	if(!WaveExists(indices))
 		return NaN
 	endif
 	for(idx : indices)
-		AB_AddTagToRow(idx, sanTag)
+		AB_AddTagToRow(idx, {newTag})
 	endfor
 End
 
 /// @brief Adds a tag to the tag list columns in a row in the experiment list
 ///        The tag list is sorted and contains only unique tags
-static Function AB_AddTagToRow(variable idx, string newTag)
+static Function AB_AddTagToRow(variable idx, WAVE/T newTags)
 
 	string oldTags, tagList
 	variable mapIndex
 
+	Duplicate/FREE/T newTags, newTagsClean
+	newTagsClean[] = AB_SanitizeTag(newTags[p])
+
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	oldTags = expBrowserList[idx][%Tags][0]
 	WAVE/T tags = ListToTextWave(oldTags, AB_TAG_SEPARATOR)
-	Redimension/N=(DimSize(tags, ROWS) + 1) tags
-	tags[Inf] = newTag
+
+	Concatenate/NP=(ROWS)/T {newTagsClean}, tags
 	WAVE/T uniqueTags = GetUniqueEntries(tags, dontDuplicate = 1)
 	Sort/A uniqueTags, uniqueTags
 	tagList                       = TextWaveToList(uniqueTags, AB_TAG_SEPARATOR)
