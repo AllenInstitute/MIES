@@ -13,7 +13,12 @@ Requirements
 - The Sutter XOP (``SutterXOP``, version 2.60) must be installed. Without it MIES can not use Sutter devices
   and the amplifier control procedures ``IPA_Control.ipf`` from Sutter Instrument are not loaded.
 - There is no separate amplifier control software like the MultiClamp Commander. The amplifiers are
-  initialized when the device is locked in the DA_Ephys panel and released when it is unlocked.
+  initialized when the device is locked in the DA_Ephys panel and released when it is unlocked. Locking
+  resets the amplifier settings, see :ref:`sutter_settings_reset`.
+- If the amplifiers can not be initialized, e.g. due to an incompatible Sutter XOP or a missing connection,
+  a message is printed and the device is still locked, as for MCC amplifiers without a running MultiClamp
+  Commander. The amplifiers can then not be used, test pulse and data acquisition on their headstages are
+  refused. Unlock and lock the device again to retry the initialization.
 
 Headstages and amplifier assignment
 -----------------------------------
@@ -127,8 +132,23 @@ The following amplifier settings have no control in the DA_Ephys panel yet. They
      - ``DynHoldOn``, ``DynHold``
      - I-Clamp only, keeps the membrane potential at the given level by a slow current injection.
 
-The settings are kept by the IPA control procedures in their package preferences and are therefore still
-active after restarting Igor Pro.
+.. _sutter_settings_reset:
+
+Settings when locking
+^^^^^^^^^^^^^^^^^^^^^
+
+The IPA control procedures store the amplifier settings in their package preferences on disk. To start
+with a defined state, MIES resets all amplifier settings to their defaults when locking a Sutter device,
+instead of applying the settings of the previous session:
+
+- holding potential and holding current, pipette offset, bridge balance, capacitance neutralization, whole
+  cell compensation and Rs compensation are zero and disabled, the fast capacitance compensation is 0.1 pF
+- dynamic hold is off
+- the primary output filter is 5 kHz, the gain is 5 mV/pA in V-Clamp and 100 mV/mV in I-Clamp
+
+The amplifier controls of the DA_Ephys panel are updated to this state, so that the panel shows the
+settings of the amplifier. Settings changed with ``IPA_SetValue`` during a session therefore have to be set
+again after locking the device.
 
 Labnotebook
 -----------
