@@ -1682,6 +1682,55 @@ Function IPA_MIES_IsInitialized()
 	return DataFolderExists(AmpPath)
 End
 
+/// @brief Reset the stored control values of all probes to the package defaults and send them to the amplifiers
+///
+/// The package stores the control values in its preferences, so without the reset the settings of the
+/// previous session are sent to the amplifiers on the next mode switch. The probe assignment and the DAC
+/// offset trim are kept.
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_ResetToDefaults()
+
+	variable probeIndex, ret
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	if(!IPA_OkToSendCommand())
+		return FALSE
+	endif
+
+	GetStructure(SIPA)
+
+	// InitControls also resets the DAC offset trim, which is a property of the hardware
+	Make/FREE/D/N=(kMaxHeadstages) dacOffsets
+	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
+		dacOffsets[probeIndex] = SIPA.ipa.HS[probeIndex].DACOffset
+	endfor
+
+	InitControls(SIPA.ipa)
+
+	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
+		SIPA.ipa.HS[probeIndex].DACOffset = dacOffsets[probeIndex]
+	endfor
+
+	ret = TRUE
+	for(probeIndex = 0; probeIndex < SIPA.numHeadstages; probeIndex += 1)
+		// the amplifier keeps the dynamic hold across mode switches and SetDIPA_fromStructure does not send it
+		SutterDAQwrite(SIPA.ipa.HS[probeIndex].ampIndex, 19 + 6 * SIPA.ipa.HS[probeIndex].HSindex, 0, 0, 0)
+
+		// returns FALSE on error and nothing otherwise
+		if(SetDIPA_fromStructure(SIPA, probeIndex) == FALSE)
+			ret = FALSE
+		endif
+	endfor
+
+	SaveStructure(SIPA)
+
+	return ret
+End
+
 /// @brief Set the clamp mode of the given probe
 ///
 /// In contrast to the "VCMode" and "CCMode" keywords of IPA_SetValue() this uses
