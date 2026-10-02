@@ -711,3 +711,43 @@ static Function CheckZeroAmps_REENTRY([STRUCT IUTF_MDATA &md])
 	CHECK_CLOSE_VAR(storedOffsetVC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
 	CHECK_CLOSE_VAR(storedOffsetIC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
 End
+
+static Function CheckAutoBridgeBalanceFailure_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// A failed automatic bridge balance must not enable the bridge balance
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckAutoBridgeBalanceFailure([STRUCT IUTF_MDATA &md])
+
+	variable ret
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	// the headstage is in voltage clamp, so the current clamp settings are only stored
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC, 10)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// fails as the headstage is in voltage clamp
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 0)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], 10, tol = 1e-3)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 0)
+
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_BB"), 10, tol = 1e-3)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 0)
+End
