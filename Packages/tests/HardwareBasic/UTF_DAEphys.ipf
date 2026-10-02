@@ -625,6 +625,91 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	endfor
 End
 
+static Function CheckRsCompSettings(string device, variable headstage, variable correction, variable prediction)
+
+	variable actual
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+
+	INFO("headstage %d", n0 = headstage)
+
+	CHECK_CLOSE_VAR(ampStorageWave[%Correction][0][headstage], correction, tol = 1e-3)
+	CHECK_CLOSE_VAR(ampStorageWave[%Prediction][0][headstage], prediction, tol = 1e-3)
+
+	// only the prediction, which is always written last, as the MCC application
+	// can change the correction when the prediction is set
+	actual = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPPREDICTION_FUNC)
+	CHECK_CLOSE_VAR(actual, prediction, tol = 1e-3)
+End
+
+static Function CheckSendToAllAmplifiers_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// Writing the Rs chaining or a chained Rs correction with "send to all" must apply the requested
+/// function and value to every headstage
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSendToAllAmplifiers([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage
+	string device
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	// different settings per headstage
+	Make/FREE/D correction = {10, 20}
+	Make/FREE/D prediction = {10, 5}
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 0, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, correction[headstage], sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_RSCOMPPREDICTION_FUNC, prediction[headstage], sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		// enabling the chaining keeps the settings
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 1, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+
+		CheckRsCompSettings(device, headstage, correction[headstage], prediction[headstage])
+	endfor
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 1)
+
+	// toggling the chaining on all headstages keeps the settings of each headstage
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_NO_AMPCHAIN_FUNC, 1)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		CheckRsCompSettings(device, headstage, correction[headstage], prediction[headstage])
+	endfor
+
+	// correction and with chaining also the prediction change by the same amount on each headstage
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, 30)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CheckRsCompSettings(device, 0, 30, 30)
+	CheckRsCompSettings(device, 1, 30, 15)
+
+	// GUI shows the settings of the selected headstage
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_RsCorr"), 30)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_RsPred"), 30)
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+End
+
 // UTF_TD_GENERATOR v0:DataGenerators#GetClampModes
 static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 
@@ -639,4 +724,202 @@ static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 
 		CHECK_EQUAL_VAR(forward * backward, 1)
 	endfor
+End
+
+static Function CheckZeroAmps_preAcq(string device)
+
+	variable ret
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 0, sendToAll = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 1, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 30, sendToAll = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+End
+
+/// AI_ZeroAmps corrects the pipette offset by the baseline current of the running test pulse,
+/// but only for headstages with a baseline current above the zero tolerance
+///
+/// See ZeroAmpsAndStopTP_IGNORE() for the used test pulse results.
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#ZeroAmpsHeadstageSelection
+static Function CheckZeroAmps([STRUCT IUTF_MDATA &md])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1"                       \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" \
+	                                                           + "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+
+	variable/G root:zeroAmpsAllHeadstages = md.v0
+
+	CtrlNamedBackGround ZeroAmps, start=(ticks + 180), period=30, proc=ZeroAmpsAndStopTP_IGNORE
+
+	ACD_AcquireData(s, md.s0)
+End
+
+static Function CheckZeroAmps_REENTRY([STRUCT IUTF_MDATA &md])
+
+	variable delta, expected, headstage, ret, storedOffsetVC, storedOffsetIC
+	string rowLabel, device
+
+	device = md.s0
+
+	WAVE/Z results = root:zeroAmpsResults
+	CHECK_WAVE(results, NUMERIC_WAVE)
+	Duplicate/FREE results, zeroAmpsResults
+	KillWaves results
+	KillVariables root:zeroAmpsAllHeadstages
+
+	// the offset of headstage 1 is set in both clamp modes
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel       = AI_MapFunctionConstantToName(MCC_PIPETTEOFFSET_FUNC, V_CLAMP_MODE)
+	storedOffsetVC = ampStorageWave[%$rowLabel][0][1]
+	rowLabel       = AI_MapFunctionConstantToName(MCC_PIPETTEOFFSET_FUNC, I_CLAMP_MODE)
+	storedOffsetIC = ampStorageWave[%$rowLabel][0][1]
+
+	// reset the amplifier
+	for(headstage = 0; headstage < 2; headstage += 1)
+		ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 0, sendToAll = 0)
+		CHECK_EQUAL_VAR(ret, 0)
+	endfor
+
+	// headstage 0 is unchanged
+	CHECK_CLOSE_VAR(zeroAmpsResults[%OffsetAfter][0], zeroAmpsResults[%OffsetBefore][0], tol = 1e-3)
+
+	// headstage 1 is corrected, see AI_MIESAutoPipetteOffset
+	headstage = 1
+	delta     = zeroAmpsResults[%Baseline][headstage] * PICO_TO_ONE * zeroAmpsResults[%Resistance][headstage] * MEGA_TO_ONE * ONE_TO_MILLI
+	expected  = zeroAmpsResults[%OffsetBefore][headstage] - delta
+	CHECK_CLOSE_VAR(expected, 10, tol = 1e-3)
+
+	CHECK_CLOSE_VAR(zeroAmpsResults[%OffsetAfter][headstage], expected, tol = 0.1)
+	CHECK_CLOSE_VAR(storedOffsetVC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
+	CHECK_CLOSE_VAR(storedOffsetIC, zeroAmpsResults[%OffsetAfter][headstage], tol = 1e-3)
+End
+
+static Function CheckAutoBridgeBalanceFailure_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// A failed automatic bridge balance must not enable the bridge balance
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckAutoBridgeBalanceFailure([STRUCT IUTF_MDATA &md])
+
+	variable ret
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"             + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	// the headstage is in voltage clamp, so the current clamp settings are only stored
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC, 10)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// fails as the headstage is in voltage clamp
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 0)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], 10, tol = 1e-3)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 0)
+
+	CHECK_CLOSE_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_BB"), 10, tol = 1e-3)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 0)
+End
+
+static Function CheckAutoBridgeBalance_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The automatic bridge balance enables the bridge balance with the resistance of the amplifier
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
+
+	variable ret, resistance
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0" + "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	resistance = AI_ReadFromAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC)
+	CHECK_EQUAL_VAR(IsFinite(resistance), 1)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], resistance, tol = 1e-3)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 1)
+
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 1)
+
+	// reset the amplifier
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+End
+
+static Function CheckSendToAllAutoWholeCellComp_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The automatic whole cell compensation with "send to all" must be executed for every headstage
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSendToAllAutoWholeCellComp([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage, actual
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" + \
+	                                                           "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 1)
+
+	// invalid capacitance, so that the update from the amplifier is visible
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel                            = AI_MapFunctionConstantToName(MCC_WHOLECELLCOMPCAP_FUNC, V_CLAMP_MODE)
+	ampStorageWave[%$rowLabel][0][0, 1] = -1
+
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, 1, GUIWrite = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	for(headstage = 0; headstage < 2; headstage += 1)
+		INFO("headstage %d", n0 = headstage)
+
+		actual = AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC)
+		CHECK_GE_VAR(actual, 0)
+		CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][headstage], actual, tol = 1e-3)
+	endfor
+
+	// reset the amplifier
+	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
 End
