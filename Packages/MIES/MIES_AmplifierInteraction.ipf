@@ -823,6 +823,7 @@ Function AI_OpenMCCs(string ampSerialNumList, [string ampTitleList])
 		failedToOpenCount = 0
 		WAVE OpenMCCList = AI_GetMCCSerialNumbers()
 		for(i = 0; i < ItemsInAmpSerialNumList; i += 1)
+			serialStr = StringFromList(i, AmpSerialNumList)
 			serialNum = str2num(serialStr)
 			findvalue/I=(serialNum) OpenMCCList
 			if(v_value == -1)
