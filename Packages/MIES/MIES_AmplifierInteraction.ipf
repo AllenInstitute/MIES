@@ -1802,7 +1802,12 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 
 	switch(func)
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			AI_WriteToMCC(func, NaN)
+			ret = AI_WriteToMCC(func, NaN)
+			// the bridge balance resistance is unchanged on failure
+			if(!IsFinite(ret))
+				break
+			endif
+
 			ret = AI_SendToAmp(device, headstage, mode, MCC_BRIDGEBALRESIST_FUNC, MCC_READ, selectAmp = 0)
 			PUB_AutoBridgeBalance(device, headstage, ret)
 			break

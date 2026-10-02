@@ -837,6 +837,48 @@ static Function CheckAutoBridgeBalanceFailure([STRUCT IUTF_MDATA &md])
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 0)
 End
 
+static Function CheckAutoBridgeBalance_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The automatic bridge balance enables the bridge balance with the resistance of the amplifier
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
+
+	variable ret, resistance
+	string device, rowLabel
+
+	device = md.s0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0" + "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = 0)
+
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, 1, GUIWrite = 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	resistance = AI_ReadFromAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC)
+	CHECK_EQUAL_VAR(IsFinite(resistance), 1)
+
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], resistance, tol = 1e-3)
+	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 1)
+
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 1)
+
+	// reset the amplifier
+	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+End
+
 static Function CheckSendToAllAutoWholeCellComp_preAcq(string device)
 
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
