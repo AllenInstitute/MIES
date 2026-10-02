@@ -1061,13 +1061,21 @@ static Function CheckAutoBridgeBalance_preAcq(string device)
 End
 
 /// The automatic bridge balance enables the bridge balance with the resistance of the amplifier
+///
+/// Sutter amplifiers have no automatic bridge balance, so the bridge balance stays disabled.
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
 
-	variable ret, resistance
+	variable ret, resistance, expectedEnable
 	string device, rowLabel
 
 	device = md.s0
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	expectedEnable = 0
+#else
+	expectedEnable = 1
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0" + "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, device)
@@ -1088,9 +1096,9 @@ static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
 	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
 	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], resistance, tol = 1e-3)
 	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
-	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 1)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], expectedEnable)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 1)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), expectedEnable)
 
 	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
 	CHECK_EQUAL_VAR(ret, 0)
