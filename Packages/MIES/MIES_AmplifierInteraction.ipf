@@ -459,6 +459,11 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				clampMode = I_CLAMP_MODE
 
 				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+
+				if(!IsFinite(value))
+					break
+				endif
+
 				AI_UpdateAmpModel(device, i, ctrl = "setvar_DataAcq_BB", value = value, selectAmp = 0)
 				AI_UpdateAmpModel(device, i, ctrl = "check_DatAcq_BBEnable", value = 1, selectAmp = 0)
 				break
@@ -1786,7 +1791,12 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 
 	switch(func)
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			AI_WriteToMCC(func, NaN)
+			ret = AI_WriteToMCC(func, NaN)
+			// the bridge balance resistance is unchanged on failure
+			if(!IsFinite(ret))
+				break
+			endif
+
 			ret = AI_SendToAmp(device, headstage, mode, MCC_BRIDGEBALRESIST_FUNC, MCC_READ, selectAmp = 0)
 			PUB_AutoBridgeBalance(device, headstage, ret)
 			break
