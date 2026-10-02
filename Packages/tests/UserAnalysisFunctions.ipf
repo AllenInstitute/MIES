@@ -42,7 +42,8 @@ Function ValidFunc_V1(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
+		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 		default:
@@ -74,7 +75,8 @@ Function ValidFunc_V2(string device, variable eventType, WAVE DAQDataWave, varia
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(DAQDataWave, NUMERIC_WAVE)
 			break
-		case HARDWARE_NI_DAC:
+		case HARDWARE_NI_DAC: // fallthrough
+		case HARDWARE_SUTTER_DAC:
 			CHECK_WAVE(DAQDataWave, WAVE_WAVE)
 			break
 		default:

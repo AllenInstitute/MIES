@@ -4,7 +4,7 @@ BEGIN
 	"Name"	"Type"	"Optionality"	"Used by"	"Help"
 	"AbsFrequencyMinDistance"	"variable"	"optional"	"DA"	"AdaptiveSupra: Minimum absolute frequency distance for DAScale estimation."
 	"AbsoluteVoltageDiff"	"variable"	"required"	"VM"	"Maximum absolute allowed difference of the baseline membrane potentials [mV].\r Set to `inf` to disable this check."
-	"AmpBesselFilter"	"variable"	"optional"	"CR"	"Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz],pass \"100000\" to select \"Bypass\"."
+	"AmpBesselFilter"	"variable"	"optional"	"CR"	"Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz],pass \"100000\" to select \"Bypass\".\r Sutter amplifiers support only the values 500;1000;2000;5000;10000;20000 [Hz] and no \"Bypass\"."
 	"AmpBesselFilterRestore"	"variable"	"optional"	"CR"	"Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
 	"AsyncQCChannels"	"wave"	"required"	"AR, CR, DA, PB, RA, RB, SE, SP, VM"	"List of asynchronous channels with alarm enabled, which must *not* be in alarm state."
 	"AutoBiasBaselineModifier"	"variable"	"required"	"SC"	"Auto bias modifier value in mV on failing baseline QC."

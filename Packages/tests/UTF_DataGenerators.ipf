@@ -30,6 +30,16 @@ static Function/WAVE InsertedTPPossibilities()
 	return wv
 End
 
+/// @brief Headstage argument of AI_ZeroAmps: 0 for headstage 1, 1 for all headstages
+static Function/WAVE ZeroAmpsHeadstageSelection()
+
+	Make/FREE/D wv = {0, 1}
+
+	SetDimensionLabels(wv, "OneHeadstage;AllHeadstages", ROWS)
+
+	return wv
+End
+
 static Function/WAVE SingleMultiDeviceDAQ()
 
 	WAVE multiDevices  = DeviceNameGeneratorMD1()
@@ -326,7 +336,13 @@ static Function/WAVE EpochTestSamplingFrequency_Gen()
 	string frequencies = DAP_GetSamplingFrequencies()
 
 	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
-	WAVE w     = ZapNaNs(wTemp)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter input supports at most 50 kHz
+	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
+	WAVE w = ZapNaNs(wTemp)
 
 	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
 
@@ -346,6 +362,11 @@ static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
 	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
 #endif // TESTS_WITH_ITC1600_HARDWARE
 #endif // TESTS_WITH_ITC18USB_HARDWARE
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter input supports at most 50 kHz
+	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	WAVE w = ZapNaNs(wTemp)
 
@@ -2424,7 +2445,12 @@ static Function/WAVE FFI_ClampModeCases()
 	variable i, numModes, mode
 	string token, dimLabels, rowLabel
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// I=0 is not supported for Sutter amplifiers
+	WAVE clampModes = GetClampModesWithoutIZero()
+#else
 	WAVE clampModes = GetClampModes()
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	numModes = DimSize(clampModes, ROWS)
 
 	Make/FREE/WAVE/N=(numModes) wv

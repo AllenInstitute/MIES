@@ -170,6 +170,8 @@ End
 #include "MIES_AcquireData"
 #include "MIES_AcquisitionStateHandling"
 #include "MIES_AmplifierInteraction"
+#include "MIES_AmplifierInteraction_MolecularDevices"
+#include "MIES_AmplifierInteraction_Sutter"
 #include "MIES_AnalysisBrowser"
 #include "MIES_AnalysisBrowser_Macro"
 #include "MIES_AnalysisBrowser_SweepBrowser"

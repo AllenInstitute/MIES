@@ -1257,11 +1257,11 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 				continue
 			endif
 
-			TP_UpdateHoldCmdInTPStorage(device, i)
-
-			if(IsNaN(refTime))
-				refTime = TPResults[%TIMESTAMP][i]
+			// headstages without a test pulse, e.g. with a stimset during TP during DAQ, have no timestamp
+			refTime = TPResults[%TIMESTAMP][i]
+			if(IsFinite(refTime))
 				SetNumberInWaveNote(TPStorage, REFERENCE_START_TIME, refTime)
+				break
 			endif
 		endfor
 	else
@@ -1273,6 +1273,14 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 	if(ret)
 		HandleOutOfMemory(device, NameOfWave(TPStorage))
 		return NaN
+	endif
+
+	// query the holding command on the first entry after TP start, later changes
+	// are recorded by AI_UpdateAmpModel() via TP_UpdateHoldCmdInTPStorage()
+	if(count == GetNumberFromWaveNote(TPStorage, INDEX_ON_TP_START))
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			TP_UpdateHoldCmdInTPStorage(device, i)
+		endfor
 	endif
 
 	// use the last value if we don't have a current one
@@ -1666,6 +1674,10 @@ Function TP_TestPulseHasCycled(string device, variable cycles)
 End
 
 /// @brief Save the amplifier holding command in the TPStorage wave
+///
+/// The value is written into the next TPStorage row, i.e. the one which will be filled by
+/// the next call of TP_RecordTP(). The headstage state and clamp mode are therefore taken
+/// from the headstage properties wave of the running test pulse and not from TPStorage.
 Function TP_UpdateHoldCmdInTPStorage(string device, variable headStage)
 
 	variable count, clampMode
@@ -1674,16 +1686,18 @@ Function TP_UpdateHoldCmdInTPStorage(string device, variable headStage)
 		return NaN
 	endif
 
+	WAVE hsProp = GetHSProperties(device)
+
+	if(!hsProp[headStage][%Enabled])
+		return NaN
+	endif
+
+	clampMode = hsProp[headStage][%ClampMode]
+
 	WAVE TPStorage = GetTPStorage(device)
 
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	EnsureLargeEnoughWave(TPStorage, indexShouldExist = count, dimension = ROWS, initialValue = NaN)
-
-	if(!IsFinite(TPStorage[count][headstage][%Headstage])) // HS not active
-		return NaN
-	endif
-
-	clampMode = TPStorage[count][headstage][%ClampMode]
 
 	if(clampMode == V_CLAMP_MODE)
 		TPStorage[count][headstage][%HoldingCmd_VC] = AI_GetHoldingCommand(device, headStage)

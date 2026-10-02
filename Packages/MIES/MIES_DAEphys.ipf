@@ -15,14 +15,13 @@ static Constant HARDWARE_TAB_NUM  = 6
 static StrConstant COMMENT_PANEL          = "UserComments"
 static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
-static StrConstant AMPLIFIER_DEF_FORMAT = "AmpNo %d Chan %d"
-
 //                                   PCIe-6343                                    | PXI-6259                                   | PCIe-6341                                 | USB-6346
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8|AI:16;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8|AI:8;AO:2;COUNTER:4;DIOPORTS:3;LINES:8,8,8"
 
 static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
 
-static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;"
+// the I=0 controls are disabled as I=0 is not supported for Sutter amplifiers
+static StrConstant SU_DISABLED_CONTROLS = "Popup_Settings_VC_DA;Popup_Settings_VC_AD;Popup_Settings_IC_DA;Popup_Settings_IC_AD;button_Hardware_ClearChanConn;popup_Settings_Amplifier;button_Settings_UpdateAmpStatus;Radio_ClampMode_1IZ;Radio_ClampMode_3IZ;Radio_ClampMode_5IZ;Radio_ClampMode_7IZ;Radio_ClampMode_9IZ;Radio_ClampMode_11IZ;Radio_ClampMode_13IZ;Radio_ClampMode_15IZ;Radio_ClampMode_AllIZero;check_Settings_AmpIEQZstep;button_DataAcq_AutoBridgeBal_IC;button_DataAcq_SlowComp_VC;"
 
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
@@ -1810,7 +1809,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			if(AI_FindConnectedAmps(rescanHardware = 1) == 0)
+			if(AI_FindConnectedAmps(ba.win, rescanHardware = 1) == 0)
 				print "Activate Multiclamp Commander software to populate list of available amplifiers"
 				ControlWindowToFront()
 			endif
@@ -1818,56 +1817,6 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 		default:
 			break
 	endswitch
-End
-
-/// @brief Return a nicely layouted list of amplifier channels
-Function/S DAP_GetNiceAmplifierChannelList()
-
-	WAVE telegraphServers = GetAmplifierTelegraphServers()
-
-	if(!DimSize(telegraphServers, ROWS))
-		return AddListItem("\\M1(MC not available", NONE, ";", Inf)
-	endif
-
-	return AddListItem(DAP_FormatTelegraphServerList(telegraphServers), NONE, ";", Inf)
-End
-
-Function/S DAP_FormatTelegraphServerList(WAVE telegraphServers)
-
-	variable i, numRows
-	string str
-	string list = ""
-
-	numRows = DimSize(telegraphServers, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
-		list = AddListItem(str, list, ";", Inf)
-	endfor
-
-	return list
-End
-
-static Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
-
-	string str
-
-	sprintf str, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannel
-
-	return str
-End
-
-/// @brief Parse the entries which DAP_GetAmplifierDef() created
-Function DAP_ParseAmplifierDef(string amplifierDef, variable &ampSerial, variable &ampChannelID)
-
-	ampSerial    = NaN
-	ampChannelID = NaN
-
-	if(!cmpstr(amplifierDef, NONE))
-		return NaN
-	endif
-
-	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
-	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
 End
 
 Function DAP_SyncDeviceAssocSettToGUI(string device, variable headStage)
@@ -2007,8 +1956,9 @@ Function DAP_ButtonProc_ClearChanCon(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			// set all DA/AD channels for both clamp modes to an invalid channel number
-			ChanAmpAssign[0, 6; 2][headStage] = NaN
-			ChanAmpAssign[8, 9][headStage]    = NaN
+			ChanAmpAssign[0, 6; 2][headStage]  = NaN
+			ChanAmpAssign[8, 9][headStage]     = NaN
+			ChanAmpAssign[%AmpType][headStage] = AMPLIFIER_TYPE_NONE
 
 			DAP_UpdateChanAmpAssignPanel(device)
 			break
@@ -2082,7 +2032,7 @@ End
 Function DAP_CheckSettings(string device, variable mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
-	variable ampSerial, ampChannelID, hardwareType
+	variable hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
@@ -2312,10 +2262,8 @@ Function DAP_CheckSettings(string device, variable mode)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-			ampSpec[i] = DAP_GetAmplifierDef(ampSerial, ampChannelID)
+		if(AI_HasAmplifier(device, i))
+			ampSpec[i] = AI_GetAmplifierDef(device, i)
 		else
 			// add a unique alternative entry
 			ampSpec[i] = num2str(i)
@@ -2698,7 +2646,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
 		AI_EnsureCorrectMode(device, headStage)
-		AI_QueryGainsUnitsForClampMode(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+		[DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC] = AI_QueryGainsUnitsForClampMode(device, headStage, clampMode)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
 			printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, DACchannel, DAUnit, DAUnitMCC
@@ -2728,7 +2676,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 
 		if(needResetting)
 			AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
-			printf "(%s) The automatically imported gains from MCC were used to overwrite differing manual settings.\r", device
+			printf "(%s) The automatically imported gains from the amplifier were used to overwrite differing manual settings.\r", device
 			ControlWindowToFront()
 			DAP_UpdateChanAmpAssignPanel(device)
 			DAP_SyncChanAmpAssignToActiveHS(device)
@@ -2965,6 +2913,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(string device, string setN
 		STRUCT CheckParametersStruct s
 		s.params  = WB_ExtractAnalysisFunctionParams(stimSet)
 		s.setName = setName
+		s.device  = device
 
 		[errorMessage, WAVE errorTypes] = AFH_CheckAnalysisParameter(func, s)
 		if(!IsEmpty(errorMessage) && !IsConstant(errorTypes, CAP_SUPERFLUOUS))
@@ -3375,6 +3324,7 @@ Function DAP_ChangeHeadStageMode(string device, variable clampMode, variable hea
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(device)
+	ASSERT(AI_IsClampModeSupported(device, clampMode), "The clamp mode " + ConvertAmplifierModeToString(clampMode) + " is not supported for the amplifiers of the device")
 
 	if(options != MCC_SKIP_UPDATES)
 		// explicitly switch to the data acquistion tab to avoid having
@@ -4641,7 +4591,8 @@ Function DAP_LockDevice(string win)
 	locked = 1
 	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps(deviceLocked)
+	PopupMenu popup_Settings_Amplifier, win=$deviceLocked, value=#("AI_GetAmplifierList(device = \"" + deviceLocked + "\")")
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))
@@ -4688,6 +4639,8 @@ Function DAP_LockDevice(string win)
 
 	DAP_UpdateSweepLimitsAndDisplay(deviceLocked)
 	DAP_AdaptPanelForDeviceSpecifics(deviceLocked)
+
+	AI_InitializeAmplifiers(deviceLocked)
 
 	WAVE TPSettings = GetTPSettings(deviceLocked)
 	// force update the stored TP settings
@@ -4778,6 +4731,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceE
 				PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", val = i)
 				PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", val = i)
 				PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", val = i)
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = AI_GetFixedAmplifierDef(device, i))
 			else
 				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 			endif
@@ -4924,6 +4878,7 @@ static Function DAP_UnlockDevice(string device)
 		unlockedDevice = UniqueName(BASE_WINDOW_NAME + "_", CONTROL_PANEL_TYPE, 1)
 	endif
 	DoWindow/W=$device/C $unlockedDevice
+	PopupMenu popup_Settings_Amplifier, win=$unlockedDevice, value=#"AI_GetAmplifierList()"
 
 	variable locked = 0
 	DAP_UpdateDataFolderDisplay(unlockedDevice, locked)
@@ -4933,6 +4888,8 @@ static Function DAP_UnlockDevice(string device)
 	hardwareType = GetHardwareType(device)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
 	TFH_StopFIFODaemon(hardwareType, deviceID)
+
+	AI_ShutdownAmplifiers(device)
 
 	flags = HARDWARE_ABORT_ON_ERROR
 	HW_CloseDevice(hardwareType, deviceID, flags = flags)
@@ -4996,7 +4953,7 @@ End
 
 static Function DAP_UpdateChanAmpAssignStorWv(string device)
 
-	variable HeadStageNo, ampSerial, ampChannelID
+	variable HeadStageNo, ampSerial, ampChannelID, ampType
 	string amplifierDef
 	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
 	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
@@ -5022,21 +4979,17 @@ static Function DAP_UpdateChanAmpAssignStorWv(string device)
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
-	amplifierDef = GetPopupMenuString(device, "popup_Settings_Amplifier")
-	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
+	amplifierDef                       = GetPopupMenuString(device, "popup_Settings_Amplifier")
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, amplifierDef)
 
-	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
-	else
-		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = NaN
-		ChanAmpAssign[%AmpChannelID][HeadStageNo] = NaN
-	endif
+	ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
+	ChanAmpAssign[%AmpChannelID][HeadStageNo] = ampChannelID
+	ChanAmpAssign[%AmpType][HeadStageNo]      = ampType
 End
 
 static Function DAP_UpdateChanAmpAssignPanel(string device)
 
-	variable HeadStageNo, channel, ampSerial, ampChannelID
+	variable HeadStageNo, channel
 	string entry
 
 	WAVE   ChanAmpAssign     = GetChanAmpAssign(device)
@@ -5070,14 +5023,8 @@ static Function DAP_UpdateChanAmpAssignPanel(string device)
 	Setvariable setvar_Settings_IC_ADgain, win=$device, value=_NUM:ChanAmpAssign[%IC_ADGain][HeadStageNo]
 	Setvariable SetVar_Hardware_IC_AD_Unit, win=$device, value=_STR:ChanAmpAssignUnit[%IC_ADUnit][HeadStageNo]
 
-	ampSerial    = ChanAmpAssign[%AmpSerialNo][HeadStageNo]
-	ampChannelID = ChanAmpAssign[%AmpChannelID][HeadStageNo]
-	if(isFinite(ampSerial) && isFinite(ampChannelID))
-		entry = DAP_GetAmplifierDef(ampSerial, ampChannelID)
-		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
-	else
-		Popupmenu popup_Settings_Amplifier, win=$device, popmatch=NONE
-	endif
+	entry = AI_GetAmplifierDef(device, HeadStageNo)
+	Popupmenu popup_Settings_Amplifier, win=$device, popmatch=entry
 End
 
 /// @brief Helper function to update all DAQ related controls after something changed.
@@ -5857,7 +5804,7 @@ Function DAP_GetDAScaleMax(string device, variable headstage, string stimsetName
 	ASSERT(IsFinite(minStimset) && IsFinite(maxStimset), "Invalid minimum/maximum")
 
 	hardwareType       = GetHardwareType(device)
-	[minData, maxData] = HW_GetDataRange(hardwareType, XOP_CHANNEL_TYPE_DAC, 1)
+	[minData, maxData] = HW_GetDataRange(hardwareType, XOP_CHANNEL_TYPE_DAC, 1, clampMode = DAG_GetHeadstageMode(device, headstage))
 
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	WAVE DACs          = GetDACListFromConfig(DAQConfigWave)

@@ -11,7 +11,7 @@
 
 static Function ACD_EnsureMCCIsOpen()
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps("")
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
@@ -426,9 +426,11 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 	string ctrl
 	variable i, activeHS, sendToAllPrevious
 
+#ifndef TESTS_WITH_SUTTER_HARDWARE
 	if(s.amp)
 		ACD_EnsureMCCIsOpen()
 	endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 
 	ACD_FetchCustomizationFunctions(s)
 
@@ -438,7 +440,8 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 	ACD_CreateLockedDAEphys(device)
 
 #ifdef TESTS_WITH_SUTTER_HARDWARE
-	Duplicate/FREE s.hs, sutterRequirementCheck
+	// s.hs can also have the labnotebook layout with the headstage independent entry, e.g. for replay
+	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] s.hs, sutterRequirementCheck
 	sutterRequirementCheck[] = s.aso[p] == 1 && s.hs[p] == 1
 	if(!(sum(sutterRequirementCheck) == 1 && sutterRequirementCheck[0] == 1))
 		INFO("SUTTER hardware currently supports only 1 HS")
@@ -513,10 +516,18 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 #endif // TESTS_WITH_SUTTER_HARDWARE
 
 		if(s.amp && activeHS < 2)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+			// the Sutter amplifiers are fixed
+			INFO("HS %d has not the fixed Sutter amplifier", n0 = i)
+			CHECK_EQUAL_VAR(AI_GetAmplifierType(device, i), AMPLIFIER_TYPE_SUTTER)
+
+			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+#else
 			// first entry is none
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
 
 			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+#endif // TESTS_WITH_SUTTER_HARDWARE
 		endif
 
 		if(!IsEmpty(s.ist[i]))

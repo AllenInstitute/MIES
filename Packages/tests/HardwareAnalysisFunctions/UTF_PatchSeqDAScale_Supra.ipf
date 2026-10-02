@@ -651,7 +651,12 @@ static Function PS_DS_Supra7_preAcq(string device)
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter amplifier has a larger current clamp output range
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "DAScales", wv = {1000, 1500, 1750, 2000, 25000})
+#else
 	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "DAScales", wv = {1000, 1500, 1750, 2000, 5000})
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
 End

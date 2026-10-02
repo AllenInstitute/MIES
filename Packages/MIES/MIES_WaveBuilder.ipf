@@ -2632,6 +2632,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	STRUCT CheckParametersStruct s
 	s.params  = params
 	s.setName = tempName
+	s.device  = ""
 
 	[errorMessage, WAVE errorTypes] = AFH_CheckAnalysisParameter(genericFunc, s)
 

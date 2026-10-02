@@ -32,18 +32,82 @@ Function FixupJSONConfigImplMain(variable jsonId, string device)
 
 	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
 	JSON_SetString(jsonID, jPath + "/StrValue", device)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	variable i, numProbes
+
+	// only the headstages of the IPA devices exist
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	numProbes = str2num(deviceInfo[%SUMHEADSTAGES])
+
+	jPath = MIES_CONF#CONF_FindControl(jsonID, "Check_DataAcqHS")
+	if(!IsEmpty(jPath))
+		for(i = numProbes; i < NUM_HEADSTAGES; i += 1)
+			JSON_SetBoolean(jsonID, jPath + "/Values/" + num2istr(i), 0)
+		endfor
+	endif
+
+	// headstages without IPA device are stored as null
+	for(i = numProbes; i < NUM_HEADSTAGES; i += 1)
+		jPath = "/Common configuration data/Headstage Association/" + num2istr(i)
+		if(JSON_Exists(jsonID, jPath))
+			JSON_SetNull(jsonID, jPath)
+		endif
+	endfor
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	PathInfo home
 	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
 	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", GetTestStimsetFullFilePath())
 End
 
-Function FixupJSONConfigImplRig(variable jsonId)
+/// @param jsonId  JSON configuration
+/// @param rigOnly [optional, defaults to false] The configuration is a rig file only
+Function FixupJSONConfigImplRig(variable jsonId, [variable rigOnly])
 
 	string serialNumStr, jsonPath
 	variable serialNum, i
 
+	rigOnly = ParamIsDefault(rigOnly) ? 0 : !!rigOnly
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	variable numProbes
+
+	// the Sutter amplifiers are fixed, replace the stored MCC amplifiers
+	// with the entries a Sutter device would store
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	numProbes = str2num(deviceInfo[%SUMHEADSTAGES])
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		sprintf jsonPath, "/Common configuration data/Headstage Association/%d/Amplifier", i
+		if(!JSON_Exists(jsonID, jsonPath))
+			continue
+		endif
+		if(JSON_GetType(jsonID, jsonPath + "/Serial", ignoreErr = 1) != JSON_NUMERIC)
+			continue
+		endif
+
+		if(i < numProbes)
+			JSON_Remove(jsonID, jsonPath + "/Serial")
+			JSON_Remove(jsonID, jsonPath + "/Title", ignoreErr = 1)
+			JSON_SetString(jsonID, jsonPath + "/Type", "Sutter")
+			JSON_SetVariable(jsonID, jsonPath + "/Channel", i)
+		elseif(rigOnly)
+			// headstages without IPA device are not stored
+			sprintf jsonPath, "/Common configuration data/Headstage Association/%d", i
+			JSON_Remove(jsonID, jsonPath)
+		else
+			// headstages without amplifier, stored as CONF_GetAmplifierSettings() does
+			JSON_SetNull(jsonID, jsonPath + "/Serial")
+			JSON_SetNull(jsonID, jsonPath + "/Channel")
+		endif
+	endfor
+
+	return NaN
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	// replace stored serial number with present serial number
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps("")
 	WAVE ampMCC = GetAmplifierMultiClamps()
 
 	CHECK_GT_VAR(DimSize(ampMCC, ROWS), 0)
@@ -91,7 +155,7 @@ Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, 
 	CHECK_PROPER_STR(S_path)
 
 	if(StringEndsWith(path, "_rig.json"))
-		FixupJSONConfigImplRig(jsonId)
+		FixupJSONConfigImplRig(jsonId, rigOnly = 1)
 	else
 		FixupJSONConfigImpl(jsonId, device)
 	endif
@@ -2052,6 +2116,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_Databrowser.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Epochs.ipf", list, ";", Inf)
 			list = AddListItem("UTF_ForeignFunctionInterfaceWithHardware.ipf", list, ";", Inf)
+			list = AddListItem("UTF_IPAControl.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Replay.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepSkipping.ipf", list, ";", Inf)
