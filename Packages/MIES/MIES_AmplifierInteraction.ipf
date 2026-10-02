@@ -493,7 +493,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
 			case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
 			case MCC_SECONDARYSIGNALLPF_FUNC:
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			default:
 				FATAL_ERROR("Unknown func: " + num2str(func))
