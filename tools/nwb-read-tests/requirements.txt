@@ -367,9 +367,9 @@ cryptography==45.0.5 ; sys_platform == 'linux' \
     --hash=sha256:e74d30ec9c7cb2f404af331d5b4099a9b322a8a6b25c4632755c8757345baac5 \
     --hash=sha256:f3562c2f23c612f2e4a6964a61d942f891d29ee320edb62ff48ffb99f3de9ae8
     # via secretstorage
-dandi==0.76.5 \
-    --hash=sha256:1be445738b87ffad257839c3353bfd49d56f9a057b9d37b08ef4f71c0607a653 \
-    --hash=sha256:5e83558c65f5eeac90444e28aaf7ba948de2e24b49e09ed96d79988712077aaf
+dandi==0.81.0 \
+    --hash=sha256:650b67b0dd391cf3a9949f8272a49dc276b8bc0d1ac8d48f5bda67ed072945f5 \
+    --hash=sha256:75c294880a226df0e7bf3daf3ad6e9030d7fd9df0f82c5b72f234e28c6af45c7
     # via -r requirements.in
 dandischema==0.12.1 \
     --hash=sha256:481ed1da9481090d8000b3b2373a0d4876043f48d4cddc3364c18e0a97bd0c22 \
@@ -546,9 +546,9 @@ h5py==3.14.0 \
     # via
     #   hdmf
     #   pynwb
-hdmf==6.1.0 \
-    --hash=sha256:3354913c85c1b242e8a6f2677804dcaf0b86c44b5187fa6fb27c29ef00f4224d \
-    --hash=sha256:545b583ee667de2b930520555e28e5cf3bfea2706bb92880277d21f05f7ad5f7
+hdmf==6.2.0 \
+    --hash=sha256:303e5c066a175448b3176b3377389e5d16bb4c5fc753f2dca540d6bd7b118b7c \
+    --hash=sha256:47dd0d0ebdf834b0cc5d1fdbe6b73d718549cffa489e47f68f638a4add20b65d
     # via
     #   dandi
     #   pynwb
@@ -1201,9 +1201,9 @@ pydantic-settings==2.14.2 \
     --hash=sha256:a20c97b37910b6550d5ea50fbcc2d4187defe58cd57070b73863d069419c9440 \
     --hash=sha256:c19dd64b19097f1de80184f0cc7b0272a13ae6e170cbf240a3e27e381ed14a5f
     # via dandischema
-pynwb==4.0.0 \
-    --hash=sha256:3b138f9d64151146ae8a7dd5ce5f82680a93447e478cfc829a0e7b4966892a93 \
-    --hash=sha256:8233d7ee565fcff1d4c59689c69d8b3dab1c41ed6b1e45967a57144f099ababf
+pynwb==4.2.0 \
+    --hash=sha256:681e86b73cf21fc607003936ac9e575efdb64d3d01001bfa351862d40f9b5e7e \
+    --hash=sha256:9710364ecac03b6e6b8693d9eeaeb9f3dc6e61195baa88adb251def901655445
     # via
     #   -r requirements.in
     #   dandi
