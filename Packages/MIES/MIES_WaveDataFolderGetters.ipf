@@ -9823,3 +9823,12 @@ Function/S GetReplayStorageAsString()
 End
 
 #endif // REPLAY_DATA
+
+/// @brief Return a free wave to store the LIMS credentials
+Function/WAVE GetLIMSCredentialsAsFree()
+
+	Make/N=(4)/T/FREE wv
+	SetDimensionLabels(wv, "Db User;Db Password;Db Host;Db Name", ROWS)
+
+	return wv
+End
