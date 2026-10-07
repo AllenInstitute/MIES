@@ -123,12 +123,56 @@ static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, s
 	endswitch
 End
 
+/// @brief Return the low pass filter values the amplifier uses for the requested ones
+///
+/// The Sutter amplifier supports only a few discrete values and uses the next one, see IPA_SetValue().
+static Function/WAVE GetExpectedLPF_IGNORE(string device, WAVE requested)
+
+	variable i, j, numEntries, numLimits
+
+	if(GetHardwareType(device) != HARDWARE_SUTTER_DAC)
+		return requested
+	endif
+
+	WAVE sutterLPF = ListToNumericWave(SUTTER_LPF_VALUES, ";")
+	Make/FREE/D upperLimits = {550, 1100, 2200, 5500, 11000}
+
+	Duplicate/FREE requested, expected
+
+	numEntries = DimSize(expected, ROWS)
+	numLimits  = DimSize(upperLimits, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		for(j = 0; j < numLimits; j += 1)
+			if(requested[i] < upperLimits[j])
+				break
+			endif
+		endfor
+
+		expected[i] = sutterLPF[j]
+	endfor
+
+	return expected
+End
+
+/// @brief Return a supported low pass filter value which differs from the default and bypass
+///
+/// The expected values for the checks are the ones for MCC amplifiers, see GetExpectedLPF_IGNORE().
+static Function GetNonDefaultLPF_IGNORE(string device)
+
+	if(GetHardwareType(device) == HARDWARE_SUTTER_DAC)
+		return 500
+	endif
+
+	return 14
+End
+
 static Function CheckMCCLPF(string device, variable expectedValue)
 
 	variable val
 
 	val = AI_ReadFromAmplifier(device, PSQ_TEST_HEADSTAGE, I_CLAMP_MODE, MCC_PRIMARYSIGNALLPF_FUNC, selectAmp = 0)
-	CHECK_EQUAL_VAR(val, expectedValue)
+	WAVE expected = GetExpectedLPF_IGNORE(device, {expectedValue})
+	CHECK_EQUAL_VAR(val, expected[0])
 End
 
 static Function CheckChirpUserEpochs(string device, WAVE baselineChunks, WAVE chirpChunk, WAVE spikeChunk, [variable incomplete, variable sweep])
@@ -217,7 +261,7 @@ static Function PS_CR1_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -299,7 +343,7 @@ static Function PS_CR2_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2, 2}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 1)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -378,7 +422,7 @@ static Function PS_CR2a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -456,7 +500,7 @@ static Function PS_CR2b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -475,7 +519,7 @@ static Function PS_CR3_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = GetNonDefaultLPF_IGNORE(device))
 	// AmpBesselFilterRestore defaults
 
 	Make/FREE asyncChannels = {2, 3}
@@ -536,8 +580,8 @@ static Function PS_CR3_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {14, 14, 14}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], GetExpectedLPF_IGNORE(str, {14, 14, 14}), mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
 	CHECK_WAVE(lbnEntries[%oorDAScale], NULL_WAVE)
@@ -557,7 +601,7 @@ static Function PS_CR4_preAcq(string device)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = GetNonDefaultLPF_IGNORE(device))
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilterRestore", var = 0)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -645,8 +689,8 @@ static Function PS_CR4_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {14, 14, 14, 14, 14, 14}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], GetExpectedLPF_IGNORE(str, {14, 14, 14, 14, 14, 14}), mode = WAVE_DATA)
 	CheckMCCLPF(str, 14)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%oorDAScale], {0, NaN, 0, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -757,7 +801,7 @@ static Function PS_CR4a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -868,7 +912,7 @@ static Function PS_CR4b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -978,7 +1022,7 @@ static Function PS_CR5_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1091,7 +1135,7 @@ static Function PS_CR6_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1200,7 +1244,7 @@ static Function PS_CR7_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1307,7 +1351,7 @@ static Function PS_CR8_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1421,7 +1465,7 @@ static Function PS_CR9_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1534,7 +1578,7 @@ static Function PS_CR9a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1647,7 +1691,7 @@ static Function PS_CR9b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1756,7 +1800,7 @@ static Function PS_CR10_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1846,7 +1890,7 @@ static Function PS_CR11_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -1931,7 +1975,7 @@ static Function PS_CR12_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2028,7 +2072,7 @@ static Function PS_CR13_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2130,7 +2174,7 @@ static Function PS_CR13a_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2, 2, 2, 2}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2213,7 +2257,7 @@ static Function PS_CR13b_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {2, 2}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2295,7 +2339,7 @@ static Function PS_CR14_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2380,7 +2424,7 @@ static Function PS_CR15_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2466,7 +2510,7 @@ static Function PS_CR16_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2549,7 +2593,7 @@ static Function PS_CR17_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF, PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2632,7 +2676,7 @@ static Function PS_CR18_REENTRY([string str])
 	CHECK_EQUAL_WAVES(lbnEntries[%userOnsetDelay], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_OnsetDelayUser"), 0)
 
-	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], {LPF_BYPASS}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initLowPassFilter], GetExpectedLPF_IGNORE(str, {LPF_BYPASS}), mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%lowPassFilter], {PSQ_CR_DEFAULT_LPF}, mode = WAVE_DATA)
 	CheckMCCLPF(str, LPF_BYPASS)
 
@@ -2641,4 +2685,45 @@ static Function PS_CR18_REENTRY([string str])
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 	Make/FREE/N=0 empty
 	CheckChirpUserEpochs(str, empty, empty, empty, incomplete = 1)
+End
+
+static Function PS_CR_UnsupportedLPF_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var = 20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var = 40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var = 1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var = 0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str = "Symmetric")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfFailedSweeps", var = 3)
+	// not supported by Sutter amplifiers
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AmpBesselFilter", var = 14)
+
+	Make/FREE/D asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_CR_UnsupportedLPF([string str])
+
+	if(GetHardwareType(str) != HARDWARE_SUTTER_DAC)
+		INFO("Only Sutter amplifiers support a restricted set of low pass filter values")
+		SKIP_TESTCASE()
+	endif
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+
+	try
+		ACD_AcquireData(s, str)
+	catch
+		PASS()
+	endtry
+End
+
+static Function PS_CR_UnsupportedLPF_REENTRY([string str])
+
+	// the analysis parameter check prevents the start of DAQ
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(str), NaN)
 End

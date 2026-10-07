@@ -1088,6 +1088,8 @@ static Function PS_RB12_preAcq(string device)
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	SetFinalDAScale(3999e-12)
+#elif defined(TESTS_WITH_SUTTER_HARDWARE)
+	SetFinalDAScale(19990e-12)
 #else
 	SetFinalDAScale(4090e-12)
 #endif // TESTS_WITH_NI_HARDWARE
@@ -1140,6 +1142,8 @@ static Function PS_RB12_REENTRY([string str])
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	finalDAScale = 3999e-12
+#elif defined(TESTS_WITH_SUTTER_HARDWARE)
+	finalDAScale = 19990e-12
 #else
 	finalDAScale = 4090e-12
 #endif // TESTS_WITH_NI_HARDWARE

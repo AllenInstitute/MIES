@@ -6714,8 +6714,9 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_CHIRP, name)
 		case "AmpBesselFilter":
-			return "Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz]," \
-			       + "pass \"" + num2str(LPF_BYPASS, "%g") + "\" to select \"Bypass\"."
+			return "Applies a bessel filter to the primary output.\r Defaults to 10e3 [Hz],"                      \
+			       + "pass \"" + num2str(LPF_BYPASS, "%g") + "\" to select \"Bypass\".\r"                         \
+			       + " Sutter amplifiers support only the values " + SUTTER_LPF_VALUES + " [Hz] and no \"Bypass\"."
 		case "AmpBesselFilterRestore":
 			return "Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
 		case "AutobiasTargetV":
@@ -6769,6 +6770,13 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val <= 0)
 				return "Must be a positive value."
+			endif
+
+			if(!IsEmpty(s.device) && GetHardwareType(s.device) == HARDWARE_SUTTER_DAC)
+				WAVE sutterLPF = ListToNumericWave(SUTTER_LPF_VALUES, ";")
+				if(IsNaN(GetRowIndex(sutterLPF, val = val)))
+					return "Must be one of " + SUTTER_LPF_VALUES + " for Sutter amplifiers."
+				endif
 			endif
 			break
 		case "AmpBesselFilterRestore":

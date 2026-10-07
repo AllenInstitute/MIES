@@ -18,7 +18,7 @@
 Constant DAQ_CONFIG_WAVE_VERSION = 3
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 67
+Constant DA_EPHYS_PANEL_VERSION           = 68
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 55
 Constant WAVEBUILDER_PANEL_VERSION        = 15
 Constant ANALYSISBROWSER_PANEL_VERSION    = 12
@@ -39,7 +39,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 85
+Constant LABNOTEBOOK_VERSION = 86
 Constant RESULTS_VERSION     = 4
 ///@}
 
@@ -501,6 +501,9 @@ Constant MCC_WRITE = 0x2
 /// Magic value for selecting "Bypass" in the bessel filter for the primary output
 Constant LPF_BYPASS = 100e3
 
+/// Supported values of the low pass filter for the primary output of Sutter amplifiers in Hz, there is no "Bypass"
+StrConstant SUTTER_LPF_VALUES = "500;1000;2000;5000;10000;20000"
+
 Constant CHECKBOX_SELECTED   = 1
 Constant CHECKBOX_UNSELECTED = 0
 
@@ -881,6 +884,14 @@ Constant WAVEBUILDER_MIN_SAMPINT_HZ = 200e3 ///< Stimulus sets are created with 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"
 
+/// @name Amplifier types of a headstage
+/// @anchor AmplifierTypes
+///@{
+Constant AMPLIFIER_TYPE_NONE   = 0 ///< no amplifier associated
+Constant AMPLIFIER_TYPE_MCC    = 1 ///< Molecular Devices amplifier controlled via MultiClamp Commander
+Constant AMPLIFIER_TYPE_SUTTER = 2 ///< Sutter amplifier integrated in the Sutter IPA DAQ device
+///@}
+
 /// @name Constants for the return value of AI_SelectMultiClamp()
 /// @anchor AISelectMultiClampReturnValues
 ///@{
@@ -1095,18 +1106,20 @@ Constant NI_TTL_MAX = 1
 ///
 /// @anchor SUDAQ_WaveRanges
 ///@{
-Constant SU_HS_IN_V_MIN = -1     // V
-Constant SU_HS_IN_V_MAX = 1      // V
-Constant SU_HS_IN_I_MIN = -20E-9 // A
-Constant SU_HS_IN_I_MAX = 20E-9  // A
-Constant SU_DAC_MIN     = -10    // V
-Constant SU_DAC_MAX     = 10     // V
-Constant SU_ADC_MIN     = -10    // V
-Constant SU_ADC_MAX     = 10     // V
-Constant SU_HS_OUT_MIN  = -1     // V
-Constant SU_HS_OUT_MAX  = 1      // V
-Constant SU_TTL_MIN     = 0      // V
-Constant SU_TTL_MAX     = 1      // V
+Constant SU_HS_IN_V_MIN  = -1     // V
+Constant SU_HS_IN_V_MAX  = 1      // V
+Constant SU_HS_IN_I_MIN  = -20E-9 // A
+Constant SU_HS_IN_I_MAX  = 20E-9  // A
+Constant SU_DAC_MIN      = -10    // V
+Constant SU_DAC_MAX      = 10     // V
+Constant SU_ADC_MIN      = -10    // V
+Constant SU_ADC_MAX      = 10     // V
+Constant SU_HS_OUT_MIN   = -1     // V
+Constant SU_HS_OUT_MAX   = 1      // V
+Constant SU_HS_OUT_I_MIN = -20E-9 // A, current clamp
+Constant SU_HS_OUT_I_MAX = 20E-9  // A, current clamp
+Constant SU_TTL_MIN      = 0      // V
+Constant SU_TTL_MAX      = 1      // V
 ///@}
 
 /// Maximum length of a valid object name in bytes in Igor Pro >= 8

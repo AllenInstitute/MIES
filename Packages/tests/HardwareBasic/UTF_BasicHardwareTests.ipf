@@ -1925,17 +1925,28 @@ static Function CheckPulseInfoGathering_REENTRY([string str])
 	CHECK_EQUAL_VAR(V_numNaNs, 0)
 
 	// check some values
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter output has a sampling interval of 0.1 ms, the epoch borders are on that grid
+	Make/FREE/D row9Ref = {20, 826.6, 828.1}
+	Make/FREE/D row25Ref = {26.5, 1373.6, 1375.1}
+	Make/FREE/D row55Ref = {29.6, 2505.2, 2506.7}
+#else
+	Make/FREE/D row9Ref = {20, 826.505, 828.005}
+	Make/FREE/D row25Ref = {26.5433, 1373.55, 1375.05}
+	Make/FREE/D row55Ref = {29.6455, 2505.13, 2506.63}
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	Duplicate/FREE/RMD=[9][] pulseInfos, pulseInfo_row9
 	Redimension/N=(numpnts(pulseInfo_row9)) pulseInfo_row9
-	CHECK_EQUAL_WAVES(pulseInfo_row9, {20, 826.505, 828.005}, mode = WAVE_DATA, tol = 1e-4)
+	CHECK_EQUAL_WAVES(pulseInfo_row9, row9Ref, mode = WAVE_DATA, tol = 1e-4)
 
 	Duplicate/FREE/RMD=[25][] pulseInfos, pulseInfo_row25
 	Redimension/N=(numpnts(pulseInfo_row25)) pulseInfo_row25
-	CHECK_EQUAL_WAVES(pulseInfo_row25, {26.5433, 1373.55, 1375.05}, mode = WAVE_DATA, tol = 1e-4)
+	CHECK_EQUAL_WAVES(pulseInfo_row25, row25Ref, mode = WAVE_DATA, tol = 1e-4)
 
 	Duplicate/FREE/RMD=[55][] pulseInfos, pulseInfo_row55
 	Redimension/N=(numpnts(pulseInfo_row55)) pulseInfo_row55
-	CHECK_EQUAL_WAVES(pulseInfo_row55, {29.6455, 2505.13, 2506.63}, mode = WAVE_DATA, tol = 1e-4)
+	CHECK_EQUAL_WAVES(pulseInfo_row55, row55Ref, mode = WAVE_DATA, tol = 1e-4)
 
 	// check total number of pulses
 	CHECK_EQUAL_VAR(DimSize(pulseInfos, ROWS), 60)
@@ -2456,7 +2467,8 @@ End
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGenerator
 static Function AnalysisFunctionNotCalledForAbortedIndexing([STRUCT IUTF_MDATA &md])
 
-	ST_SetStimsetParameter("AnaFuncIdx2_DA_0", "Amplitude", epochIndex = 0, var = 10e3)
+	// out of range for all hardware, e.g. the Sutter current clamp output allows +/-20 nA
+	ST_SetStimsetParameter("AnaFuncIdx2_DA_0", "Amplitude", epochIndex = 0, var = 100e3)
 
 	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD" + num2str(md.v0) + "_RA1_I1_L0_BKG1"                         + \
 	                                                           "__HS0_DA0_AD0_CM:IC:_ST:AnaFuncIdx1_DA_0:_IST:AnaFuncIdx2_DA_0:" + \

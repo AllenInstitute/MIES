@@ -698,6 +698,12 @@ static Function PS_SP10_preAcq(string device)
 
 	ST_SetStimsetParameter("PatchSeqSquarePu_DA_0", "Total number of steps", var = 50)
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter amplifier has a five times larger current clamp output range, scale the pulse
+	// so that the DAScale value is out-of-range after the same number of sweeps as with NI hardware
+	ST_SetStimsetParameter("PatchSeqSquarePu_DA_0", "Amplitude", epochIndex = 1, var = 5)
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	Make/FREE asyncChannels = {2, 3}
 	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
@@ -721,13 +727,13 @@ static Function PS_SP10_REENTRY([string str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries, numEntriesRef
 	string key
 
-#ifdef TESTS_WITH_NI_HARDWARE
+#if defined(TESTS_WITH_NI_HARDWARE) || defined(TESTS_WITH_SUTTER_HARDWARE)
 	sweepNo       = 38
 	numEntriesRef = sweepNo + 1
 #else
 	sweepNo       = 39
 	numEntriesRef = sweepNo + 1
-#endif // TESTS_WITH_NI_HARDWARE
+#endif // TESTS_WITH_NI_HARDWARE || TESTS_WITH_SUTTER_HARDWARE
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 

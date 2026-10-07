@@ -440,3 +440,68 @@ static Function TCONF_DataBrowserAndHideState()
 	CHECK_EQUAL_VAR(IsWindowHidden(bsPanel), 1)
 	JSON_Release(jsonID)
 End
+
+static Function AmplifierTypeConversionWorks()
+
+	CHECK_EQUAL_STR(MIES_CONF#CONF_AmplifierTypeToString(AMPLIFIER_TYPE_MCC), "MCC")
+	CHECK_EQUAL_STR(MIES_CONF#CONF_AmplifierTypeToString(AMPLIFIER_TYPE_SUTTER), "Sutter")
+
+	CHECK_EQUAL_VAR(MIES_CONF#CONF_AmplifierTypeFromString("MCC"), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(MIES_CONF#CONF_AmplifierTypeFromString("Sutter"), AMPLIFIER_TYPE_SUTTER)
+
+	// no amplifier has no string representation
+	try
+		MIES_CONF#CONF_AmplifierTypeToString(AMPLIFIER_TYPE_NONE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		MIES_CONF#CONF_AmplifierTypeFromString("unknown")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function AmplifierTypeFromConfigWorks()
+
+	variable jsonID
+	string path = "/Amplifier"
+
+	jsonID = JSON_New()
+	JSON_AddTreeObject(jsonID, path)
+
+	JSON_SetString(jsonID, path + "/Type", "Sutter")
+	CHECK_EQUAL_VAR(MIES_CONF#CONF_GetAmplifierTypeFromConfig(jsonID, path), AMPLIFIER_TYPE_SUTTER)
+
+	// configurations without type only know MCC amplifiers
+	JSON_Remove(jsonID, path + "/Type")
+	JSON_SetVariable(jsonID, path + "/Serial", 1234)
+	JSON_SetVariable(jsonID, path + "/Channel", 1)
+	CHECK_EQUAL_VAR(MIES_CONF#CONF_GetAmplifierTypeFromConfig(jsonID, path), AMPLIFIER_TYPE_MCC)
+
+	JSON_SetNull(jsonID, path + "/Serial")
+	CHECK_EQUAL_VAR(MIES_CONF#CONF_GetAmplifierTypeFromConfig(jsonID, path), AMPLIFIER_TYPE_NONE)
+
+	// invalid serial
+	JSON_SetString(jsonID, path + "/Serial", "1234")
+	try
+		MIES_CONF#CONF_GetAmplifierTypeFromConfig(jsonID, path)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	// missing serial
+	JSON_Remove(jsonID, path + "/Serial")
+	try
+		MIES_CONF#CONF_GetAmplifierTypeFromConfig(jsonID, path)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	JSON_Release(jsonID)
+End

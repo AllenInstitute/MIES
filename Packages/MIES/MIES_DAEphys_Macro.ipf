@@ -1520,7 +1520,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Amplifier, userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_Settings_Amplifier, userdata(Config_DontSave)="1"
 	PopupMenu popup_Settings_Amplifier, userdata(Config_DontRestore)="1"
-	PopupMenu popup_Settings_Amplifier, mode=1, popvalue="- none -", value=#"DAP_GetNiceAmplifierChannelList()"
+	PopupMenu popup_Settings_Amplifier, mode=1, popvalue="- none -", value=#"AI_GetAmplifierList()"
 	PopupMenu Popup_Settings_IC_DA, pos={225.00, 411.00}, size={47.00, 19.00}, proc=DAP_PopMenuProc_CAA
 	PopupMenu Popup_Settings_IC_DA, title="DA", userdata(tabnum)="6"
 	PopupMenu Popup_Settings_IC_DA, userdata(tabcontrol)="ADC"

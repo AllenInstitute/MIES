@@ -168,6 +168,9 @@ static StrConstant EXPCONFIG_JSON_PRESSUREBLOCK = "Pressure"
 static StrConstant EXPCONFIG_JSON_AMPSERIAL     = "Serial"
 static StrConstant EXPCONFIG_JSON_AMPTITLE      = "Title"
 static StrConstant EXPCONFIG_JSON_AMPCHANNEL    = "Channel"
+static StrConstant EXPCONFIG_JSON_AMPTYPE       = "Type"
+static StrConstant EXPCONFIG_AMPTYPE_MCC        = "MCC"
+static StrConstant EXPCONFIG_AMPTYPE_SUTTER     = "Sutter"
 static StrConstant EXPCONFIG_JSON_AMPVCDA       = "DA"
 static StrConstant EXPCONFIG_JSON_AMPVCDAGAIN   = "DA gain"
 static StrConstant EXPCONFIG_JSON_AMPVCDAUNIT   = "DA unit"
@@ -980,6 +983,22 @@ static Function CONF_GetVariableFromSavedControl(variable jsonID, string niceNam
 	string ctrlPath = CONF_FindControl(jsonID, niceName)
 	ASSERT(!IsEmpty(ctrlPath), "Can not find control " + niceName + " in config file.")
 	return JSON_GetVariable(jsonID, ctrlPath + "/" + EXPCONFIG_FIELD_CTRLVVALUE)
+End
+
+/// @brief Return true if the configuration requires the amplifier connection
+///
+/// @param jsonID ID of existing json
+///
+/// @returns 1 if "Require Amplifier" is checked in the configuration, 0 otherwise
+static Function CONF_RequiresAmplifierConnection(variable jsonID)
+
+	string ctrlPath = CONF_FindControl(jsonID, "check_Settings_RequireAmpConn")
+
+	if(IsEmpty(ctrlPath))
+		return 0
+	endif
+
+	return JSON_GetVariable(jsonID, ctrlPath + "/" + EXPCONFIG_FIELD_CTRLVVALUE, ignoreErr = 1) == 1
 End
 
 /// @brief Returns a wave with all windows
@@ -2015,7 +2034,7 @@ End
 /// @param[in] midExp middle of experiment - uploads MCC relevant settings from panel to MCC instead
 static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID, variable midExp)
 
-	variable i, type, numRows, ampSerial, ampChannel, index, value, ampSerialType
+	variable i, type, numRows, ampSerial, ampChannel, index, value, ampType
 	string jsonPath, jsonBasePath, jsonPathAmpBlock, msg
 	string ampSerialList = ""
 	string ampTitleList  = ""
@@ -2025,6 +2044,8 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 	FindValue/TXOP=(TXOP_WHOLE_ELEM)/TEXT=EXPCONFIG_JSON_HSASSOCBLOCK keys
 	ASSERT(V_Value >= 0, "Headstage Association block not found in configuration.")
 
+	Make/FREE/D/N=(NUM_HEADSTAGES) ampTypes = AMPLIFIER_TYPE_NONE
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
 		type         = JSON_GetType(jsonID, jsonBasePath)
@@ -2033,27 +2054,31 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		endif
 
 		if(type == JSON_OBJECT)
-			jsonPath      = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
-			ampSerialType = JSON_GetType(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL, ignoreErr = 1)
-			switch(ampSerialType)
-				case JSON_INVALID:
-					sprintf msg, "Missing \"%s\" entry for headstage %d in configuration.", jsonPath, i
-					FATAL_ERROR(msg)
-				case JSON_NUMERIC:
-					// associated HS
-					break
-				case JSON_NULL:
-					// unassociated
-					continue
-				default:
-					FATAL_ERROR("Invalid type: " + num2str(ampSerialType))
-			endswitch
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
+			ampType  = CONF_GetAmplifierTypeFromConfig(jsonID, jsonPath)
 
-			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
+			// no amplifier keeps the fixed amplifier of devices with integrated amplifiers
+			if(ampType != AMPLIFIER_TYPE_NONE && !AI_IsAllowedAmplifierType(device, ampType))
+				if(AI_IsAllowedAmplifierType(device, AMPLIFIER_TYPE_NONE))
+					printf "The amplifier of headstage %d in the configuration is not supported by the device %s, restoring it without amplifier.\r", i, device
+					// headstages without amplifier can not acquire while the amplifier connection is required
+					if(CONF_RequiresAmplifierConnection(jsonID))
+						printf "The configuration requires the amplifier connection, disable \"Require Amplifier\" in the Settings tab to use headstage %d.\r", i
+					endif
+				else
+					printf "The amplifier of headstage %d in the configuration is not supported by the device %s, keeping its fixed amplifier.\r", i, device
+				endif
+				ControlWindowToFront()
+				ampType = AMPLIFIER_TYPE_NONE
+			endif
 
-			if(IsNaN(ampSerial))
+			ampTypes[i] = ampType
+
+			if(ampType != AMPLIFIER_TYPE_MCC)
 				continue
 			endif
+
+			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 
 			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
 			ampTitleList  = AddListItem(JSON_GetString(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
@@ -2065,12 +2090,14 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
-		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP")
+		Assert(AI_OpenMCCs(device, ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP")
 	endif
 
 	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_POSITION_MCC))
 
 	PGC_SetAndActivateControl(device, "button_Settings_UpdateDACList")
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = i)
@@ -2079,33 +2106,47 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 		type         = JSON_GetType(jsonID, jsonBasePath)
 
 		if(type == JSON_NULL)
-			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+			ampType = AMPLIFIER_TYPE_NONE
+			if(AI_IsAllowedAmplifierType(device, AMPLIFIER_TYPE_NONE))
+				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+			endif
 			PGC_SetAndActivateControl(device, "popup_Settings_Pressure_dev", str = NONE)
 			if(!IsDeviceNameFromSutter(device))
 				PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
 			endif
 		elseif(type == JSON_OBJECT)
 			jsonPathAmpBlock = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
-			ampSerial        = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
-			ampChannel       = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
+			ampType          = ampTypes[i]
 
-			if(IsFinite(ampSerial) && IsFinite(ampChannel))
-				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
-				PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
-			else
-				PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
-				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
-
-				jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
-				CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
-				CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
-			endif
+			switch(ampType)
+				case AMPLIFIER_TYPE_MCC:
+					ampSerial  = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPSERIAL)
+					ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
+					PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = CONF_FindAmpInList(device, ampSerial, ampChannel))
+					PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+					break
+				case AMPLIFIER_TYPE_SUTTER:
+					// the amplifier is fixed, check that it matches the configuration
+					ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + EXPCONFIG_JSON_AMPCHANNEL)
+					if(AI_GetAmplifierType(device, i) != AMPLIFIER_TYPE_SUTTER || ChanAmpAssign[%AmpChannelID][i] != ampChannel)
+						sprintf msg, "The Sutter amplifier of headstage %d in the configuration does not match the connected IPA devices.", i
+						FATAL_ERROR(msg)
+					endif
+					// the gains of Sutter amplifiers are fixed
+					PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+					break
+				case AMPLIFIER_TYPE_NONE:
+					if(AI_IsAllowedAmplifierType(device, AMPLIFIER_TYPE_NONE))
+						PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", str = NONE)
+						CONF_RestoreGainsAndUnits(device, jsonID, jsonPathAmpBlock)
+					elseif(AI_HasAmplifier(device, i))
+						// keeps the fixed amplifier of devices with integrated amplifiers
+						PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
+					endif
+					break
+				default:
+					FATAL_ERROR("Invalid amplifier type")
+			endswitch
 			jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
 			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_DA", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA)
 			CONF_SetDAEPhysChannelPopup(device, "Popup_Settings_VC_AD", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD)
@@ -2138,7 +2179,7 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 			pressureDataWv[index][%NegCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTNEG)
 			pressureDataWv[index][%PosCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTPOS)
 
-			if(IsFinite(ampSerial))
+			if(ampType == AMPLIFIER_TYPE_MCC)
 				if(!midExp)
 					CONF_RestoreAmplifierSettings(device, i, jsonID, jsonBasePath)
 				else
@@ -2149,6 +2190,28 @@ static Function CONF_RestoreHeadstageAssociation(string device, variable jsonID,
 	endfor
 	PGC_SetAndActivateControl(device, "button_Hardware_P_Enable")
 
+End
+
+/// @brief Restore the DA/AD gains and units of the currently selected headstage in the hardware tab
+///
+/// @param device           device
+/// @param jsonID           ID of the configuration json
+/// @param jsonPathAmpBlock json path of the amplifier block of the headstage, including the trailing slash
+static Function CONF_RestoreGainsAndUnits(string device, variable jsonID, string jsonPathAmpBlock)
+
+	string jsonPath
+
+	jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_VCBLOCK + "/"
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAGAIN)
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_VC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADGAIN)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDAUNIT)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_VC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPVCADUNIT)
+
+	jsonPath = jsonPathAmpBlock + EXPCONFIG_JSON_ICBLOCK + "/"
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_DAgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAGAIN)
+	CONF_OnExistSetAndActivateControlVar(device, "setvar_Settings_IC_ADgain", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADGAIN)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_DA_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT)
+	CONF_OnExistSetAndActivateControlStr(device, "SetVar_Hardware_IC_AD_Unit", jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT)
 End
 
 static Function CONF_OnExistSetAndActivateControlVar(string win, string ctrl, variable jsonId, string jsonPath)
@@ -2215,13 +2278,76 @@ static Function CONF_RestoreUserPressure(string device, variable jsonID)
 	PGC_SetAndActivateControl(device, "button_Hardware_PUser_Enable")
 End
 
+/// @brief Convert an amplifier type to its configuration file representation
+///
+/// @param ampType one of @ref AmplifierTypes, except #AMPLIFIER_TYPE_NONE
+static Function/S CONF_AmplifierTypeToString(variable ampType)
+
+	switch(ampType)
+		case AMPLIFIER_TYPE_MCC:
+			return EXPCONFIG_AMPTYPE_MCC
+		case AMPLIFIER_TYPE_SUTTER:
+			return EXPCONFIG_AMPTYPE_SUTTER
+		default:
+			FATAL_ERROR("Invalid amplifier type: " + num2istr(ampType))
+	endswitch
+End
+
+/// @brief Convert the configuration file representation of an amplifier type
+///
+/// @returns one of @ref AmplifierTypes, except #AMPLIFIER_TYPE_NONE
+static Function CONF_AmplifierTypeFromString(string ampTypeStr)
+
+	strswitch(ampTypeStr)
+		case EXPCONFIG_AMPTYPE_MCC:
+			return AMPLIFIER_TYPE_MCC
+		case EXPCONFIG_AMPTYPE_SUTTER:
+			return AMPLIFIER_TYPE_SUTTER
+		default:
+			FATAL_ERROR("Invalid amplifier type in configuration: " + ampTypeStr)
+	endswitch
+End
+
+/// @brief Return the amplifier type stored in the amplifier block of a headstage
+///
+/// Configurations without amplifier type only know MCC amplifiers.
+///
+/// @param jsonID           ID of the configuration json
+/// @param jsonPathAmpBlock json path of the amplifier block of the headstage, without trailing slash
+///
+/// @returns one of @ref AmplifierTypes
+static Function CONF_GetAmplifierTypeFromConfig(variable jsonID, string jsonPathAmpBlock)
+
+	variable ampSerialType, ampSerial, ampChannel
+	string msg
+
+	if(JSON_Exists(jsonID, jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPTYPE))
+		return CONF_AmplifierTypeFromString(JSON_GetString(jsonID, jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPTYPE))
+	endif
+
+	ampSerialType = JSON_GetType(jsonID, jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPSERIAL, ignoreErr = 1)
+	switch(ampSerialType)
+		case JSON_INVALID:
+			sprintf msg, "Missing \"%s\" entry in configuration.", jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPSERIAL
+			FATAL_ERROR(msg)
+		case JSON_NUMERIC:
+			ampSerial  = JSON_GetVariable(jsonID, jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPSERIAL)
+			ampChannel = JSON_GetVariable(jsonID, jsonPathAmpBlock + "/" + EXPCONFIG_JSON_AMPCHANNEL)
+			return (IsFinite(ampSerial) && IsFinite(ampChannel)) ? AMPLIFIER_TYPE_MCC : AMPLIFIER_TYPE_NONE
+		case JSON_NULL:
+			return AMPLIFIER_TYPE_NONE
+		default:
+			FATAL_ERROR("Invalid type: " + num2str(ampSerialType))
+	endswitch
+End
+
 /// @brief Retrieves current amplifier and pressure settings to json
 ///
 /// @param[in] device device
 /// @returns jsonID ID of json object with user pressure configuration data
 static Function CONF_GetAmplifierSettings(string device)
 
-	variable jsonID, i, clampMode, ampSerial, ampChannelID, index
+	variable jsonID, i, clampMode, ampSerial, ampChannelID, index, ampType
 	string jsonPath, amplifierDef, basePath
 
 	jsonID = JSON_New()
@@ -2268,12 +2394,22 @@ static Function CONF_GetAmplifierSettings(string device)
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDAUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_DA_Unit"))
 		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPICADUNIT, GetSetVariableString(device, "SetVar_Hardware_IC_AD_Unit"))
 
-		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
-		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
-		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
+		ampType = AI_GetAmplifierType(device, i)
+
+		if(ampType == AMPLIFIER_TYPE_SUTTER)
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
+
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTYPE, CONF_AmplifierTypeToString(ampType))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ChanAmpAssign[%AmpChannelID][i])
+
+			// @todo store the amplifier settings once they are supported for Sutter amplifiers
+		elseif(ampType == AMPLIFIER_TYPE_MCC)
+			ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+			ampChannelID = ChanAmpAssign[%AmpChannelID][i]
 
 			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/"
 
+			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTYPE, CONF_AmplifierTypeToString(ampType))
 			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
 			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
@@ -2447,20 +2583,21 @@ End
 
 /// @brief Find the list index of a connected amplifier serial number
 ///
+/// @param device          device
 /// @param ampSerialRef    Amplifier Serial Number to search for
 /// @param ampChannelIDRef Headstage reference number
-static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDRef)
+static Function CONF_FindAmpInList(string device, variable ampSerialRef, variable ampChannelIDRef)
 
 	string listOfAmps, ampDef
-	variable numAmps, i, ampSerial, ampChannelID
+	variable numAmps, i, ampType, ampSerial, ampChannelID
 
-	listOfAmps = DAP_GetNiceAmplifierChannelList()
+	listOfAmps = AI_GetAmplifierList(device = device)
 	numAmps    = ItemsInList(listOfAmps)
 
 	for(i = 0; i < numAmps; i += 1)
-		ampDef = StringFromList(i, listOfAmps)
-		DAP_ParseAmplifierDef(ampDef, ampSerial, ampChannelID)
-		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
+		ampDef                             = StringFromList(i, listOfAmps)
+		[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, ampDef)
+		if(ampType == AMPLIFIER_TYPE_MCC && ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
 			return i
 		endif
 	endfor
