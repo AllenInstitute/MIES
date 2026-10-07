@@ -438,7 +438,7 @@ Constant I_EQUAL_ZERO_MODE = 2
 
 Constant NUM_CLAMP_MODES = 3
 
-/// @name Possible values for the function parameter of AI_SendToAmp
+/// @name Possible values for the function parameter of AI_MCC_SendToAmp
 /// @anchor AI_SendToAmpConstants
 ///@{
 Constant MCC_BEGIN_INVALID_FUNC       = 10000

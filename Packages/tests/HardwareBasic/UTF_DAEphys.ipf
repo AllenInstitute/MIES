@@ -410,7 +410,7 @@ End
 static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
 
 	/// desync MCC and MIES
-	MIES_AI#AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
+	MIES_AI#AI_MCC_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
 
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
@@ -716,8 +716,8 @@ static Function CheckAmplifierScaling([STRUCT IUTF_MDATA &md])
 	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
-		forward  = MIES_AI#AI_GetMCCScale(clampMode, func, MCC_READ)
-		backward = MIES_AI#AI_GetMCCScale(clampMode, func, MCC_WRITE)
+		forward  = MIES_AI#AI_MCC_GetMCCScale(clampMode, func, MCC_READ)
+		backward = MIES_AI#AI_MCC_GetMCCScale(clampMode, func, MCC_WRITE)
 
 		CHECK_EQUAL_VAR(forward * backward, 1)
 	endfor

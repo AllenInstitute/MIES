@@ -23,7 +23,7 @@ static Constant NUM_TRIES_AXON_TELEGRAPH = 10
 #define AMPLIFIER_XOPS_PRESENT
 #endif
 
-static Function AI_InitAxonTelegraphStruct(STRUCT AxonTelegraph_DataStruct &tds)
+static Function AI_MCC_InitAxonTelegraphStruct(STRUCT AxonTelegraph_DataStruct &tds)
 
 	tds.version = 13
 End
@@ -58,7 +58,7 @@ static Structure AxonTelegraph_DataStruct
 EndStructure
 
 /// @brief Returns the serial number of the headstage compatible with Axon* functions, @see GetChanAmpAssign
-static Function AI_GetAmpAxonSerial(string device, variable headStage)
+static Function AI_MCC_GetAmpAxonSerial(string device, variable headStage)
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
@@ -66,12 +66,12 @@ static Function AI_GetAmpAxonSerial(string device, variable headStage)
 End
 
 /// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
-static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
+static Function/S AI_MCC_GetAmpMCCSerial(string device, variable headStage)
 
 	variable axonSerial
 	string   mccSerial
 
-	axonSerial = AI_GetAmpAxonSerial(device, headStage)
+	axonSerial = AI_MCC_GetAmpAxonSerial(device, headStage)
 
 	if(axonSerial == 0)
 		return "Demo"
@@ -82,14 +82,14 @@ static Function/S AI_GetAmpMCCSerial(string device, variable headStage)
 End
 
 ///@brief Return the channel of the currently selected head stage
-static Function AI_GetAmpChannel(string device, variable headStage)
+static Function AI_MCC_GetAmpChannel(string device, variable headStage)
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 
 	return ChanAmpAssign[%AmpChannelID][headStage]
 End
 
-static Function AI_IsValidSerialAndChannel([string mccSerial, variable axonSerial, variable channel])
+static Function AI_MCC_IsValidSerialAndChannel([string mccSerial, variable axonSerial, variable channel])
 
 	if(!ParamIsDefault(mccSerial))
 		if(isEmpty(mccSerial))
@@ -112,7 +112,7 @@ static Function AI_IsValidSerialAndChannel([string mccSerial, variable axonSeria
 	return 1
 End
 
-static Function AI_AssertOnInvalidAccessType(variable accessType)
+static Function AI_MCC_AssertOnInvalidAccessType(variable accessType)
 
 	ASSERT(accessType == MCC_READ || accessType == MCC_WRITE, "Invalid accessType")
 End
@@ -122,9 +122,9 @@ End
 /// @param clampMode  clamp mode (pass `NaN` for doesn't matter)
 /// @param func       MCC function, one of @ref AI_SendToAmpConstants
 /// @param accessType One of @ref MCCAccessType
-static Function AI_GetMCCScale(variable clampMode, variable func, variable accessType)
+static Function AI_MCC_GetMCCScale(variable clampMode, variable func, variable accessType)
 
-	AI_AssertOnInvalidAccessType(accessType)
+	AI_MCC_AssertOnInvalidAccessType(accessType)
 
 	if(IsFinite(clampMode))
 		AI_AssertOnInvalidClampMode(clampMode)
@@ -204,7 +204,7 @@ End
 /// @param device           device
 /// @param ctrl             [optional] name of the amplifier control
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
-/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
+/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_MCC_SendToAmp()
 ///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
@@ -325,7 +325,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				AmpStorageWave[%$rowLabel][0][i] = value
 
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				if(func == MCC_HOLDING_FUNC || func == MCC_HOLDINGENABLE_FUNC)
 					TP_UpdateHoldCmdInTPStorage(device, i)
@@ -336,26 +336,26 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = 0
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case MCC_AUTOWHOLECELLCOMP_FUNC:
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				func                             = MCC_WHOLECELLCOMPCAP_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPRESIST_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPENABLE_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 				break
@@ -369,13 +369,13 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					chainedFunc = MCC_RSCOMPPREDICTION_FUNC
 					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_MCC_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
@@ -389,13 +389,13 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					chainedFunc = MCC_RSCOMPCORRECTION_FUNC
 					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_MCC_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
@@ -407,7 +407,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					oppositeMode = V_CLAMP_MODE
 				endif
 
-				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				func     = MCC_PIPETTEOFFSET_FUNC
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
@@ -428,7 +428,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
 
 					// selecting amplifier here, as the clamp mode is now different
-					value                            = AI_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
+					value                            = AI_MCC_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
 					AmpStorageWave[%$rowLabel][0][i] = value
 					AI_UpdateAmpView(device, i, func = func, clampMode = oppositeMode)
 					DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
@@ -468,7 +468,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				clampMode = I_CLAMP_MODE
 
-				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				if(!IsFinite(value))
 					break
@@ -493,7 +493,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
 			case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
 			case MCC_SECONDARYSIGNALLPF_FUNC:
-				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			default:
 				FATAL_ERROR("Unknown func: " + num2str(func))
@@ -681,7 +681,7 @@ static Function AI_MIESAutoPipetteOffset(string device, variable headStage)
 	// @todo check for IC
 	vdelta = ((TPResults[%BaselineSteadyState][headstage] * PICO_TO_ONE) * (TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE)) * ONE_TO_MILLI
 	// get current DC V offset
-	offset = AI_SendToAmp(device, headStage, clampMode, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
+	offset = AI_MCC_SendToAmp(device, headStage, clampMode, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
 	// add delta to current DC V offset
 	value = offset - vDelta
 	if(value > MIN_PIPETTEOFFSET && value < MAX_PIPETTEOFFSET)
@@ -697,6 +697,16 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_Que
 
 	PerformSubsystemEntry()
 
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_MCC_QueryGainsUnitsForClampMode(device, headstage, clampMode)
+
+	return [DAGain, ADGain, DAUnit, ADUnit]
+End
+
+/// @copydoc AI_QueryGainsUnitsForClampMode
+Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_MCC_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode)
+
+	PerformSubsystemEntry()
+
 	DAGain = NaN
 	ADGain = NaN
 	DAUnit = ""
@@ -704,7 +714,7 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_Que
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	[ADGain, DAGain] = AI_RetrieveGains(device, headstage, clampMode)
+	[ADGain, DAGain] = AI_MCC_RetrieveGains(device, headstage, clampMode)
 
 	if(clampMode == V_CLAMP_MODE)
 		DAUnit = "mV"
@@ -773,6 +783,20 @@ End
 /// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
 Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleList])
 
+	PerformSubsystemEntry()
+
+	if(ParamIsDefault(ampTitleList))
+		ampTitleList = ""
+	else
+		ASSERT(ItemsInList(ampSerialNumList) == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
+	endif
+
+	return AI_MCC_OpenMCCs(ampSerialNumList, ampTitleList)
+End
+
+/// @copydoc AI_OpenMCCs
+Function AI_MCC_OpenMCCs(string ampSerialNumList, string ampTitleList)
+
 	string cmd, serialStr, title
 	variable i, j, numDups, serialNum, failedToOpenCount
 	variable ItemsInAmpSerialNumList
@@ -781,12 +805,6 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 	PerformSubsystemEntry()
 
 	ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
-
-	if(ParamIsDefault(AmpTitleList))
-		AmpTitleList = ""
-	else
-		ASSERT(ItemsInAmpSerialNumList == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
-	endif
 
 	if(ItemsInAmpSerialNumList > 1)
 		WAVE/T ampSerialListRaw = ListToTextWave(ampSerialNumList, ";")
@@ -806,7 +824,7 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 		ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
 	endif
 
-	WAVE OpenMCCList = AI_GetMCCSerialNumbers()
+	WAVE OpenMCCList = AI_MCC_GetMCCSerialNumbers()
 	do
 		for(i = 0; i < ItemsInAmpSerialNumList; i += 1)
 			serialStr = stringfromlist(i, AmpSerialNumList)
@@ -815,16 +833,16 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 			findvalue/I=(serialNum) OpenMCCList
 			if(V_value == -1)
 				if(!serialNum)
-					sprintf cmd, "\"%s\" /T%s(%s)", AI_GetMCCWinFilePath(), title, SerialStr
+					sprintf cmd, "\"%s\" /T%s(%s)", AI_MCC_GetMCCWinFilePath(), title, SerialStr
 				else
-					sprintf cmd, "\"%s\" /S00%g /T%s(%s)", AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
+					sprintf cmd, "\"%s\" /S00%g /T%s(%s)", AI_MCC_GetMCCWinFilePath(), SerialNum, title, SerialStr
 				endif
 				executeScriptText cmd
 			endif
 		endfor
 
 		failedToOpenCount = 0
-		WAVE OpenMCCList = AI_GetMCCSerialNumbers()
+		WAVE OpenMCCList = AI_MCC_GetMCCSerialNumbers()
 		for(i = 0; i < ItemsInAmpSerialNumList; i += 1)
 			serialStr = StringFromList(i, AmpSerialNumList)
 			serialNum = str2num(serialStr)
@@ -848,9 +866,9 @@ End
 /// @brief Gets the serial numbers of all open MCCs
 ///
 /// @return a 1D FREE wave containing amplifier serial numbers without leading zeroes
-static Function/WAVE AI_GetMCCSerialNumbers()
+static Function/WAVE AI_MCC_GetMCCSerialNumbers()
 
-	AI_FindConnectedAmps("", rescanHardware = 1)
+	AI_MCC_FindConnectedAmps(1)
 	WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
 	Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
 	return GetUniqueEntries(OpenMCCList)
@@ -861,7 +879,7 @@ End
 /// Hardcoded as Igor does not allow to query that information.
 ///
 /// Distinguishes between i386 and x64 Igor versions
-static Function/S AI_GetMCCWinFilePath()
+static Function/S AI_MCC_GetMCCWinFilePath()
 
 	variable numEntries, i
 	string progFolder, path
@@ -1489,18 +1507,12 @@ threadsafe Function/WAVE AI_GetFunctionConstantForClampMode(variable clampMode)
 	return uniqueFuncs
 End
 
-#ifdef AMPLIFIER_XOPS_PRESENT
-
 ///@brief Returns the holding command of the amplifier
 Function AI_GetHoldingCommand(string device, variable headstage)
 
 	PerformSubsystemEntry()
 
-	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
-
-	return MCC_GetHoldingEnable() ? (MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_HOLDING_FUNC, MCC_READ)) : 0
+	return AI_MCC_GetHoldingCommand(device, headstage)
 End
 
 /// @brief Return the clamp mode of the headstage as returned by the amplifier
@@ -1514,67 +1526,7 @@ Function AI_GetMode(string device, variable headstage)
 
 	PerformSubsystemEntry()
 
-	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
-
-	return MCC_GetMode()
-End
-
-/// @brief Return the DA/AD gains of the given headstage
-///
-/// Internally we query the External Command Sensitivity of the Amplifier (MCC) GUI.
-///
-/// =========== ==========================
-///  ClampMode   MultiClampCommander GUI
-/// =========== ==========================
-///  VC          Off
-///               20 mV/V
-///              100 mV/V
-/// =========== ==========================
-///  IC          Off
-///              400 pA/V
-///                2 nA/V
-/// =========== ==========================
-///
-/// Gain is returned in mV/V for #V_CLAMP_MODE and pA/V for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
-///
-/// @param      device device
-/// @param      headstage  headstage [0, NUM_HEADSTAGES[
-/// @param      clampMode  clamp mode
-/// @retval     ADGain     ADC gain
-/// @retval     DAGain     DAC gain
-static Function [variable ADGain, variable DAGain] AI_RetrieveGains(string device, variable headstage, variable clampMode)
-
-	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
-	variable channel    = AI_GetAmpChannel(device, headStage)
-
-	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
-
-	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
-
-	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
-	clampMode = tds.OperatingMode
-
-	if(tds.OperatingMode == V_CLAMP_MODE)
-		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
-	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
-		DAGain = tds.ExtCmdSens * ONE_TO_PICO
-	endif
-
-	return [ADGain, DAGain]
-End
-
-/// @brief Return the opposite clamp mode depending on the current one
-static Function AI_GetOppositeClampAmpMode(variable mode)
-
-	if(mode == V_CLAMP_MODE)
-		return I_CLAMP_MODE
-	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
-		return V_CLAMP_MODE
-	endif
-
-	FATAL_ERROR("Invalid clamp mode: " + num2str(mode))
+	return AI_MCC_GetMode(device, headstage)
 End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
@@ -1585,28 +1537,9 @@ End
 /// @returns one of @ref AISelectMultiClampReturnValues
 Function AI_SelectMultiClamp(string device, variable headStage)
 
-	variable channel, axonSerial, err
-	string mccSerial
-
 	PerformSubsystemEntry()
 
-	// checking axonSerial is done as a service to the caller
-	axonSerial = AI_GetAmpAxonSerial(device, headStage)
-	mccSerial  = AI_GetAmpMCCSerial(device, headStage)
-	channel    = AI_GetAmpChannel(device, headStage)
-
-	if(!AI_IsValidSerialAndChannel(mccSerial = mccSerial, axonSerial = axonSerial, channel = channel))
-		return AMPLIFIER_CONNECTION_INVAL_SER
-	endif
-
-	AssertOnAndClearRTError()
-	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
-
-	if(err)
-		return AMPLIFIER_CONNECTION_MCC_FAILED
-	endif
-
-	return AMPLIFIER_CONNECTION_SUCCESS
+	return AI_MCC_SelectMultiClamp(device, headStage)
 End
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
@@ -1626,24 +1559,70 @@ Function AI_SetClampMode(string device, variable headStage, variable mode, [vari
 		selectAmp = !!selectAmp
 	endif
 
-	AI_AssertOnInvalidClampMode(mode)
+	return AI_MCC_SetClampMode(device, headStage, mode, zeroStep, selectAmp)
+End
 
-	if(selectAmp)
-		if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
-			return NaN
-		endif
+/// @brief Set the clamp mode in the MCC app to the
+///        same clamp mode as MIES has stored.
+///
+/// @param device device
+/// @param headstage  headstage
+/// @param selectAmp  [optional, defaults to false] selects the amplifier
+///                   before using, some callers might be able to skip it.
+///
+/// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
+Function AI_EnsureCorrectMode(string device, variable headStage, [variable selectAmp])
+
+	PerformSubsystemEntry()
+
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 0
+	else
+		selectAmp = !!selectAmp
 	endif
 
-	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
-		if(!IsFinite(MCC_SetMode(I_EQUAL_ZERO_MODE)))
-			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
-		endif
-		Sleep/Q/T/C=-1 6
+	return AI_MCC_EnsureCorrectMode(device, headStage, selectAmp)
+End
+
+/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
+///
+/// @param device 		 device
+/// @param sweepNo           data wave sweep number
+Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
+
+	PerformSubsystemEntry()
+
+	return AI_MCC_FillAndSendAmpliferSettings(device, sweepNo)
+End
+
+/// @brief Auto fills the units and gains for all headstages connected to amplifiers
+/// by querying the MCC application
+///
+/// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
+///
+/// @return number of connected amplifiers
+Function AI_QueryGainsFromMCC(string device)
+
+	PerformSubsystemEntry()
+
+	return AI_MCC_QueryGainsFromMCC(device)
+End
+
+/// @brief Return the number of connected amplifiers
+///
+/// @param device         device, can be empty if not yet known
+/// @param rescanHardware [optional, defaults to false] rescan the hardware instead of using cached results
+Function AI_FindConnectedAmps(string device, [variable rescanHardware])
+
+	PerformSubsystemEntry()
+
+	if(ParamIsDefault(rescanHardware))
+		rescanHardware = 0
+	else
+		rescanHardware = !!rescanHardware
 	endif
 
-	if(!IsFinite(MCC_SetMode(mode)))
-		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
-	endif
+	return AI_MCC_FindConnectedAmps(rescanHardware)
 End
 
 /// @brief Write to the amplifier
@@ -1652,7 +1631,7 @@ End
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
+/// @param value            value to set. values is in MIES units, see AI_MCC_SendToAmp() and there the description of `usePrefixes`
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
@@ -1697,7 +1676,7 @@ End
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
+/// @param value            value to set. values is in MIES units, see AI_MCC_SendToAmp() and there the description of `usePrefixes`
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
 /// @param selectAmp        [optional, defaults to true] Select the amplifier
@@ -1714,10 +1693,144 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 	endif
 
 	if(ParamIsDefault(usePrefixes))
-		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
+		return AI_MCC_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
 	endif
 
-	return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+	return AI_MCC_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+End
+
+#ifdef AMPLIFIER_XOPS_PRESENT
+
+/// @copydoc AI_GetHoldingCommand
+Function AI_MCC_GetHoldingCommand(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetHoldingEnable() ? (MCC_GetHolding() * AI_MCC_GetMCCScale(MCC_GetMode(), MCC_HOLDING_FUNC, MCC_READ)) : 0
+End
+
+/// @copydoc AI_GetMode
+Function AI_MCC_GetMode(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetMode()
+End
+
+/// @brief Return the DA/AD gains of the given headstage
+///
+/// Internally we query the External Command Sensitivity of the Amplifier (MCC) GUI.
+///
+/// =========== ==========================
+///  ClampMode   MultiClampCommander GUI
+/// =========== ==========================
+///  VC          Off
+///               20 mV/V
+///              100 mV/V
+/// =========== ==========================
+///  IC          Off
+///              400 pA/V
+///                2 nA/V
+/// =========== ==========================
+///
+/// Gain is returned in mV/V for #V_CLAMP_MODE and pA/V for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
+///
+/// @param      device device
+/// @param      headstage  headstage [0, NUM_HEADSTAGES[
+/// @param      clampMode  clamp mode
+/// @retval     ADGain     ADC gain
+/// @retval     DAGain     DAC gain
+static Function [variable ADGain, variable DAGain] AI_MCC_RetrieveGains(string device, variable headstage, variable clampMode)
+
+	variable axonSerial = AI_MCC_GetAmpAxonSerial(device, headstage)
+	variable channel    = AI_MCC_GetAmpChannel(device, headStage)
+
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_MCC_GetTelegraphStruct(axonSerial, channel)
+
+	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
+
+	ADGain    = tds.ScaleFactor * tds.Alpha / ONE_TO_MILLI
+	clampMode = tds.OperatingMode
+
+	if(tds.OperatingMode == V_CLAMP_MODE)
+		DAGain = tds.ExtCmdSens * ONE_TO_MILLI
+	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
+		DAGain = tds.ExtCmdSens * ONE_TO_PICO
+	endif
+
+	return [ADGain, DAGain]
+End
+
+/// @brief Return the opposite clamp mode depending on the current one
+static Function AI_MCC_GetOppositeClampAmpMode(variable mode)
+
+	if(mode == V_CLAMP_MODE)
+		return I_CLAMP_MODE
+	elseif(mode == I_CLAMP_MODE || mode == I_EQUAL_ZERO_MODE)
+		return V_CLAMP_MODE
+	endif
+
+	FATAL_ERROR("Invalid clamp mode: " + num2str(mode))
+End
+
+/// @copydoc AI_SelectMultiClamp
+Function AI_MCC_SelectMultiClamp(string device, variable headStage)
+
+	variable channel, axonSerial, err
+	string mccSerial
+
+	PerformSubsystemEntry()
+
+	// checking axonSerial is done as a service to the caller
+	axonSerial = AI_MCC_GetAmpAxonSerial(device, headStage)
+	mccSerial  = AI_MCC_GetAmpMCCSerial(device, headStage)
+	channel    = AI_MCC_GetAmpChannel(device, headStage)
+
+	if(!AI_MCC_IsValidSerialAndChannel(mccSerial = mccSerial, axonSerial = axonSerial, channel = channel))
+		return AMPLIFIER_CONNECTION_INVAL_SER
+	endif
+
+	AssertOnAndClearRTError()
+	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+
+	if(err)
+		return AMPLIFIER_CONNECTION_MCC_FAILED
+	endif
+
+	return AMPLIFIER_CONNECTION_SUCCESS
+End
+
+/// @copydoc AI_SetClampMode
+Function AI_MCC_SetClampMode(string device, variable headStage, variable mode, variable zeroStep, variable selectAmp)
+
+	PerformSubsystemEntry()
+
+	AI_AssertOnInvalidClampMode(mode)
+
+	if(selectAmp)
+		if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
+			return NaN
+		endif
+	endif
+
+	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
+		if(!IsFinite(MCC_SetMode(I_EQUAL_ZERO_MODE)))
+			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
+		endif
+		Sleep/Q/T/C=-1 6
+	endif
+
+	if(!IsFinite(MCC_SetMode(mode)))
+		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
+	endif
 End
 
 /// @brief Generic interface to call MCC amplifier functions
@@ -1736,15 +1849,17 @@ End
 /// @param value            [optional] Required for writers, must be left out for readers
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-static Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+Function AI_MCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	variable ret, headstageMode, scale, nonScaledValue
 	string str
 
+	PerformSubsystemEntry()
+
 	ASSERT(func > MCC_BEGIN_INVALID_FUNC && func < MCC_END_INVALID_FUNC, "MCC function constant is out for range")
 	ASSERT(IsValidHeadstage(headstage), "invalid headStage index")
 	AI_AssertOnInvalidClampMode(mode)
-	AI_AssertOnInvalidAccessType(accessType)
+	AI_MCC_AssertOnInvalidAccessType(accessType)
 
 	if(ParamIsDefault(checkBeforeWrite))
 		checkBeforeWrite = 0
@@ -1759,7 +1874,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	endif
 
 	if(ParamIsDefault(usePrefixes) || !!usePrefixes)
-		scale = AI_GetMCCScale(mode, func, accessType)
+		scale = AI_MCC_GetMCCScale(mode, func, accessType)
 	else
 		scale = 1
 	endif
@@ -1794,7 +1909,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	value         *= scale
 
 	if(checkBeforeWrite)
-		ret = AI_ReadFromMCC(func)
+		ret = AI_MCC_ReadFromMCC(func)
 
 		// Don't send the value if it is equal to the current value, with tolerance
 		// being 1% of the reference value, or if it is zero and the current value is
@@ -1807,24 +1922,24 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 
 	switch(func)
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
-			ret = AI_WriteToMCC(func, NaN)
+			ret = AI_MCC_WriteToMCC(func, NaN)
 			// the bridge balance resistance is unchanged on failure
 			if(!IsFinite(ret))
 				break
 			endif
 
-			ret = AI_SendToAmp(device, headstage, mode, MCC_BRIDGEBALRESIST_FUNC, MCC_READ, selectAmp = 0)
+			ret = AI_MCC_SendToAmp(device, headstage, mode, MCC_BRIDGEBALRESIST_FUNC, MCC_READ, selectAmp = 0)
 			PUB_AutoBridgeBalance(device, headstage, ret)
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
-			AI_WriteToMCC(func, NaN)
-			ret = AI_SendToAmp(device, headStage, mode, MCC_PIPETTEOFFSET_FUNC, MCC_READ, selectAmp = 0)
+			AI_MCC_WriteToMCC(func, NaN)
+			ret = AI_MCC_SendToAmp(device, headStage, mode, MCC_PIPETTEOFFSET_FUNC, MCC_READ, selectAmp = 0)
 			break
 		default:
 			if(accessType == MCC_READ)
-				ret = AI_ReadFromMCC(func)
+				ret = AI_MCC_ReadFromMCC(func)
 			else
-				ret = AI_WriteToMCC(func, value)
+				ret = AI_MCC_WriteToMCC(func, value)
 			endif
 			break
 	endswitch
@@ -1841,7 +1956,7 @@ static Function AI_SendToAmp(string device, variable headStage, variable mode, v
 	return ret * scale
 End
 
-static Function AI_ReadFromMCC(variable func)
+static Function AI_MCC_ReadFromMCC(variable func)
 
 	switch(func)
 		case MCC_AUTOWHOLECELLCOMP_FUNC: // fallthrough
@@ -1910,7 +2025,7 @@ static Function AI_ReadFromMCC(variable func)
 	endswitch
 End
 
-static Function AI_WriteToMCC(variable func, variable value)
+static Function AI_MCC_WriteToMCC(variable func, variable value)
 
 	switch(func)
 		case MCC_AUTOWHOLECELLCOMP_FUNC:
@@ -1985,31 +2100,17 @@ static Function AI_WriteToMCC(variable func, variable value)
 	endswitch
 End
 
-/// @brief Set the clamp mode in the MCC app to the
-///        same clamp mode as MIES has stored.
-///
-/// @param device device
-/// @param headstage  headstage
-/// @param selectAmp  [optional, defaults to false] selects the amplifier
-///                   before using, some callers might be able to skip it.
-///
-/// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
-Function AI_EnsureCorrectMode(string device, variable headStage, [variable selectAmp])
+/// @copydoc AI_EnsureCorrectMode
+Function AI_MCC_EnsureCorrectMode(string device, variable headStage, variable selectAmp)
 
 	variable serial, channel, storedMode, setMode, ampConnectionState
 
 	PerformSubsystemEntry()
 
-	if(ParamIsDefault(selectAmp))
-		selectAmp = 0
-	else
-		selectAmp = !!selectAmp
-	endif
+	serial  = AI_MCC_GetAmpAxonSerial(device, headStage)
+	channel = AI_MCC_GetAmpChannel(device, headStage)
 
-	serial  = AI_GetAmpAxonSerial(device, headStage)
-	channel = AI_GetAmpChannel(device, headStage)
-
-	if(!AI_IsValidSerialAndChannel(channel = channel, axonSerial = serial))
+	if(!AI_MCC_IsValidSerialAndChannel(channel = channel, axonSerial = serial))
 		return 1
 	endif
 
@@ -2020,7 +2121,7 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 		endif
 	endif
 
-	[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(serial, channel)
+	[STRUCT AxonTelegraph_DataStruct tds] = AI_MCC_GetTelegraphStruct(serial, channel)
 
 	storedMode = DAG_GetHeadstageMode(device, headStage)
 	setMode    = tds.operatingMode
@@ -2033,11 +2134,8 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 	return 0
 End
 
-/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
-///
-/// @param device 		 device
-/// @param sweepNo           data wave sweep number
-Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
+/// @copydoc AI_FillAndSendAmpliferSettings
+Function AI_MCC_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	variable i, axonSerial, channel, ampConnState, clampMode
 	string mccSerial
@@ -2057,9 +2155,9 @@ Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 			continue
 		endif
 
-		mccSerial  = AI_GetAmpMCCSerial(device, i)
-		axonSerial = AI_GetAmpAxonSerial(device, i)
-		channel    = AI_GetAmpChannel(device, i)
+		mccSerial  = AI_MCC_GetAmpMCCSerial(device, i)
+		axonSerial = AI_MCC_GetAmpAxonSerial(device, i)
+		channel    = AI_MCC_GetAmpChannel(device, i)
 
 		ampConnState = AI_SelectMultiClamp(device, i)
 
@@ -2074,32 +2172,32 @@ Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 		clampMode = DAG_GetHeadstageMode(device, i)
 		AI_AssertOnInvalidClampMode(clampMode)
 
-		[STRUCT AxonTelegraph_DataStruct tds] = AI_GetTelegraphStruct(axonSerial, channel)
+		[STRUCT AxonTelegraph_DataStruct tds] = AI_MCC_GetTelegraphStruct(axonSerial, channel)
 
 		ASSERT(clampMode == tds.OperatingMode, "A clamp mode mismatch was detected. Please describe the events leading up to that assertion. Thanks!")
 
 		if(clampMode == V_CLAMP_MODE)
 			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable()
-			ampSettingsWave[0][1][i]  = MCC_GetHolding() * AI_GetMCCScale(V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_READ)
+			ampSettingsWave[0][1][i]  = MCC_GetHolding() * AI_MCC_GetMCCScale(V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_READ)
 			ampSettingsWave[0][2][i]  = MCC_GetOscKillerEnable()
-			ampSettingsWave[0][3][i]  = MCC_GetRsCompBandwidth() * AI_GetMCCScale(V_CLAMP_MODE, MCC_RSCOMPBANDWIDTH_FUNC, MCC_READ)
+			ampSettingsWave[0][3][i]  = MCC_GetRsCompBandwidth() * AI_MCC_GetMCCScale(V_CLAMP_MODE, MCC_RSCOMPBANDWIDTH_FUNC, MCC_READ)
 			ampSettingsWave[0][4][i]  = MCC_GetRsCompCorrection()
 			ampSettingsWave[0][5][i]  = MCC_GetRsCompEnable()
 			ampSettingsWave[0][6][i]  = MCC_GetRsCompPrediction()
 			ampSettingsWave[0][7][i]  = MCC_GetWholeCellCompEnable()
-			ampSettingsWave[0][8][i]  = MCC_GetWholeCellCompCap() * AI_GetMCCScale(V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC, MCC_READ)
-			ampSettingsWave[0][9][i]  = MCC_GetWholeCellCompResist() * AI_GetMCCScale(V_CLAMP_MODE, MCC_WHOLECELLCOMPRESIST_FUNC, MCC_READ)
+			ampSettingsWave[0][8][i]  = MCC_GetWholeCellCompCap() * AI_MCC_GetMCCScale(V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC, MCC_READ)
+			ampSettingsWave[0][9][i]  = MCC_GetWholeCellCompResist() * AI_MCC_GetMCCScale(V_CLAMP_MODE, MCC_WHOLECELLCOMPRESIST_FUNC, MCC_READ)
 			ampSettingsWave[0][39][i] = MCC_GetFastCompCap()
 			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap()
 			ampSettingsWave[0][41][i] = MCC_GetFastCompTau()
 			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau()
 		elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 			ampSettingsWave[0][10][i] = MCC_GetHoldingEnable()
-			ampSettingsWave[0][11][i] = MCC_GetHolding() * AI_GetMCCScale(I_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_READ)
+			ampSettingsWave[0][11][i] = MCC_GetHolding() * AI_MCC_GetMCCScale(I_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_READ)
 			ampSettingsWave[0][12][i] = MCC_GetNeutralizationEnable()
-			ampSettingsWave[0][13][i] = MCC_GetNeutralizationCap() * AI_GetMCCScale(I_CLAMP_MODE, MCC_NEUTRALIZATIONCAP_FUNC, MCC_READ)
+			ampSettingsWave[0][13][i] = MCC_GetNeutralizationCap() * AI_MCC_GetMCCScale(I_CLAMP_MODE, MCC_NEUTRALIZATIONCAP_FUNC, MCC_READ)
 			ampSettingsWave[0][14][i] = MCC_GetBridgeBalEnable()
-			ampSettingsWave[0][15][i] = MCC_GetBridgeBalResist() * AI_GetMCCScale(I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC, MCC_READ)
+			ampSettingsWave[0][15][i] = MCC_GetBridgeBalResist() * AI_MCC_GetMCCScale(I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC, MCC_READ)
 			ampSettingsWave[0][36][i] = MCC_GetSlowCurrentInjEnable()
 			ampSettingsWave[0][37][i] = MCC_GetSlowCurrentInjLevel()
 			ampSettingsWave[0][38][i] = MCC_GetSlowCurrentInjSetlTime()
@@ -2139,20 +2237,15 @@ Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 		ampSettingsTextWave[0][5][i] = tds.HardwareTypeString
 
 		// new parameters
-		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_GetMCCScale(NaN, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
+		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_MCC_GetMCCScale(NaN, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
 	endfor
 
 	ED_AddEntriesToLabnotebook(ampSettingsWave, ampSettingsKey, sweepNo, device, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(ampSettingsTextWave, ampSettingsTextKey, sweepNo, device, DATA_ACQUISITION_MODE)
 End
 
-/// @brief Auto fills the units and gains for all headstages connected to amplifiers
-/// by querying the MCC application
-///
-/// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
-///
-/// @return number of connected amplifiers
-Function AI_QueryGainsFromMCC(string device)
+/// @copydoc AI_QueryGainsFromMCC
+Function AI_MCC_QueryGainsFromMCC(string device)
 
 	variable clampMode, old_ClampMode, i, numConnAmplifiers
 	variable DAGain, ADGain
@@ -2180,7 +2273,7 @@ Function AI_QueryGainsFromMCC(string device)
 		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
 
 		old_clampMode = clampMode
-		clampMode     = AI_GetOppositeClampAmpMode(old_clampMode)
+		clampMode     = AI_MCC_GetOppositeClampAmpMode(old_clampMode)
 
 		DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
 
@@ -2195,21 +2288,12 @@ Function AI_QueryGainsFromMCC(string device)
 	return numConnAmplifiers
 End
 
-/// @brief Return the number of connected amplifiers
-///
-/// @param device         device, can be empty if not yet known
-/// @param rescanHardware [optional, defaults to false] rescan the hardware instead of using cached results
-Function AI_FindConnectedAmps(string device, [variable rescanHardware])
+/// @copydoc AI_FindConnectedAmps
+Function AI_MCC_FindConnectedAmps(variable rescanHardware)
 
 	string key
 
 	PerformSubsystemEntry()
-
-	if(ParamIsDefault(rescanHardware))
-		rescanHardware = 0
-	else
-		rescanHardware = !!rescanHardware
-	endif
 
 	key = CA_AmplifierHardwareWavesKey()
 
@@ -2229,7 +2313,7 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 			Duplicate/O cache[0], telegraphServers
 			Duplicate/O cache[1], ampMCC
 		else
-			[WAVE telegraphServers, WAVE ampMCC] = AI_FindConnectedAmpsNoCache()
+			[WAVE telegraphServers, WAVE ampMCC] = AI_MCC_FindConnectedAmpsNoCache()
 
 			Make/FREE/WAVE cache = {telegraphServers, ampMCC}
 
@@ -2243,7 +2327,7 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 End
 
 /// @brief Create the amplifier connection waves
-static Function [WAVE telegraphServers, WAVE ampMCC] AI_FindConnectedAmpsNoCache()
+static Function [WAVE telegraphServers, WAVE ampMCC] AI_MCC_FindConnectedAmpsNoCache()
 
 	string list
 
@@ -2268,14 +2352,14 @@ static Function [WAVE telegraphServers, WAVE ampMCC] AI_FindConnectedAmpsNoCache
 	return [telegraphServers, ampMCC]
 End
 
-static Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+static Function [STRUCT AxonTelegraph_DataStruct tds] AI_MCC_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	variable i, err
 	string errMsg
 
 	PerformSubsystemEntry()
 
-	AI_InitAxonTelegraphStruct(tds)
+	AI_MCC_InitAxonTelegraphStruct(tds)
 
 	for(i = 0; i < NUM_TRIES_AXON_TELEGRAPH; i += 1)
 
@@ -2302,17 +2386,17 @@ End
 
 #else // AMPLIFIER_XOPS_PRESENT
 
-Function AI_GetHoldingCommand(string device, variable headstage)
+Function AI_MCC_GetHoldingCommand(string device, variable headstage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_GetMode(string device, variable headstage)
+Function AI_MCC_GetMode(string device, variable headstage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function [variable ADGain, variable DAGain] AI_RetrieveGains(string device, variable headstage, variable clampMode)
+static Function [variable ADGain, variable DAGain] AI_MCC_RetrieveGains(string device, variable headstage, variable clampMode)
 
 	ADGain = NaN
 	DAGain = NaN
@@ -2322,57 +2406,47 @@ static Function [variable ADGain, variable DAGain] AI_RetrieveGains(string devic
 	return [ADGain, DAGain]
 End
 
-static Function AI_GetOppositeClampAmpMode(variable mode)
+static Function AI_MCC_GetOppositeClampAmpMode(variable mode)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SelectMultiClamp(string device, variable headStage)
+Function AI_MCC_SelectMultiClamp(string device, variable headStage)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep, variable selectAmp])
+Function AI_MCC_SetClampMode(string device, variable headStage, variable mode, variable zeroStep, variable selectAmp)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, variable func, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp])
+Function AI_MCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_WriteToAmplifier(string device, variable headStage, variable mode, variable func, variable value, [variable sendToAll, variable checkBeforeWrite, variable selectAmp, variable GUIWrite])
+Function AI_MCC_EnsureCorrectMode(string device, variable headStage, variable selectAmp)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+Function AI_MCC_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_EnsureCorrectMode(string device, variable headStage, [variable selectAmp])
+Function AI_MCC_QueryGainsFromMCC(string device)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
+Function AI_MCC_FindConnectedAmps(variable rescanHardware)
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_QueryGainsFromMCC(string device)
-
-	DEBUGPRINT("Unimplemented")
-End
-
-Function AI_FindConnectedAmps(string device, [variable rescanHardware])
-
-	DEBUGPRINT("Unimplemented")
-End
-
-static Function [STRUCT AxonTelegraph_DataStruct tds] AI_GetTelegraphStruct(variable axonSerial, variable channel)
+static Function [STRUCT AxonTelegraph_DataStruct tds] AI_MCC_GetTelegraphStruct(variable axonSerial, variable channel)
 
 	DEBUGPRINT("Unimplemented")
 End
