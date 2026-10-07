@@ -2458,8 +2458,8 @@ static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDR
 	numAmps    = ItemsInList(listOfAmps)
 
 	for(i = 0; i < numAmps; i += 1)
-		ampDef = StringFromList(i, listOfAmps)
-		DAP_ParseAmplifierDef(ampDef, ampSerial, ampChannelID)
+		ampDef                    = StringFromList(i, listOfAmps)
+		[ampSerial, ampChannelID] = DAP_ParseAmplifierDef(ampDef)
 		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
 			return i
 		endif

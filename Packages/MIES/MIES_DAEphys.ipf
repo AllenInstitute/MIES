@@ -1857,17 +1857,19 @@ static Function/S DAP_GetAmplifierDef(variable ampSerial, variable ampChannel)
 End
 
 /// @brief Parse the entries which DAP_GetAmplifierDef() created
-Function DAP_ParseAmplifierDef(string amplifierDef, variable &ampSerial, variable &ampChannelID)
+Function [variable ampSerial, variable ampChannelID] DAP_ParseAmplifierDef(string amplifierDef)
 
 	ampSerial    = NaN
 	ampChannelID = NaN
 
 	if(!cmpstr(amplifierDef, NONE))
-		return NaN
+		return [ampSerial, ampChannelID]
 	endif
 
 	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
 	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
+
+	return [ampSerial, ampChannelID]
 End
 
 Function DAP_SyncDeviceAssocSettToGUI(string device, variable headStage)
@@ -5022,8 +5024,8 @@ static Function DAP_UpdateChanAmpAssignStorWv(string device)
 	// Assigns amplifier to a particular headstage
 	// sounds weird because this relationship is predetermined in hardware
 	// but now you are telling the software what it is
-	amplifierDef = GetPopupMenuString(device, "popup_Settings_Amplifier")
-	DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
+	amplifierDef              = GetPopupMenuString(device, "popup_Settings_Amplifier")
+	[ampSerial, ampChannelID] = DAP_ParseAmplifierDef(amplifierDef)
 
 	if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 		ChanAmpAssign[%AmpSerialNo][HeadStageNo]  = ampSerial
