@@ -1105,10 +1105,14 @@ End
 
 Function AI_MCC_GetHoldingCommand(string device, variable headstage)
 
+	PerformSubsystemEntry()
+
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_GetMode(string device, variable headstage)
+
+	PerformSubsystemEntry()
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -1130,35 +1134,49 @@ End
 
 Function AI_MCC_SelectMultiClamp(string device, variable headStage)
 
+	PerformSubsystemEntry()
+
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_SetClampMode(string device, variable headStage, variable mode, variable zeroStep, variable selectAmp)
+
+	PerformSubsystemEntry()
 
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
+	PerformSubsystemEntry()
+
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_EnsureCorrectMode(string device, variable headStage, variable selectAmp)
+
+	PerformSubsystemEntry()
 
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
+	PerformSubsystemEntry()
+
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_QueryGainsFromMCC(string device)
 
+	PerformSubsystemEntry()
+
 	DEBUGPRINT("Unimplemented")
 End
 
 Function AI_MCC_FindConnectedAmps(variable rescanHardware)
+
+	PerformSubsystemEntry()
 
 	DEBUGPRINT("Unimplemented")
 End
