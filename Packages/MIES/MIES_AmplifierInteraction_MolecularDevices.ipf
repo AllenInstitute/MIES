@@ -265,7 +265,14 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_MCC
 	return [DAGain, ADGain, DAUnit, ADUnit]
 End
 
-/// @copydoc AI_OpenMCCs
+/// @brief Opens Multi-clamp commander software
+///
+/// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
+/// Ex. "834001;435003;836059", "0;" starts the MCC in Demo mode
+/// Duplicate serial numbers are ignored as well as amplifier titles for the duplicates.
+/// For each unique serial number one MCC is opened.
+/// @param ampTitleList MCC gui window titles, blank or with the same number of items as `ampSerialNumList`
+/// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
 Function AI_MCC_OpenMCCs(string ampSerialNumList, string ampTitleList)
 
 	string cmd, serialStr, title

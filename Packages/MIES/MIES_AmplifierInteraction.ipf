@@ -1257,7 +1257,7 @@ End
 ///        same clamp mode as MIES has stored.
 ///
 /// @param device device
-/// @param headstage  headstage
+/// @param headStage  headstage
 /// @param selectAmp  [optional, defaults to false] selects the amplifier
 ///                   before using, some callers might be able to skip it.
 ///
@@ -1398,7 +1398,6 @@ End
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
 /// @param selectAmp        [optional, defaults to true] Select the amplifier
