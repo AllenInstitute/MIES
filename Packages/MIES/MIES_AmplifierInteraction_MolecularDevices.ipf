@@ -516,22 +516,7 @@ Function AI_MCC_SetClampMode(string device, variable headStage, variable mode, v
 	endif
 End
 
-/// @brief Generic interface to call MCC amplifier functions
-///
-/// @param device           locked panel name to work on
-/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-/// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
-/// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param accessType       One of @ref MCCAccessType
-/// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
-///                         check the current value and do nothing if it is equal within some tolerance to the one written
-/// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
-///                         `mV` instead of `V`
-/// @param selectAmp        [optional, defaults to true] Select the amplifier
-///                         before use, some callers might save time in doing that once themselves.
-/// @param value            [optional] Required for writers, must be left out for readers
-///
-/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
+/// @copydoc AI_SendToAmp
 Function AI_MCC_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
 
 	variable ret, headstageMode, scale, nonScaledValue

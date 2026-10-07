@@ -24,7 +24,7 @@ static Constant MIN_PIPETTEOFFSET = -150
 /// @param device           device
 /// @param ctrl             [optional] name of the amplifier control
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
-/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_MCC_SendToAmp()
+/// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
 ///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
@@ -145,7 +145,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 
 				AmpStorageWave[%$rowLabel][0][i] = value
 
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				if(func == MCC_HOLDING_FUNC || func == MCC_HOLDINGENABLE_FUNC)
 					TP_UpdateHoldCmdInTPStorage(device, i)
@@ -156,26 +156,26 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
 
 				AmpStorageWave[%$rowLabel][0][i] = 0
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			case MCC_AUTOWHOLECELLCOMP_FUNC:
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				func                             = MCC_WHOLECELLCOMPCAP_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPRESIST_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 
 				func                             = MCC_WHOLECELLCOMPENABLE_FUNC
 				rowLabel                         = AI_MapFunctionConstantToName(func, clampMode)
-				value                            = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value                            = AI_SendToAmp(device, i, clampMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(device, i, func = func, clampMode = clampMode)
 				break
@@ -189,13 +189,13 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					chainedFunc = MCC_RSCOMPPREDICTION_FUNC
 					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_MCC_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
@@ -209,13 +209,13 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					return 1
 				endif
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					chainedFunc = MCC_RSCOMPCORRECTION_FUNC
 					rowLabel    = AI_MapFunctionConstantToName(chainedFunc, clampMode)
 
 					AmpStorageWave[%$rowLabel][0][i] += diff
-					AI_MCC_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+					AI_SendToAmp(device, i, clampMode, chainedFunc, MCC_WRITE, value = AmpStorageWave[%$rowLabel][0][i], checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 					AI_UpdateAmpView(device, i, func = chainedFunc, clampMode = clampMode)
 				endif
 				break
@@ -227,7 +227,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					oppositeMode = V_CLAMP_MODE
 				endif
 
-				value = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				func     = MCC_PIPETTEOFFSET_FUNC
 				rowLabel = AI_MapFunctionConstantToName(func, clampMode)
@@ -248,7 +248,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 					rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
 
 					// selecting amplifier here, as the clamp mode is now different
-					value                            = AI_MCC_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
+					value                            = AI_SendToAmp(device, i, oppositeMode, func, MCC_READ, checkBeforeWrite = checkBeforeWrite, selectAmp = 1)
 					AmpStorageWave[%$rowLabel][0][i] = value
 					AI_UpdateAmpView(device, i, func = func, clampMode = oppositeMode)
 					DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
@@ -288,7 +288,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_AUTOBRIDGEBALANCE_FUNC:
 				clampMode = I_CLAMP_MODE
 
-				value = AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				value = AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = NaN, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 
 				if(!IsFinite(value))
 					break
@@ -313,7 +313,7 @@ static Function AI_UpdateAmpModel(string device, variable headStage, [string ctr
 			case MCC_PRIMARYSIGNALHPF_FUNC: // fallthrough
 			case MCC_PRIMARYSIGNALLPF_FUNC: // fallthrough
 			case MCC_SECONDARYSIGNALLPF_FUNC:
-				AI_MCC_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, clampMode, func, MCC_WRITE, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = 0)
 				break
 			default:
 				FATAL_ERROR("Unknown func: " + num2str(func))
@@ -501,7 +501,7 @@ static Function AI_MIESAutoPipetteOffset(string device, variable headStage)
 	// @todo check for IC
 	vdelta = ((TPResults[%BaselineSteadyState][headstage] * PICO_TO_ONE) * (TPResults[%ResistanceSteadyState][headstage] * MEGA_TO_ONE)) * ONE_TO_MILLI
 	// get current DC V offset
-	offset = AI_MCC_SendToAmp(device, headStage, clampMode, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
+	offset = AI_SendToAmp(device, headStage, clampMode, MCC_PIPETTEOFFSET_FUNC, MCC_READ)
 	// add delta to current DC V offset
 	value = offset - vDelta
 	if(value > MIN_PIPETTEOFFSET && value < MAX_PIPETTEOFFSET)
@@ -1334,13 +1334,44 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 	return AI_MCC_FindConnectedAmps(rescanHardware)
 End
 
+/// @brief Generic interface to call amplifier functions
+///
+/// @param device           locked panel name to work on
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+/// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
+/// @param func             Function to call, see @ref AI_SendToAmpConstants
+/// @param accessType       One of @ref MCCAccessType
+/// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
+///                         check the current value and do nothing if it is equal within some tolerance to the one written
+/// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
+///                         `mV` instead of `V`
+/// @param selectAmp        [optional, defaults to true] Select the amplifier
+///                         before use, some callers might save time in doing that once themselves.
+/// @param value            [optional] Required for writers, must be left out for readers
+///
+/// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
+Function AI_SendToAmp(string device, variable headStage, variable mode, variable func, variable accessType, [variable checkBeforeWrite, variable usePrefixes, variable selectAmp, variable value])
+
+	PerformSubsystemEntry()
+
+	checkBeforeWrite = ParamIsDefault(checkBeforeWrite) ? 0 : !!checkBeforeWrite
+	usePrefixes      = ParamIsDefault(usePrefixes) ? 1 : !!usePrefixes
+	selectAmp        = ParamIsDefault(selectAmp) ? 1 : !!selectAmp
+
+	if(ParamIsDefault(value))
+		return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp)
+	endif
+
+	return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
+End
+
 /// @brief Write to the amplifier
 ///
 /// @param device           device
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AI_MCC_SendToAmp() and there the description of `usePrefixes`
+/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
 ///                         to all active headstages (true) or just to the given one (false)
 /// @param checkBeforeWrite [optional, defaults to false] (ignored for getter functions)
@@ -1385,7 +1416,7 @@ End
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             One of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
-/// @param value            value to set. values is in MIES units, see AI_MCC_SendToAmp() and there the description of `usePrefixes`
+/// @param value            value to set. values is in MIES units, see AI_SendToAmp() and there the description of `usePrefixes`
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
 /// @param selectAmp        [optional, defaults to true] Select the amplifier
@@ -1402,8 +1433,8 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 	endif
 
 	if(ParamIsDefault(usePrefixes))
-		return AI_MCC_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
+		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
 	endif
 
-	return AI_MCC_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+	return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
 End
