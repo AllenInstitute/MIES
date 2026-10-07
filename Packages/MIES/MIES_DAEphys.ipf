@@ -1810,7 +1810,7 @@ Function DAP_ButtonCtrlFindConnectedAmps(STRUCT WMButtonAction &ba) : ButtonCont
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			if(AI_FindConnectedAmps(rescanHardware = 1) == 0)
+			if(AI_FindConnectedAmps(ba.win, rescanHardware = 1) == 0)
 				print "Activate Multiclamp Commander software to populate list of available amplifiers"
 				ControlWindowToFront()
 			endif
@@ -4641,7 +4641,7 @@ Function DAP_LockDevice(string win)
 	locked = 1
 	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps(deviceLocked)
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))

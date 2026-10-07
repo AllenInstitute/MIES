@@ -764,13 +764,14 @@ End
 
 /// @brief Opens Multi-clamp commander software
 ///
+/// @param device           device
 /// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
 /// Ex. "834001;435003;836059", "0;" starts the MCC in Demo mode
 /// Duplicate serial numbers are ignored as well as amplifier titles for the duplicates.
 /// For each unique serial number one MCC is opened.
 /// @param ampTitleList [optional, defaults to blank] MCC gui window title
 /// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
-Function AI_OpenMCCs(string ampSerialNumList, [string ampTitleList])
+Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleList])
 
 	string cmd, serialStr, title
 	variable i, j, numDups, serialNum, failedToOpenCount
@@ -849,7 +850,7 @@ End
 /// @return a 1D FREE wave containing amplifier serial numbers without leading zeroes
 static Function/WAVE AI_GetMCCSerialNumbers()
 
-	AI_FindConnectedAmps(rescanHardware = 1)
+	AI_FindConnectedAmps("", rescanHardware = 1)
 	WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
 	Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
 	return GetUniqueEntries(OpenMCCList)
@@ -2195,7 +2196,10 @@ Function AI_QueryGainsFromMCC(string device)
 End
 
 /// @brief Return the number of connected amplifiers
-Function AI_FindConnectedAmps([variable rescanHardware])
+///
+/// @param device         device, can be empty if not yet known
+/// @param rescanHardware [optional, defaults to false] rescan the hardware instead of using cached results
+Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 
 	string key
 
@@ -2363,7 +2367,7 @@ Function AI_QueryGainsFromMCC(string device)
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_FindConnectedAmps([variable rescanHardware])
+Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 
 	DEBUGPRINT("Unimplemented")
 End
