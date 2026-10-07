@@ -191,6 +191,55 @@ static Function AI_MCC_GetMCCScale(variable clampMode, variable func, variable a
 	endif
 End
 
+/// @copydoc AI_UpdateDependentSettings
+Function AI_MCC_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
+
+	variable oppositeMode, oldTab, value
+	string rowLabel
+
+	PerformSubsystemEntry()
+
+	switch(func)
+		case MCC_AUTOPIPETTEOFFSET_FUNC:
+			oppositeMode = AI_MCC_GetOppositeClampAmpMode(clampMode)
+
+			WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
+
+			// the pipette offset for the opposite mode has also changed, fetch that too
+			AssertOnAndClearRTError()
+			try
+				oldTab = GetTabID(device, "ADC")
+				if(oldTab != 0)
+					PGC_SetAndActivateControl(device, "ADC", val = 0)
+				endif
+
+				DAP_ChangeHeadStageMode(device, oppositeMode, headstage, MCC_SKIP_UPDATES)
+
+				func     = MCC_PIPETTEOFFSET_FUNC
+				rowLabel = AI_MapFunctionConstantToName(func, oppositeMode)
+
+				// selecting amplifier here, as the clamp mode is now different
+				value                                    = AI_MCC_SendToAmp(device, headstage, oppositeMode, func, MCC_READ, selectAmp = 1)
+				AmpStorageWave[%$rowLabel][0][headstage] = value
+				AI_UpdateAmpView(device, headstage, func = func, clampMode = oppositeMode)
+				DAP_ChangeHeadStageMode(device, clampMode, headstage, MCC_SKIP_UPDATES)
+
+				if(oldTab != 0)
+					PGC_SetAndActivateControl(device, "ADC", val = oldTab)
+				endif
+			catch
+				ClearRTError()
+				if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
+					printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", device, ConvertAmplifierModeToString(oppositeMode), headstage
+				endif
+				// do nothing
+			endtry
+			break
+		default:
+			break
+	endswitch
+End
+
 /// @copydoc AI_QueryGainsUnitsForClampMode
 Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_MCC_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode)
 
