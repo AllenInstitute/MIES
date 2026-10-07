@@ -2698,7 +2698,7 @@ static Function DAP_CheckHeadStage(string device, variable headStage, variable m
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
 		AI_EnsureCorrectMode(device, headStage)
-		AI_QueryGainsUnitsForClampMode(device, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
+		[DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC] = AI_QueryGainsUnitsForClampMode(device, headStage, clampMode)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
 			printf "(%s) The configured unit for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%s vs %s).\r", device, DACchannel, DAUnit, DAUnitMCC

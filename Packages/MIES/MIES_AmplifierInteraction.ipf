@@ -693,7 +693,7 @@ End
 /// @brief Query the MCC application for the gains and units of the given clamp mode
 ///
 /// Assumes that the correct amplifier is already selected!
-Function AI_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode, variable &DAGain, variable &ADGain, string &DAUnit, string &ADUnit)
+Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode)
 
 	PerformSubsystemEntry()
 
@@ -704,7 +704,7 @@ Function AI_QueryGainsUnitsForClampMode(string device, variable headstage, varia
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
+	[ADGain, DAGain] = AI_RetrieveGains(device, headstage, clampMode)
 
 	if(clampMode == V_CLAMP_MODE)
 		DAUnit = "mV"
@@ -713,6 +713,8 @@ Function AI_QueryGainsUnitsForClampMode(string device, variable headstage, varia
 		DAUnit = "pA"
 		ADUnit = "mV"
 	endif
+
+	return [DAGain, ADGain, DAUnit, ADUnit]
 End
 
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
@@ -1539,9 +1541,9 @@ End
 /// @param      device device
 /// @param      headstage  headstage [0, NUM_HEADSTAGES[
 /// @param      clampMode  clamp mode
-/// @param[out] ADGain     ADC gain
-/// @param[out] DAGain     DAC gain
-static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
+/// @retval     ADGain     ADC gain
+/// @retval     DAGain     DAC gain
+static Function [variable ADGain, variable DAGain] AI_RetrieveGains(string device, variable headstage, variable clampMode)
 
 	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
 	variable channel    = AI_GetAmpChannel(device, headStage)
@@ -1558,6 +1560,8 @@ static Function AI_RetrieveGains(string device, variable headstage, variable cla
 	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
 		DAGain = tds.ExtCmdSens * ONE_TO_PICO
 	endif
+
+	return [ADGain, DAGain]
 End
 
 /// @brief Return the opposite clamp mode depending on the current one
@@ -2169,7 +2173,7 @@ Function AI_QueryGainsFromMCC(string device)
 
 		AI_AssertOnInvalidClampMode(clampMode)
 
-		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(device, i, clampMode)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
 		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
@@ -2179,7 +2183,7 @@ Function AI_QueryGainsFromMCC(string device)
 
 		DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
 
-		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(device, i, clampMode)
 		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
 		AI_WriteToAmplifier(device, i, clampMode, MCC_HOLDINGENABLE_FUNC, 0, selectAmp = 0)
@@ -2304,12 +2308,14 @@ Function AI_GetMode(string device, variable headstage)
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_RetrieveGains(string device, variable headstage, variable clampMode, variable &ADGain, variable &DAGain)
+static Function [variable ADGain, variable DAGain] AI_RetrieveGains(string device, variable headstage, variable clampMode)
 
 	ADGain = NaN
 	DAGain = NaN
 
 	DEBUGPRINT("Unimplemented")
+
+	return [ADGain, DAGain]
 End
 
 static Function AI_GetOppositeClampAmpMode(variable mode)
