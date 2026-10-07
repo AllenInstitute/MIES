@@ -970,11 +970,12 @@ static Function CheckZeroAmps([STRUCT IUTF_MDATA &md])
 	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" \
 	                                                           + "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
 
+	ACD_AcquireData(s, md.s0)
+
+	// after ACD_AcquireData as it skips the test case with Sutter hardware
 	variable/G zeroAmpsAllHeadstages = md.v0
 
 	CtrlNamedBackGround ZeroAmps, start=(ticks + 180), period=30, proc=ZeroAmpsAndStopTP_IGNORE
-
-	ACD_AcquireData(s, md.s0)
 End
 
 static Function CheckZeroAmps_REENTRY([STRUCT IUTF_MDATA &md])
