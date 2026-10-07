@@ -782,7 +782,7 @@ Function AI_OpenMCCs(string device, string ampSerialNumList, [string ampTitleLis
 
 	ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
 
-	if(paramIsDefault(AmpTitleList))
+	if(ParamIsDefault(AmpTitleList))
 		AmpTitleList = ""
 	else
 		ASSERT(ItemsInAmpSerialNumList == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
@@ -1713,7 +1713,7 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 		selectAmp = !!selectAmp
 	endif
 
-	if(ParamIsdefault(usePrefixes))
+	if(ParamIsDefault(usePrefixes))
 		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
 	endif
 
@@ -1990,7 +1990,7 @@ End
 ///
 /// @param device device
 /// @param headstage  headstage
-/// @paran selectAmp  [optional, defaults to false] selects the amplifier
+/// @param selectAmp  [optional, defaults to false] selects the amplifier
 ///                   before using, some callers might be able to skip it.
 ///
 /// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
