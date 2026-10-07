@@ -30,6 +30,16 @@ static Function/WAVE InsertedTPPossibilities()
 	return wv
 End
 
+/// @brief Headstage argument of AI_ZeroAmps: 0 for headstage 1, 1 for all headstages
+static Function/WAVE ZeroAmpsHeadstageSelection()
+
+	Make/FREE/D wv = {0, 1}
+
+	SetDimensionLabels(wv, "OneHeadstage;AllHeadstages", ROWS)
+
+	return wv
+End
+
 static Function/WAVE SingleMultiDeviceDAQ()
 
 	WAVE multiDevices  = DeviceNameGeneratorMD1()

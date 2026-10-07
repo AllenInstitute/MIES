@@ -11,7 +11,7 @@
 
 static Function ACD_EnsureMCCIsOpen()
 
-	AI_FindConnectedAmps()
+	AI_FindConnectedAmps("")
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
