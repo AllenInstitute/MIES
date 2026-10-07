@@ -2454,12 +2454,12 @@ static Function CONF_FindAmpInList(variable ampSerialRef, variable ampChannelIDR
 	string listOfAmps, ampDef
 	variable numAmps, i, ampSerial, ampChannelID
 
-	listOfAmps = DAP_GetNiceAmplifierChannelList()
+	listOfAmps = AI_GetAmplifierList()
 	numAmps    = ItemsInList(listOfAmps)
 
 	for(i = 0; i < numAmps; i += 1)
 		ampDef                    = StringFromList(i, listOfAmps)
-		[ampSerial, ampChannelID] = DAP_ParseAmplifierDef(ampDef)
+		[ampSerial, ampChannelID] = AI_ParseAmplifierDef(ampDef)
 		if(ampSerial == ampSerialRef && ampChannelID == ampChannelIDRef)
 			return i
 		endif

@@ -522,6 +522,27 @@ Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_Que
 	return [DAGain, ADGain, DAUnit, ADUnit]
 End
 
+/// @brief Return a nicely layouted list of amplifier channels
+///
+/// Used as popup menu value function.
+Function/S AI_GetAmplifierList()
+
+	return AI_MCC_GetAmplifierList()
+End
+
+/// @brief Return the amplifier list entry for the given amplifier serial and channel
+Function/S AI_GetAmplifierDef(variable ampSerial, variable ampChannel)
+
+	return AI_MCC_GetAmplifierDef(ampSerial, ampChannel)
+End
+
+/// @brief Parse the entries which AI_GetAmplifierDef() created
+Function [variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string amplifierDef)
+
+	[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
+	return [ampSerial, ampChannelID]
+End
+
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
 /// clamp mode with the gains and units.
 Function AI_UpdateChanAmpAssign(string device, variable headStage, variable clampMode, variable DAGain, variable ADGain, string DAUnit, string ADUnit)

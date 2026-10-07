@@ -11,6 +11,8 @@
 
 static Constant NUM_TRIES_AXON_TELEGRAPH = 10
 
+static StrConstant AMPLIFIER_DEF_FORMAT = "AmpNo %d Chan %d"
+
 #if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
 #define AMPLIFIER_XOPS_PRESENT
 #endif
@@ -319,6 +321,65 @@ static Function/S AI_MCC_GetMCCWinFilePath()
 
 	FATAL_ERROR("Could not find the MCC application")
 	return "ERROR"
+End
+
+/// @copydoc AI_GetAmplifierList
+Function/S AI_MCC_GetAmplifierList()
+
+	PerformSubsystemEntry()
+
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
+
+	if(!DimSize(telegraphServers, ROWS))
+		return AddListItem("\\M1(MC not available", NONE, ";", Inf)
+	endif
+
+	return AddListItem(AI_MCC_FormatTelegraphServerList(telegraphServers), NONE, ";", Inf)
+End
+
+static Function/S AI_MCC_FormatTelegraphServerList(WAVE telegraphServers)
+
+	variable i, numRows
+	string str
+	string list = ""
+
+	numRows = DimSize(telegraphServers, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		str  = AI_MCC_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
+		list = AddListItem(str, list, ";", Inf)
+	endfor
+
+	return list
+End
+
+/// @copydoc AI_GetAmplifierDef
+Function/S AI_MCC_GetAmplifierDef(variable ampSerial, variable ampChannel)
+
+	string str
+
+	PerformSubsystemEntry()
+
+	sprintf str, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannel
+
+	return str
+End
+
+/// @copydoc AI_ParseAmplifierDef
+Function [variable ampSerial, variable ampChannelID] AI_MCC_ParseAmplifierDef(string amplifierDef)
+
+	PerformSubsystemEntry()
+
+	ampSerial    = NaN
+	ampChannelID = NaN
+
+	if(!cmpstr(amplifierDef, NONE))
+		return [ampSerial, ampChannelID]
+	endif
+
+	sscanf amplifierDef, AMPLIFIER_DEF_FORMAT, ampSerial, ampChannelID
+	ASSERT(V_Flag == 2, "Unexpected amplifier popup list format")
+
+	return [ampSerial, ampChannelID]
 End
 
 #ifdef AMPLIFIER_XOPS_PRESENT
@@ -967,7 +1028,7 @@ static Function [WAVE telegraphServers, WAVE ampMCC] AI_MCC_FindConnectedAmpsNoC
 
 	SetDataFolder saveDFR
 
-	list = DAP_FormatTelegraphServerList(telegraphServers)
+	list = AI_MCC_FormatTelegraphServerList(telegraphServers)
 
 	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 
