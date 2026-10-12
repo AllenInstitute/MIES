@@ -406,3 +406,64 @@ static Function TestGetWindowsPath()
 	// colon (HFS)
 	CHECK_EQUAL_STR(windowsPath, GetWindowsPath("C:windows:system.ini"))
 End
+
+static Function TestLoadTextFileWorks()
+
+	variable fNum
+	string data, input
+
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextFile.txt"
+
+	Open fNum as tmpFile
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	data = LoadTextFile(tmpFile)
+	CHECK_EQUAL_STR(data, input)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileNonExisting()
+
+	string data
+
+	try
+		data = LoadTextFile("")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestLoadTextFileFromRefWorks()
+
+	variable fNum
+	string data, input
+
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextFile.txt"
+
+	Open fNum as tmpFile
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	Open/R fnum as tmpFile
+	data = LoadTextFileFromRef(fnum)
+	CHECK_EQUAL_STR(data, input)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileFromRefNonExisting()
+
+	string data
+
+	try
+		data = LoadTextFileFromRef(0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
