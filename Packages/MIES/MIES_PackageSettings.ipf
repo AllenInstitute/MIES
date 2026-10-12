@@ -37,14 +37,13 @@ End
 /// Caller is responsible for releasing the document.
 Function PS_ReadSettings(string package, FUNCREF PS_GenerateSettingsDefaults generateDefaults)
 
-	string filepath, data, fName
+	string   filepath
 	variable JSONid
 
 	filepath = PS_GetSettingsFile(package)
 
 	if(FileExists(filepath))
-		[data, fName] = LoadTextFileInteractive(filepath)
-		JSONid        = JSON_Parse(data, ignoreErr = 1)
+		JSONid = JSON_Load(filepath, ignoreErr = 1)
 
 		if(IsFinite(JSONid))
 			return JSONid

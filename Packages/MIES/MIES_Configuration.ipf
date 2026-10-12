@@ -2723,7 +2723,7 @@ End
 /// @brief Loads through all config json files and synchronizes global package settings in config files (if present) to user package settings with overwrite.
 Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 
-	string fName, input, fullFilePath, globalSettingsPath
+	string fName, input, globalSettingsPath
 	variable jsonIdConf
 
 	PerformSubsystemEntry()
@@ -2733,12 +2733,7 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 		globalSettingsPath = "/" + EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK
 		for(fName : configFiles)
 
-			[input, fullFilePath] = LoadTextFileInteractive(fName)
-			if(IsEmpty(input))
-				continue
-			endif
-
-			jsonIdConf = JSON_Parse(input, ignoreErr = 1)
+			jsonIdConf = JSON_Load(fName, ignoreErr = 1)
 			if(!JSON_IsValid(jsonIdConf))
 				continue
 			endif

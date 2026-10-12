@@ -80,13 +80,9 @@ End
 /// Returns the full path to the rewritten JSON configuration file and the corresponding jsonID.
 Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
 
-	string data, fName, rewrittenConfigPath, basename
+	string rewrittenConfigPath, basename
 
-	[data, fName] = LoadTextFileInteractive(path)
-	CHECK_PROPER_STR(data)
-	CHECK_PROPER_STR(fName)
-
-	jsonID = JSON_Parse(data)
+	jsonID = JSON_Load(path)
 	PathInfo home
 	CHECK_PROPER_STR(S_path)
 
