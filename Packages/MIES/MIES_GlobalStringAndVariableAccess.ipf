@@ -205,19 +205,26 @@ End
 /// @returns the mies version
 static Function/S CreateMiesVersionNoCache()
 
-	string path, topDir, version, gitPath
-	string gitDir, fullVersionPath
+	string path, topDir, version, gitPath, tempPath, symbPath
+	string gitDir, repoVersionPath, tempVersionPath
 	variable refNum
 	variable ret = 1
 
 	// set path to the toplevel directory in the mies folder structure
 	path            = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
-	fullVersionPath = path + "version.txt"
+	repoVersionPath = path + "version.txt"
 
 	topDir = path
 	gitDir = topDir + ".git"
 	if(FolderExists(gitDir))
 		// topDir is a git repository
+
+		symbPath = GetUniqueSymbolicPath()
+
+		tempPath = SpecialDirPath("Temporary", 0, 0, 0)
+		NewPath/O/Q/Z $symbPath, tempPath
+		tempVersionPath = tempPath + UniqueFileOrFolder(symbPath, "version_", suffix = ".txt")
+		KillPath $symbPath
 
 		WAVE/T gitPathCandidates = GetPossiblePathsToGit()
 
@@ -226,17 +233,26 @@ static Function/S CreateMiesVersionNoCache()
 				continue
 			endif
 
-			ret = ExecuteGitForMIESVersion(gitPath, topDir, fullVersionPath)
+			ret = ExecuteGitForMIESVersion(gitPath, topDir, tempVersionPath)
 			break
 		endfor
 
 		if(ret)
 			// none of the candidates worked, fallback to use git from PATH
-			ExecuteGitForMIESVersion("git", topDir, fullVersionPath)
+			ExecuteGitForMIESVersion("git", topDir, tempVersionPath)
 		endif
+
+		if(CompareFiles(repoVersionPath, tempVersionPath))
+			DeleteFile/Z repoVersionPath
+			ASSERT(V_flag == 0 || V_flag == -43, "Could not delete version.txt in the MIES repository, maybe the current user can't read/write the file? Path: " + repoVersionPath)
+			CopyFile/Z tempVersionPath as repoVersionPath
+			ASSERT(V_flag == 0, "Could not copy the version files")
+		endif
+
+		DeleteFile/Z tempVersionPath
 	endif
 
-	open/R/Z refNum as fullVersionPath
+	open/R/Z refNum as repoVersionPath
 	if(V_flag != 0)
 		printf "Could not determine the MIES version.\r"
 		printf "Possible reasons:\r"
@@ -264,7 +280,7 @@ End
 ///
 /// @param gitPathOrName   full path to a git binary on the system or plain git for using the one in PATH
 /// @param topDir          full path to the toplevel folder of the MIES repository
-/// @param fullVersionPath full path to the version.txt file in the MIES repository
+/// @param fullVersionPath full path to a writeable file, will hold version information when returning successfully
 ///
 /// @return zero on success, aborts on failure
 static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, string fullVersionPath)
@@ -281,7 +297,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 
 	// delete the old version.txt so that we can be sure to get the correct one afterwards
 	DeleteFile/Z fullVersionPath
-	ASSERT(V_flag == 0 || V_flag == -43, "Could not delete previous version.txt, maybe the current user can't read/write the file? Path: " + fullVersionPath)
+	ASSERT(V_flag == 0 || V_flag == -43, "Could not delete version.txt in temp, maybe the current user can't read/write the file? Path: " + fullVersionPath)
 
 	DEBUGPRINT("Folder is a git repository: ", str = topDir)
 
