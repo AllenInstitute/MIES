@@ -514,13 +514,40 @@ Function [string data, string fName] LoadTextFileInteractive(string fileName, [s
 		return ["", ""]
 	endif
 
+	data = LoadTextFileFromRef(fnum)
+
+	return [data, S_fileName]
+End
+
+/// @brief Load data from file to a string. The file size must be < 2GB.
+///
+/// In comparison to LoadTextFileInteractive() this function asserts out if the file is not readable.
+Function/S LoadTextFile(string fileName)
+
+	variable fnum
+
+	Open/R/Z=(1) fnum as fileName
+	ASSERT(!V_flag, "The file " + fileName + " could not be opened for reading")
+
+	return LoadTextFileFromRef(fnum)
+End
+
+/// @brief Low level file read function
+///
+/// Expects fnum to be an open file reference, which will be closed on successful return.
+Function/S LoadTextFileFromRef(variable fnum)
+
+	string data
+
 	FStatus fnum
+	ASSERT(V_flag, "fnum does not reference a valid file")
+
 	ASSERT(V_logEOF < STRING_MAX_SIZE, "Can't load " + num2istr(V_logEOF) + " bytes to string.")
 	data = PadString("", V_logEOF, 0x20)
 	FBinRead fnum, data
 	Close fnum
 
-	return [data, S_Path + S_fileName]
+	return data
 End
 
 /// @brief Load data from a file to a text wave.
