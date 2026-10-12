@@ -44,7 +44,7 @@ End
 /// @return absolute path to the downloaded asset
 static Function/S DND_FetchAsset(variable setNumber, string assetID, string assetPath)
 
-	string url, refHash, downloadUrl, path, name, assetFilePath, data, fname
+	string url, refHash, downloadUrl, path, name, assetFilePath, data
 	variable jsonID
 
 	sprintf url, "https://api.dandiarchive.org/api/dandisets/%06d/versions/draft/assets/%s", setNumber, assetID
@@ -66,7 +66,7 @@ static Function/S DND_FetchAsset(variable setNumber, string assetID, string asse
 
 	PathInfo/S $path
 	assetFilePath = S_path + name
-	[data, fname] = LoadTextFileInteractive(assetFilePath)
+	data          = LoadTextFile(assetFilePath)
 
 	ASSERT(!cmpstr(refHash, Hash(data, 1)), "Invalid checksum")
 

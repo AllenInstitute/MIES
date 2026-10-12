@@ -821,15 +821,13 @@ End
 ///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
 Function/S CalcHashForFile(string path, [variable method])
 
-	string contents, loadedFilePath
+	string contents
 
 	if(ParamIsDefault(method))
 		method = HASH_SHA2_256
 	endif
 
-	ASSERT(FileExists(path), "Expected a file")
-
-	[contents, loadedFilePath] = LoadTextFileInteractive(path)
+	contents = LoadTextFile(path)
 
 	return Hash(contents, method)
 End

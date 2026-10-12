@@ -385,7 +385,7 @@ End
 Function PS_FixPackageLocation(string package)
 
 	string folder, incorrectFolder, incorrectPackageFile, incorrectLogFile
-	string correctPackageFile, correctLogFile, incorrectData, correctData, fName, data
+	string correctPackageFile, correctLogFile, incorrectData, correctData, data
 
 	folder = PS_GetSettingsFolder(package)
 
@@ -414,9 +414,9 @@ Function PS_FixPackageLocation(string package)
 			MoveFile incorrectLogFile as correctLogFile
 		else
 			// read the incorrect log file and append it to the correct one
-			[incorrectData, fName] = LoadTextFileInteractive(incorrectLogFile)
-			[correctData, fName]   = LoadTextFileInteractive(correctLogFile)
-			data                   = RemoveEnding(correctData, "\n") + "\n" + incorrectData
+			incorrectData = LoadTextFile(incorrectLogFile)
+			correctData   = LoadTextFile(correctLogFile)
+			data          = RemoveEnding(correctData, "\n") + "\n" + incorrectData
 			SaveTextFile(data, correctLogFile)
 			DeleteFile incorrectLogFile
 		endif
