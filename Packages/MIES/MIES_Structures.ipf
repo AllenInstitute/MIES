@@ -628,6 +628,7 @@ EndStructure
 Structure CheckParametersStruct
 	string params // supplied analysis functions parameters
 	string setName // name of the stimulus set
+	string device // device for the hardware dependent checks, empty if the check is independent of a device (e.g. in the wavebuilder)
 EndStructure
 
 /// @brief ReadOut Structure for ASYNC
