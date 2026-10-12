@@ -1,9 +1,9 @@
 .. _daephys:
 
-Da_Ephys
+DA_Ephys
 ========
 
-The DA_Epys panel centralizes control of data acquisition, including multiple
+The DA_Ephys panel centralizes control of data acquisition, including multiple
 hardware components necessary for performing electrophysiology experiments,
 such as the DAC, amplifier, and pressure regulators.
 
