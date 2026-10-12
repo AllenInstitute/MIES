@@ -66,7 +66,7 @@ static Function/S DND_FetchAsset(variable setNumber, string assetID, string asse
 
 	PathInfo/S $path
 	assetFilePath = S_path + name
-	[data, fname] = LoadTextFile(assetFilePath)
+	[data, fname] = LoadTextFileInteractive(assetFilePath)
 
 	ASSERT(!cmpstr(refHash, Hash(data, 1)), "Invalid checksum")
 

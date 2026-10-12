@@ -16,7 +16,7 @@
 // AskUserForExistingFolder
 // HasEnoughDiskspaceFree
 // SaveTextFile
-// LoadTextFile
+// LoadTextFileInteractive
 // GetFileVersion
 // GetFileSize
 // HFSPathToPosix

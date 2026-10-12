@@ -21,7 +21,7 @@ Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/Z/T paths, [variable i
 	Make/FREE/N=(numEntries)/T values, keys
 
 	for(i = 0; i < numEntries; i += 1)
-		[data, fName] = LoadTextFile(paths[i])
+		[data, fName] = LoadTextFileInteractive(paths[i])
 		values[i]     = data
 
 		keys[i] = GetFile(paths[i])
