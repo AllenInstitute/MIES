@@ -193,7 +193,7 @@ static Function GetJSON(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	string data, fname
 
-	[data, fname] = LoadTextFile(prefs.settingsFile)
+	[data, fname] = LoadTextFileInteractive(prefs.settingsFile)
 
 	return JSON_Parse(data)
 End

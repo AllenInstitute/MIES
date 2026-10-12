@@ -278,7 +278,7 @@ static Function CHI_LoadInstallationConfiguration()
 	if(!FileExists(fullFilePath))
 		return NaN
 	endif
-	[txt, fullFilePath] = LoadTextFile(fullFilePath)
+	[txt, fullFilePath] = LoadTextFileInteractive(fullFilePath)
 	return JSON_Parse(txt, ignoreErr = 1)
 End
 

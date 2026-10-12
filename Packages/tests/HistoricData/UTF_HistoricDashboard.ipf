@@ -35,7 +35,7 @@ static Function TestCompression()
 	CHECK(FileExists(compPath))
 	CHECK(FileExists(fullPath))
 
-	[data, filename] = LoadTextFile(fullPath)
+	[data, filename] = LoadTextFileInteractive(fullPath)
 	CHECK_EQUAL_STR(filename, fullPath)
 	CHECK_EQUAL_STR(refData, data)
 End

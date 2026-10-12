@@ -43,7 +43,7 @@ Function PS_ReadSettings(string package, FUNCREF PS_GenerateSettingsDefaults gen
 	filepath = PS_GetSettingsFile(package)
 
 	if(FileExists(filepath))
-		[data, fName] = LoadTextFile(filepath)
+		[data, fName] = LoadTextFileInteractive(filepath)
 		JSONid        = JSON_Parse(data, ignoreErr = 1)
 
 		if(IsFinite(JSONid))
@@ -415,8 +415,8 @@ Function PS_FixPackageLocation(string package)
 			MoveFile incorrectLogFile as correctLogFile
 		else
 			// read the incorrect log file and append it to the correct one
-			[incorrectData, fName] = LoadTextFile(incorrectLogFile)
-			[correctData, fName]   = LoadTextFile(correctLogFile)
+			[incorrectData, fName] = LoadTextFileInteractive(incorrectLogFile)
+			[correctData, fName]   = LoadTextFileInteractive(correctLogFile)
 			data                   = RemoveEnding(correctData, "\n") + "\n" + incorrectData
 			SaveTextFile(data, correctLogFile)
 			DeleteFile incorrectLogFile

@@ -82,7 +82,7 @@ Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, 
 
 	string data, fName, rewrittenConfigPath, basename
 
-	[data, fName] = LoadTextFile(path)
+	[data, fName] = LoadTextFileInteractive(path)
 	CHECK_PROPER_STR(data)
 	CHECK_PROPER_STR(fName)
 

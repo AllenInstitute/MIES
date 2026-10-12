@@ -494,7 +494,7 @@ End
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Select file"] window title of the save file dialog.
 /// @returns loaded string data and full path fileName
-Function [string data, string fName] LoadTextFile(string fileName, [string fileFilter, string message])
+Function [string data, string fName] LoadTextFileInteractive(string fileName, [string fileFilter, string message])
 
 	variable fNum, zFlag
 
@@ -802,7 +802,7 @@ Function/S CalcHashForFile(string path, [variable method])
 
 	ASSERT(FileExists(path), "Expected a file")
 
-	[contents, loadedFilePath] = LoadTextFile(path)
+	[contents, loadedFilePath] = LoadTextFileInteractive(path)
 
 	return Hash(contents, method)
 End

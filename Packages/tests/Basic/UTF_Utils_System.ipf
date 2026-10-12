@@ -105,7 +105,7 @@ static Function TestUploadJsonPayload()
 	jsonID = JSON_New()
 	UploadJSONPayload(jsonID)
 
-	[logs, retFilename] = LoadTextFile(filename)
+	[logs, retFilename] = LoadTextFileInteractive(filename)
 	CHECK_PROPER_STR(logs)
 	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
 End
