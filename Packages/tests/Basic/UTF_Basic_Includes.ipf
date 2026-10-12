@@ -19,6 +19,7 @@
 #include "UTF_Debugging"
 #include "UTF_EpochswoHardware"
 #include "UTF_ForeignFunctionInterface"
+#include "UTF_GlobalStringAndVariableAccess"
 #include "UTF_GuiUtilities"
 #include "UTF_Hashmap"
 #include "UTF_InputDialog"
