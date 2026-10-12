@@ -550,6 +550,21 @@ Function/S LoadTextFileFromRef(variable fnum)
 	return data
 End
 
+/// @brief Return 0 if both files have the exact same contents, 1 otherwise
+Function CompareFiles(string file1, string file2)
+
+	string data1, data2
+
+	if(!FileExists(file1) || !FileExists(file2))
+		return 1
+	endif
+
+	data1 = LoadTextFile(file1)
+	data2 = LoadTextFile(file2)
+
+	return cmpstr(data1, data2, 2) != 0
+End
+
 /// @brief Load data from a file to a text wave.
 ///
 /// @param[in] fullFilePath full path to the file to be loaded
