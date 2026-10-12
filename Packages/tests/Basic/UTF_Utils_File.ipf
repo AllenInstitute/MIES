@@ -467,3 +467,40 @@ static Function TestLoadTextFileFromRefNonExisting()
 		CHECK_NO_RTE()
 	endtry
 End
+
+static Function TestCompareFiles()
+
+	string input, tmpfile1, tmpfile2, tmpfile3
+	variable fnum
+
+	tmpFile1 = GetFolder(FunctionPath("")) + "LoadTextFile1.txt"
+
+	Open fNum as tmpFile1
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	tmpfile2 = GetFolder(FunctionPath("")) + "LoadTextFile2.txt"
+
+	Open fNum as tmpFile2
+	input = "ABCD"
+	FBinWrite fnum, input
+	Close fNum
+
+	tmpfile3 = GetFolder(FunctionPath("")) + "LoadTextFile3.txt"
+
+	Open fNum as tmpFile3
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, "I_DONT_EXIST"), 1)
+	CHECK_EQUAL_VAR(CompareFiles("I_DONT_EXIST", tmpFile1), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, tmpFile2), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile2, tmpFile3), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, tmpFile3), 0)
+
+	DeleteFile tmpFile1
+	DeleteFile tmpFile2
+	DeleteFile tmpFile3
+End
