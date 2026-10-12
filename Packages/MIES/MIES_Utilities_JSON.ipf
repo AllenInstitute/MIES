@@ -14,15 +14,13 @@
 /// Fill `payload` array with content from files
 Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/Z/T paths, [variable isBinary])
 
-	string data, fName, filepath, jsonpath
 	variable numEntries, i, offset
 
 	numEntries = WaveExists(paths) ? DimSize(paths, ROWS) : 0
 	Make/FREE/N=(numEntries)/T values, keys
 
 	for(i = 0; i < numEntries; i += 1)
-		[data, fName] = LoadTextFileInteractive(paths[i])
-		values[i]     = data
+		values[i] = LoadTextFile(paths[i])
 
 		keys[i] = GetFile(paths[i])
 	endfor

@@ -73,8 +73,8 @@ static Function RestoreAndSaveConfiguration([string str])
 	CHECK(FileExists(workingFolder + newConfig))
 	CHECK(FileExists(workingFolder + newRigConfig))
 
-	[fContent, fName]    = LoadTextFileInteractive(workingFolder + defaultRigConfig)
-	[fContentRig, fName] = LoadTextFileInteractive(workingFolder + newRigConfig)
+	fContent    = LoadTextFile(workingFolder + defaultRigConfig)
+	fContentRig = LoadTextFile(workingFolder + newRigConfig)
 	CHECK_EQUAL_STR(fContent, fContentRig)
 
 	wList = AddListItem(DATABROWSER_WINDOW_NAME, "")
