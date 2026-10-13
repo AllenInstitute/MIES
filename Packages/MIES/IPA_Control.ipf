@@ -156,6 +156,13 @@ static Function /S Get_StructPath()
 End
 
 
+//the struct string exists between IPA_Initialize and IPA_Shutdown
+static Function IsInitialized()
+	SVar/Z SD_Struct = $(Get_StructPath())
+	return SVAR_Exists(SD_Struct)
+End
+
+
 //get the local structure
 static Function GetStructure(Struct IPASeries &SIPA)
 	SVAR SD_Struct = $(Get_StructPath())
@@ -291,6 +298,10 @@ End
 
 
 Function IPA_Shutdown()
+	if (IsInitialized() == FALSE)
+		return FALSE
+	endif
+
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
 	SaveControls(SIPA.ipa)
@@ -883,6 +894,9 @@ Function IPA_GetValue(variable probe_count, string value)
 	if (probe_count <=0)
 		return FALSE
 	endif
+	if (IsInitialized() == FALSE)
+		return FALSE
+	endif
 	//one based
 	Variable probeIndex = probe_count - 1
 	Variable ampIndex
@@ -1062,6 +1076,9 @@ End
 
 Function IPA_SetValue(variable probe_count, string setting, variable value )
 	if (probe_count <=0)
+		return FALSE
+	endif
+	if (IsInitialized() == FALSE)
 		return FALSE
 	endif
 	

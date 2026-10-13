@@ -219,6 +219,16 @@ static Function IPAAuxInputs()
 	RestoreIPA_IGNORE(state)
 End
 
+static Function IPANotInitialized()
+
+	CHECK_EQUAL_VAR(DataFolderExists(IPA_PACKAGE_FOLDER), 0)
+
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_NUM_PROBES), 0)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_V_HOLD, 0), 0)
+	CHECK_EQUAL_VAR(IPA_Shutdown(), 0)
+	CHECK_NO_RTE()
+End
+
 #else
 
 static Function IPARequiresSutterHardware()
