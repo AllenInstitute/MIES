@@ -248,11 +248,7 @@ static Function/S CreateMiesVersionNoCache()
 		return UNKNOWN_MIES_VERSION
 	endif
 
-	FStatus refNum
-	version = PadString("", V_logEOF, 0x20)
-	FBinRead refNum, version
-	Close refNum
-
+	version = LoadTextFileFromRef(refNum)
 	version = NormalizeToEOL(version, "\r")
 
 	DEBUGPRINT("Version.txt contents:\r\r", str = version)
