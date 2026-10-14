@@ -16,7 +16,7 @@ Static Constant FALSE = 0
 Static Constant SutterXOP_XOPVersion = 2.60			// SutterXOP major version number needs to match SutterPatch, minor version is for info only
 
 Static Constant kLiveMode = -1
-Static Constant kNoDevice = -1
+Static Constant kNoDevice = 255 // ampIndex and HSIndex are uchar, so -1 would be stored as 255
 Static Constant kIPASingle = 1
 Static Constant kIPADouble = 2
 Static Constant kSutterInterface = 3
@@ -26,6 +26,10 @@ Static Constant kMaxHeadstages = 8 //(2 double IPA * max amplifiers)
 
 Static Constant kCC_deltaCap = 1.4  // CC circuit has 1.4 pF more headstage capacitance.
 Static Constant kStabilityControl = 1  //pF moved to prefs
+
+// Valid range of the offset DAC value (2^16/V), the amplifier ignores +16384
+Static Constant kOffsetMin = -16384
+Static Constant kOffsetMax = 16383
 
 //-------------------Structure to store amplifier values ------------------------
 
@@ -149,6 +153,13 @@ End
 //get struct string path
 static Function /S Get_StructPath()
 	return AmpPath + ":SD_Struct"
+End
+
+
+//the struct string exists between IPA_Initialize and IPA_Shutdown
+static Function IsInitialized()
+	SVar/Z SD_Struct = $(Get_StructPath())
+	return SVAR_Exists(SD_Struct)
 End
 
 
@@ -287,6 +298,10 @@ End
 
 
 Function IPA_Shutdown()
+	if (IsInitialized() == FALSE)
+		return FALSE
+	endif
+
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
 	SaveControls(SIPA.ipa)
@@ -387,7 +402,11 @@ static Function SetCompensation(Struct IPASeries &SIPA, variable probeIndex)  //
 		return FALSE
 	endif
 	
-	if (probeIndex > SIPA.numHeadstages)
+	if (probeIndex < 0)
+		return FALSE
+	endif
+
+	if (probeIndex >= SIPA.numHeadstages)
 		return FALSE
 	endif
 
@@ -527,7 +546,7 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 
 	//SRs Lag
 	setval=min(1023,round(SIPA.ipa.HS[probeIndex].lag*5.12)) 	//Settings from 20 to 200  (us)
-	setval=max(51,round(SIPA.ipa.HS[probeIndex].lag*5.12))
+	setval=max(51,setval)
 	if (HS)
 		SutterDAQwrite(Amp,23,10,(setval&0xff00)/256,setval&0x00ff) //14bit unsigned?
 	else
@@ -769,7 +788,7 @@ static Function SetAuxOut(Struct IPASeries &SIPA, Variable ampIndex, Variable ch
 	if (IPA_OKToSendCommand())
 		SutterDAQwrite(ampIndex,17,DACout, (scaledvalue&0xff00)/256,scaledvalue&0x00ff)
 	endif
-	SIPA.amp[ampindex].analogOut[channel] = value
+	SIPA.amp[ampindex].analogOut[channel - 1] = value // channel is one based
 
 	return TRUE
 End
@@ -875,12 +894,19 @@ Function IPA_GetValue(variable probe_count, string value)
 	if (probe_count <=0)
 		return FALSE
 	endif
+	if (IsInitialized() == FALSE)
+		return FALSE
+	endif
 	//one based
 	Variable probeIndex = probe_count - 1
 	Variable ampIndex
 	
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
+
+	if (probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
 
 	DFREF dfr=$AmpPath
 	
@@ -1030,7 +1056,7 @@ Function IPA_GetValue(variable probe_count, string value)
 			break
 		case "AuxIn1":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,0)
 			return SIPA.amp[ampindex].analogIn[0]
 		case "AuxIn2":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
@@ -1038,11 +1064,11 @@ Function IPA_GetValue(variable probe_count, string value)
 			return SIPA.amp[ampindex].analogIn[1]
 		case "AuxIn3":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,2)
 			return SIPA.amp[ampindex].analogIn[2]
 		case "AuxIn4":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			ReadAuxIn(SIPA,ampIndex,3)
 			return SIPA.amp[ampindex].analogIn[3]
 	endswitch
 End
@@ -1052,11 +1078,18 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 	if (probe_count <=0)
 		return FALSE
 	endif
+	if (IsInitialized() == FALSE)
+		return FALSE
+	endif
 	
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
 	
 	Variable probeIndex = probe_count-1
+	if (probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amptype = SIPA.amp[ampl_index].amptype
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
@@ -1075,11 +1108,11 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			break
 		case "CCMode":
 		  	SIPA.ipa.HS[probeIndex].vc = 2
-		  	SetDIPA_fromStructure(SIPA, amp_channel)
+			SetDIPA_fromStructure(SIPA, probeIndex)
 			break
 		case "VCMode":
 		  	SIPA.ipa.HS[probeIndex].vc= 0
-		  	SetDIPA_fromStructure(SIPA, amp_channel)
+			SetDIPA_fromStructure(SIPA, probeIndex)
 			break
 		case "IHold":  
 			if (abs(value)>20e-9)
@@ -1188,6 +1221,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				value = 0.25*sign(value)
 			endif
 			Value = round(2^16*value)  //convert to 16bit value
+			Value = limit(Value, kOffsetMin, kOffsetMax)
 			if (oktosend)
 				SutterDAQwrite(ampl_index,17,1+3*amp_channel,(value&0xff00)/256,value&0x00ff)		//1 for HS#0, 4 for HS#1
 			endif
@@ -1203,10 +1237,16 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				value = 25e-12
 			endif
 			value *= 1e12
-			if (SIPA.ipa.HS[probeIndex].vc == 2)
-				value += kCC_deltaCap - kStabilityControl
-			endif				
+			// store the value without the CC offset, it is added when the value is sent in CC,
+			// see ModifyCapMag()
 			setval =  round(value*655.32)
+			if (SIPA.ipa.HS[probeIndex].vc == 2)
+				ModifyCapMag(setval)
+				// in CC the value is the capacitance neutralization, only active with ECompOn
+				if (SIPA.ipa.HS[probeIndex].capneuton == 0)
+					setval = 0
+				endif
+			endif
 			if (setval<0)
 				setval=0
 			endif
@@ -1304,11 +1344,12 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].bridgeon = TRUE
 			break
 		case "BridgeOn":
+			value = !!value
 			setval =  value*round(SIPA.ipa.HS[probeIndex].bridge*81.92)
 			if (oktosend)
 				SutterDAQwrite(ampl_index,2+21*amp_channel,5,(setval&0xff00)/256,setval&0x00ff)
 			endif
-			SIPA.ipa.HS[probeIndex].bridgeon = !value
+			SIPA.ipa.HS[probeIndex].bridgeon = value
 			break	
 		case "AutoEComp":
 			Auto_ElectrodeCompensation(SIPA,probeIndex)
@@ -1331,7 +1372,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			endif
 			value*=1000
 			setval =  round(value*32.767)
-			if (oktosend)
+			// sending the value enables the dynamic hold, only do that when it is on
+			if (oktosend && SIPA.ipa.HS[probeIndex].trackon && (SIPA.ipa.HS[probeIndex].vc == 2))
 				SutterDAQwrite(ampl_index,19+6*amp_channel,1,(setval&0xff00)/256,setval&0x00ff)
 			endif
 			SIPA.ipa.HS[probeIndex].track = value
@@ -1347,7 +1389,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif
 			else 					//Tracking turned OFF
 				if ((SIPA.ipa.HS[probeIndex].vc == 2) && (oktosend))
-					SutterDAQwrite(ampl_index,19,0,0,0)
+					SutterDAQwrite(ampl_index,19+6*amp_channel,0,0,0)
 				endif
 			endif		
 			break	
@@ -1355,7 +1397,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			if (SIPA.ipa.HS[probeIndex].vc == 2) //only set if in CC
 				setval=value*round((SIPA.ipa.HS[probeIndex].fastmag+kCC_deltaCap-kStabilityControl)*655.32)
 				if (oktosend)
-					SutterDAQwrite(ampl_index ,2,2,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,2+21*amp_channel,2,(setval&0xff00)/256,setval&0x00ff)
 				endif
 			endif	
 			SIPA.ipa.HS[probeIndex].capneuton = value
@@ -1364,16 +1406,16 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			if (SIPA.ipa.HS[probeIndex].vc == 0) //only set if in VC
 				setval = 32.767*SIPA.ipa.HS[probeIndex].hpot*value
 				if (oktosend)
-					SutterDAQwrite(ampl_index,16,0,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 				endif
-				SIPA.ipa.HS[probeIndex].hpoton = value
 			endif
+			SIPA.ipa.HS[probeIndex].hpoton = value
 			break
 		case "IHoldOn":		//Holding current set
 			if (SIPA.ipa.HS[probeIndex].vc == 2) //only set if in CC
 				setval = 1.63835*SIPA.ipa.HS[probeIndex].hcurr*value
 				if (oktosend)
-					SutterDAQwrite(ampl_index,16,0,(setval&0xff00)/256,setval&0x00ff)
+					SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].hcurron = value
@@ -1419,16 +1461,17 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				return FALSE
 			endif
 			ZeroIPAOffset(SIPA,probeIndex)
-			return TRUE
+			break	// store the new offset
 		case "SealTest":
 			if (oktosend)
 				if (value==0)
-					SutterDAQWrite(0,18,0,10,10)
+					SutterDAQWrite(ampl_index,18,0,10,10)
 				else 
-					SutterDAQwrite(0,18,1,10,value)
+					SutterDAQwrite(ampl_index,18,1,10,value)
 				endif
 			endif
 			SIPA.ipa.HS[probeIndex].seal = value
+			break
 		case "Buzz":
 			Buzz(SIPA,probeIndex,value)
 			break
@@ -1461,7 +1504,7 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 	Variable oktosend = IPA_OKToSendCommand()
 	variable readvalue
-	variable myoffset = SIPA.ipa.HS[probeIndex].offset * 2^16
+	variable myoffset = SIPA.ipa.HS[probeIndex].offset	// already in DAC units, see "Offset" in IPA_SetValue
 	variable myLJP = SIPA.ipa.HS[probeIndex].ljp * 2^16
 	variable offsetMV
 	variable readchannel
@@ -1480,7 +1523,8 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 		endif
 		direction = (readvalue > 0)		//1 is positive, 0 is negative
 		
-		if (abs(readvalue*SIPA.ipa.HS[probeIndex].gainvc) > 9.9)
+		// output voltage of the amplifier, gainvc is the index into the VC gains in mV/pA
+		if (abs(readvalue*str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,"0.5;1;2.5;5;10;25"))*1e9) > 9.9)
 			//Print "Out of Range"
 			offsetstep = 2048	//32 mV
 		endif
@@ -1502,8 +1546,8 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 				myoffset += offsetstep
 				direction = 0
 			endif
-			if (abs(myoffset)>16384)
-				myoffset = 16384*sign(myoffset) //limit to +/- 250 mV
+			if (myoffset < kOffsetMin || myoffset > kOffsetMax)
+				myoffset = limit(myoffset, kOffsetMin, kOffsetMax) //limit to +/- 250 mV
 				break
 			endif
 			if (oktosend)
@@ -1519,6 +1563,7 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 			endif
 		endfor
 		myoffset += myljp
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		if (oktosend)
 			if (amp_channel==1)  //Second HS on dIPA
 					SutterDAQwrite(ampl_index,17,4,(myoffset&0xff00)/256,myoffset&0x00ff)
@@ -1532,10 +1577,9 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 			readvalue = Sutterdaqread(ampl_index,readchannel)
 		endif
 		myoffset += readvalue*2^16
-		if (abs(myoffset)>16384)
-			myoffset = 16384*sign(myoffset)
-		endif
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		myoffset += myljp
+		myoffset = limit(myoffset, kOffsetMin, kOffsetMax)
 		
 		if (oktosend)
 			if (amp_channel==1)   //Second HS on dIPA
@@ -1566,17 +1610,17 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 
-	SutterDAQwrite(0,2,1,3,0)
-	SutterDAQwrite(0,2,2,40,0)
+	SutterDAQwrite(ampl_index,2+21*amp_channel,1,3,0)
+	SutterDAQwrite(ampl_index,2+21*amp_channel,2,40,0)
 	
 	variable step, stepsign
 	stepsign=1
 	for (step=0; step<(1*duration); step+=1)
 		if (stepsign==1)
-			SutterDAQwrite(0,16,0,192,0)
+			SutterDAQwrite(ampl_index,16,amp_channel,192,0)
 			stepsign= -1
 		else
-			SutterDAQwrite(0,16,0,64,0)
+			SutterDAQwrite(ampl_index,16,amp_channel,64,0)
 			stepsign=1
 		endif
 		IPA_usdelay(1000)
@@ -1584,11 +1628,11 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 	
 	variable setval
 	setval=round((SIPA.ipa.HS[probeIndex].fastmag+kCC_deltaCap-kStabilityControl)*655.32)*SIPA.ipa.HS[probeIndex].capneuton
-	SutterDAQwrite(0,2,2,(setval&0xff00)/256,setval&0x00ff)	
+	SutterDAQwrite(ampl_index,2+21*amp_channel,2,(setval&0xff00)/256,setval&0x00ff)
 	setval=round((SIPA.ipa.HS[probeIndex].fastphase-0.1)*1023/4.4)
-	SutterDAQwrite(0,2,1,(setval&0xff00)/256,setval&0x00ff)	
+	SutterDAQwrite(ampl_index,2+21*amp_channel,1,(setval&0xff00)/256,setval&0x00ff)
 	setval = 1.63835*SIPA.ipa.HS[probeIndex].hcurr*SIPA.ipa.HS[probeIndex].hcurron
-	SutterDAQwrite(0,16,0,(setval&0xff00)/256,setval&0x00ff)
+	SutterDAQwrite(ampl_index,16,amp_channel,(setval&0xff00)/256,setval&0x00ff)
 
 	return TRUE
 End
