@@ -7,6 +7,7 @@
 
 static Constant OODDAQ_PRECISION       = 0.001
 static Constant OTHER_EPOCHS_PRECISION = 0.050 // in ms
+static Constant TRIG_ZERO_TOLERANCE    = 1e-10 // values of trigonometric epochs treated as zero
 static Constant MAX_ITERATIONS         = 100000
 
 static Function GlobalPreAcq(string device)
@@ -511,10 +512,14 @@ End
 
 static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 
-	variable numRows, i, num, epochBegin, epochEnd
+	variable numRows, i, num, epochBegin, epochEnd, halfWidth
 	string shortname, epochType, levelTwoType, levelTwoNumber, levelThreeType, levelThreeNumber, refEpochType
 
 	numRows = DimSize(epochChannel, ROWS)
+
+	// the window must contain at least one point on each side, e.g. the
+	// Sutter output has a sampling interval of 0.1 ms
+	halfWidth = max(OTHER_EPOCHS_PRECISION / 2, DimDelta(DAchannel, ROWS))
 
 	Make/FREE/T/N=(numRows) shortnames = EP_GetShortName(epochChannel[p][EPOCH_COL_TAGS])
 
@@ -560,8 +565,9 @@ static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 		epochBegin = str2num(epochChannel[i][EPOCH_COL_STARTTIME]) * ONE_TO_MILLI
 		epochEnd   = str2num(epochChannel[i][EPOCH_COL_ENDTIME]) * ONE_TO_MILLI
 
-		Duplicate/FREE/R=(epochBegin - OTHER_EPOCHS_PRECISION / 2, epochBegin + OTHER_EPOCHS_PRECISION / 2) DAchannel, slice
-		if(GetRowIndex(slice, val = 0) == 0)
+		Duplicate/FREE/R=(epochBegin - halfWidth, epochBegin + halfWidth) DAchannel, slice
+		MatrixOP/FREE absSlice = abs(slice)
+		if(GetRowIndex(slice, val = 0) == 0 || WaveMin(absSlice) < TRIG_ZERO_TOLERANCE)
 			// one of the points was zero
 			PASS()
 		else
@@ -570,11 +576,12 @@ static Function TestTrigonometricEpochs(WAVE/T epochChannel, WAVE DAchannel)
 			CHECK_EQUAL_VAR(V_flag, 0)
 		endif
 
-		Duplicate/FREE/R=(epochEnd - OTHER_EPOCHS_PRECISION / 2, epochEnd + OTHER_EPOCHS_PRECISION / 2) DAchannel, slice
-		if(GetRowIndex(slice, val = 0) == 0)
+		Duplicate/FREE/R=(epochEnd - halfWidth, epochEnd + halfWidth) DAchannel, slice
+		MatrixOP/FREE absSlice = abs(slice)
+		if(GetRowIndex(slice, val = 0) == 0 || WaveMin(absSlice) < TRIG_ZERO_TOLERANCE)
 			// one of the points was zero
 			PASS()
-		elseif(epochEnd < rightx(DAChannel))
+		elseif(epochEnd < (rightx(DAChannel) - DimDelta(DAchannel, ROWS) / 2))
 			// if not we need at least a zero crossing
 			FindLevel/Q slice, 0
 			CHECK_EQUAL_VAR(V_flag, 0)

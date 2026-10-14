@@ -336,7 +336,13 @@ static Function/WAVE EpochTestSamplingFrequency_Gen()
 	string frequencies = DAP_GetSamplingFrequencies()
 
 	WAVE wTemp = ListToNumericWave(frequencies, ";", ignoreErr = 1)
-	WAVE w     = ZapNaNs(wTemp)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// sampling frequencies in kHz, the Sutter input is limited by its minimum sampling interval in ms
+	wTemp[] = (wTemp[p] > (1 / HARDWARE_SU_MIN_SAMPINT_ADC)) ? NaN : wTemp[p]
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
+	WAVE w = ZapNaNs(wTemp)
 
 	SetDimensionLabelsFromWaveContents(w, prefix = "f_", suffix = "_kHz")
 
@@ -356,6 +362,11 @@ static Function/WAVE EpochTestSamplingFrequencyTTL_Gen()
 	wTemp[] = (wTemp[p] == 100) ? NaN : wTemp[p]
 #endif // TESTS_WITH_ITC1600_HARDWARE
 #endif // TESTS_WITH_ITC18USB_HARDWARE
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// sampling frequencies in kHz, the Sutter input is limited by its minimum sampling interval in ms
+	wTemp[] = (wTemp[p] > (1 / HARDWARE_SU_MIN_SAMPINT_ADC)) ? NaN : wTemp[p]
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	WAVE w = ZapNaNs(wTemp)
 
