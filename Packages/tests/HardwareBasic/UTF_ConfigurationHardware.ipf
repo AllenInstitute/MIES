@@ -56,11 +56,11 @@ static Function RestoreAndSaveConfiguration([string str])
 
 		if(JSON_Exists(jsonId, stimsetJsonPath))
 			FixupJSONConfigImplMain(jsonId, str)
-			fContent = JSON_Dump(jsonId, indent = 2)
 		elseif(JSON_Exists(jsonId, hsAssocJsonPath))
 			FixupJSONConfigImplRig(jsonId)
-			fContent = JSON_Dump(jsonId, indent = 2)
 		endif
+
+		fContent = JSON_Dump(jsonId, indent = 2)
 		JSON_Release(jsonId)
 		SaveTextFile(fContent, workingFolder + GetFile(fileName))
 	endfor
