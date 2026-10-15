@@ -172,8 +172,8 @@ static Function TCONF_CompareTextFiles(string fName1, string fName2)
 
 	string s1, s2
 
-	[s1, fName1] = LoadTextFile(PrependExperimentFolder_IGNORE(fName1))
-	[s2, fName2] = LoadTextFile(PrependExperimentFolder_IGNORE(fName2))
+	s1 = LoadTextFile(PrependExperimentFolder_IGNORE(fName1))
+	s2 = LoadTextFile(PrependExperimentFolder_IGNORE(fName2))
 
 	CHECK_EQUAL_STR(TCONF_NormalizeJSON(s1), TCONF_NormalizeJSON(s2))
 End

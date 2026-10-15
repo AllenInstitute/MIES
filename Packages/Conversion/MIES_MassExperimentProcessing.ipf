@@ -191,11 +191,7 @@ End
 // Caller needs to release json
 static Function GetJSON(STRUCT MultiExperimentProcessPrefs &prefs)
 
-	string data, fname
-
-	[data, fname] = LoadTextFile(prefs.settingsFile)
-
-	return JSON_Parse(data)
+	return JSON_Load(prefs.settingsFile)
 End
 
 // json will be released

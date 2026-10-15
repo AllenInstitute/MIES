@@ -37,14 +37,13 @@ End
 /// Caller is responsible for releasing the document.
 Function PS_ReadSettings(string package, FUNCREF PS_GenerateSettingsDefaults generateDefaults)
 
-	string filepath, data, fName
+	string   filepath
 	variable JSONid
 
 	filepath = PS_GetSettingsFile(package)
 
 	if(FileExists(filepath))
-		[data, fName] = LoadTextFile(filepath)
-		JSONid        = JSON_Parse(data, ignoreErr = 1)
+		JSONid = JSON_Load(filepath, ignoreErr = 1)
 
 		if(IsFinite(JSONid))
 			return JSONid
@@ -386,7 +385,7 @@ End
 Function PS_FixPackageLocation(string package)
 
 	string folder, incorrectFolder, incorrectPackageFile, incorrectLogFile
-	string correctPackageFile, correctLogFile, incorrectData, correctData, fName, data
+	string correctPackageFile, correctLogFile, incorrectData, correctData, data
 
 	folder = PS_GetSettingsFolder(package)
 
@@ -415,9 +414,9 @@ Function PS_FixPackageLocation(string package)
 			MoveFile incorrectLogFile as correctLogFile
 		else
 			// read the incorrect log file and append it to the correct one
-			[incorrectData, fName] = LoadTextFile(incorrectLogFile)
-			[correctData, fName]   = LoadTextFile(correctLogFile)
-			data                   = RemoveEnding(correctData, "\n") + "\n" + incorrectData
+			incorrectData = LoadTextFile(incorrectLogFile)
+			correctData   = LoadTextFile(correctLogFile)
+			data          = RemoveEnding(correctData, "\n") + "\n" + incorrectData
 			SaveTextFile(data, correctLogFile)
 			DeleteFile incorrectLogFile
 		endif
