@@ -80,13 +80,9 @@ End
 /// Returns the full path to the rewritten JSON configuration file and the corresponding jsonID.
 Function [variable jsonID, string fullPath] FixupJSONConfig_IGNORE(string path, string device)
 
-	string data, fName, rewrittenConfigPath, basename
+	string rewrittenConfigPath, basename
 
-	[data, fName] = LoadTextFile(path)
-	CHECK_PROPER_STR(data)
-	CHECK_PROPER_STR(fName)
-
-	jsonID = JSON_Parse(data)
+	jsonID = JSON_Load(path)
 	PathInfo home
 	CHECK_PROPER_STR(S_path)
 
@@ -1885,6 +1881,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_Downsample.ipf", list, ";", Inf)
 			list = AddListItem("UTF_EpochswoHardware.ipf", list, ";", Inf)
 			list = AddListItem("UTF_ForeignFunctionInterface.ipf", list, ";", Inf)
+			list = AddListItem("UTF_GlobalStringAndVariableAccess.ipf", list, ";", Inf)
 			list = AddListItem("UTF_GuiUtilities.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Hashmap.ipf", list, ";", Inf)
 			list = AddListItem("UTF_JSONWaveNotes.ipf", list, ";", Inf)

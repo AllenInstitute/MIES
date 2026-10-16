@@ -494,7 +494,7 @@ End
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
 /// @param[in] message [optional, default = "Select file"] window title of the save file dialog.
 /// @returns loaded string data and full path fileName
-Function [string data, string fName] LoadTextFile(string fileName, [string fileFilter, string message])
+Function [string data, string fName] LoadTextFileInteractive(string fileName, [string fileFilter, string message])
 
 	variable fNum, zFlag
 
@@ -514,13 +514,55 @@ Function [string data, string fName] LoadTextFile(string fileName, [string fileF
 		return ["", ""]
 	endif
 
+	data = LoadTextFileFromRef(fnum)
+
+	return [data, S_fileName]
+End
+
+/// @brief Load data from file to a string. The file size must be < 2GB.
+///
+/// In comparison to LoadTextFileInteractive() this function asserts out if the file is not readable.
+Function/S LoadTextFile(string fileName)
+
+	variable fnum
+
+	Open/R/Z=(1) fnum as fileName
+	ASSERT(!V_flag, "The file " + fileName + " could not be opened for reading")
+
+	return LoadTextFileFromRef(fnum)
+End
+
+/// @brief Low level file read function
+///
+/// Expects fnum to be an open file reference, which will be closed on successful return.
+Function/S LoadTextFileFromRef(variable fnum)
+
+	string data
+
 	FStatus fnum
+	ASSERT(V_flag, "fnum does not reference a valid file")
+
 	ASSERT(V_logEOF < STRING_MAX_SIZE, "Can't load " + num2istr(V_logEOF) + " bytes to string.")
 	data = PadString("", V_logEOF, 0x20)
 	FBinRead fnum, data
 	Close fnum
 
-	return [data, S_Path + S_fileName]
+	return data
+End
+
+/// @brief Return 0 if both files have the exact same contents, 1 otherwise
+Function CompareFiles(string file1, string file2)
+
+	string data1, data2
+
+	if(!FileExists(file1) || !FileExists(file2))
+		return 1
+	endif
+
+	data1 = LoadTextFile(file1)
+	data2 = LoadTextFile(file2)
+
+	return cmpstr(data1, data2, 2) != 0
 End
 
 /// @brief Load data from a file to a text wave.
@@ -794,15 +836,13 @@ End
 ///               Type of cryptographic hash function, one of @ref HASH_SHA2_256
 Function/S CalcHashForFile(string path, [variable method])
 
-	string contents, loadedFilePath
+	string contents
 
 	if(ParamIsDefault(method))
 		method = HASH_SHA2_256
 	endif
 
-	ASSERT(FileExists(path), "Expected a file")
-
-	[contents, loadedFilePath] = LoadTextFile(path)
+	contents = LoadTextFile(path)
 
 	return Hash(contents, method)
 End

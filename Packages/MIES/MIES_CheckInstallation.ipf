@@ -271,15 +271,15 @@ End
 /// @return JSON id or NaN if configuration file does not exist
 static Function CHI_LoadInstallationConfiguration()
 
-	string folder, fullFilePath, txt
+	string folder, fullFilePath
 
 	folder       = ParseFilePath(1, FunctionPath(""), ":", 1, 2)
 	fullFilePath = folder + CHI_INSTALLCONFIG_NAME
 	if(!FileExists(fullFilePath))
 		return NaN
 	endif
-	[txt, fullFilePath] = LoadTextFile(fullFilePath)
-	return JSON_Parse(txt, ignoreErr = 1)
+
+	return JSON_Load(fullFilePath, ignoreErr = 1)
 End
 
 /// @param key key in JSON tree under /Installation

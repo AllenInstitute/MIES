@@ -16,7 +16,7 @@
 // AskUserForExistingFolder
 // HasEnoughDiskspaceFree
 // SaveTextFile
-// LoadTextFile
+// LoadTextFileInteractive
 // GetFileVersion
 // GetFileSize
 // HFSPathToPosix
@@ -405,4 +405,102 @@ static Function TestGetWindowsPath()
 
 	// colon (HFS)
 	CHECK_EQUAL_STR(windowsPath, GetWindowsPath("C:windows:system.ini"))
+End
+
+static Function TestLoadTextFileWorks()
+
+	variable fNum
+	string data, input
+
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextFile.txt"
+
+	Open fNum as tmpFile
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	data = LoadTextFile(tmpFile)
+	CHECK_EQUAL_STR(data, input)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileNonExisting()
+
+	string data
+
+	try
+		data = LoadTextFile("")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestLoadTextFileFromRefWorks()
+
+	variable fNum
+	string data, input
+
+	string tmpFile = GetFolder(FunctionPath("")) + "LoadTextFile.txt"
+
+	Open fNum as tmpFile
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	Open/R fnum as tmpFile
+	data = LoadTextFileFromRef(fnum)
+	CHECK_EQUAL_STR(data, input)
+
+	DeleteFile tmpFile
+End
+
+static Function TestLoadTextFileFromRefNonExisting()
+
+	string data
+
+	try
+		data = LoadTextFileFromRef(0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+static Function TestCompareFiles()
+
+	string input, tmpfile1, tmpfile2, tmpfile3
+	variable fnum
+
+	tmpFile1 = GetFolder(FunctionPath("")) + "LoadTextFile1.txt"
+
+	Open fNum as tmpFile1
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	tmpfile2 = GetFolder(FunctionPath("")) + "LoadTextFile2.txt"
+
+	Open fNum as tmpFile2
+	input = "ABCD"
+	FBinWrite fnum, input
+	Close fNum
+
+	tmpfile3 = GetFolder(FunctionPath("")) + "LoadTextFile3.txt"
+
+	Open fNum as tmpFile3
+	input = "abcd"
+	FBinWrite fnum, input
+	Close fNum
+
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, "I_DONT_EXIST"), 1)
+	CHECK_EQUAL_VAR(CompareFiles("I_DONT_EXIST", tmpFile1), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, tmpFile2), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile2, tmpFile3), 1)
+	CHECK_EQUAL_VAR(CompareFiles(tmpFile1, tmpFile3), 0)
+
+	DeleteFile tmpFile1
+	DeleteFile tmpFile2
+	DeleteFile tmpFile3
 End

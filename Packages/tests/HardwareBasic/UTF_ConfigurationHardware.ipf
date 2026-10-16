@@ -51,16 +51,15 @@ static Function RestoreAndSaveConfiguration([string str])
 	WAVE/Z/T fileList = GetAllFilesRecursivelyFromPath(templateIPath, regex = "(?i)\.json$")
 	CHECK_WAVE(fileList, TEXT_WAVE | FREE_WAVE)
 	for(fileName : fileList)
-		[fContent, fName] = LoadTextFile(fileName)
-		jsonId            = JSON_Parse(fContent)
+		jsonId = JSON_Load(fileName)
 
 		if(JSON_Exists(jsonId, stimsetJsonPath))
 			FixupJSONConfigImplMain(jsonId, str)
-			fContent = JSON_Dump(jsonId, indent = 2)
 		elseif(JSON_Exists(jsonId, hsAssocJsonPath))
 			FixupJSONConfigImplRig(jsonId)
-			fContent = JSON_Dump(jsonId, indent = 2)
 		endif
+
+		fContent = JSON_Dump(jsonId, indent = 2)
 		JSON_Release(jsonId)
 		SaveTextFile(fContent, workingFolder + GetFile(fileName))
 	endfor
@@ -74,8 +73,8 @@ static Function RestoreAndSaveConfiguration([string str])
 	CHECK(FileExists(workingFolder + newConfig))
 	CHECK(FileExists(workingFolder + newRigConfig))
 
-	[fContent, fName]    = LoadTextFile(workingFolder + defaultRigConfig)
-	[fContentRig, fName] = LoadTextFile(workingFolder + newRigConfig)
+	fContent    = LoadTextFile(workingFolder + defaultRigConfig)
+	fContentRig = LoadTextFile(workingFolder + newRigConfig)
 	CHECK_EQUAL_STR(fContent, fContentRig)
 
 	wList = AddListItem(DATABROWSER_WINDOW_NAME, "")

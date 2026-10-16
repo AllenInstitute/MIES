@@ -464,7 +464,7 @@ Function CONF_RestoreWindow(string fName, [string rigFile])
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
 	AssertOnAndClearRTError()
 	try
-		[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
+		[input, fullFilePath] = LoadTextFileInteractive(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
 		if(IsEmpty(input))
 			return 0
 		endif
@@ -2605,7 +2605,7 @@ static Function CONF_JoinRigFile(variable jsonID, string rigFileName)
 	string   input
 	variable jsonIDRig
 
-	[input, rigFileName] = LoadTextFile(rigFileName)
+	[input, rigFileName] = LoadTextFileInteractive(rigFileName)
 	if(IsEmpty(input))
 		return 0
 	endif
@@ -2634,7 +2634,7 @@ static Function [variable jsonId, string txtData] CONF_LoadConfigUsedForDAEphysP
 		printf "Info: Tried to load former configuration file saved in DAEphys user data, but file does not exist: %s\rUsing default settings.\r", fName
 		return [NaN, ""]
 	endif
-	[txtData, str] = LoadTextFile(fName)
+	[txtData, str] = LoadTextFileInteractive(fName)
 	if(IsEmpty(txtData))
 		return [NaN, ""]
 	endif
@@ -2694,7 +2694,7 @@ End
 /// @brief Loads through all config json files and synchronizes global package settings in config files (if present) to user package settings with overwrite.
 Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 
-	string fName, input, fullFilePath, globalSettingsPath
+	string fName, input, globalSettingsPath
 	variable jsonIdConf
 
 	WAVE/Z/T configFiles = CONF_GetConfigFiles()
@@ -2702,12 +2702,7 @@ Function CONF_UpdatePackageSettingsFromConfigFiles(variable jsonIdPkg)
 		globalSettingsPath = "/" + EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_GLOBALPACKAGESETTINGBLOCK
 		for(fName : configFiles)
 
-			[input, fullFilePath] = LoadTextFile(fName)
-			if(IsEmpty(input))
-				continue
-			endif
-
-			jsonIdConf = JSON_Parse(input, ignoreErr = 1)
+			jsonIdConf = JSON_Load(fName, ignoreErr = 1)
 			if(!JSON_IsValid(jsonIdConf))
 				continue
 			endif
