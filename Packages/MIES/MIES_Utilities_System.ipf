@@ -364,15 +364,16 @@ End
 threadsafe Function/DF UploadJSONPayloadAsyncWorker(DFREF threadDFR)
 
 	variable jsonID, err
-	string msg
+	string msg, uploadID
 
 	jsonID = ASYNC_FetchVariable(threadDFR, "jsonID")
 
-	[err, msg] = UploadJSONPayload(jsonID)
+	[err, msg, uploadID] = UploadJSONPayload(jsonID)
 
-	DFREF      dfrOut     = NewFreeDataFolder()
-	variable/G dfrOut:err = err
-	string/G   dfrOut:msg = msg
+	DFREF      dfrOut          = NewFreeDataFolder()
+	variable/G dfrOut:err      = err
+	string/G   dfrOut:msg      = msg
+	string/G   dfrOut:uploadID = uploadID
 
 	return dfrOut
 End
@@ -392,10 +393,10 @@ Function UploadJSONPayloadAsyncReadout(STRUCT ASYNC_ReadOutStruct &ar)
 	endif
 
 	NVAR/SDFR=ar.dfr err
-	SVAR/SDFR=ar.dfr msg
+	SVAR/SDFR=ar.dfr msg, uploadID
 
 	if(err)
-		BUG("Uploading the JSON payload failed with error " + num2str(err) + ": " + msg)
+		BUG("Uploading the JSON payload failed with error " + num2str(err) + ": " + msg, keys = {"uploadID"}, values = {uploadID})
 	endif
 End
 
@@ -404,8 +405,9 @@ End
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
 ///
 /// @retval err Igor error code of URLRequest or the HTTP status code of a failed request, zero on success
-/// @retval msg response of the server or the error message
-threadsafe Function [variable err, string msg] UploadJSONPayload(variable jsonID)
+/// @retval msg      response of the server or the error message
+/// @retval uploadID unique ID of the upload, which is also part of its log entries
+threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayload(variable jsonID)
 
 	variable skip, timeout, payloadSize
 	string payload
@@ -415,11 +417,19 @@ threadsafe Function [variable err, string msg] UploadJSONPayload(variable jsonID
 	skip = WaveExists(overrideResults) ? overrideResults[0] : 0
 #endif // AUTOMATED_TESTING
 
+	// allows to match the log entries of uploads running in parallel threads
+	uploadID = GenerateRFC4122UUID()
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	payloadSize = strlen(payload)
+	// time in s for uploading the payload with the minimum upload rate plus the connection overhead
+	timeout = payloadSize * 8 / UPLOAD_MIN_RATE + UPLOAD_BASE_TIMEOUT
+
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"size", "timeout", "uploadID"}, values = {num2str(payloadSize), num2str(timeout), uploadID})
+
 	if(!skip)
-		payload     = JSON_Dump(jsonID)
-		payloadSize = strlen(payload)
-		// time in s for uploading the payload with the minimum upload rate plus the connection overhead
-		timeout = payloadSize * 8 / UPLOAD_MIN_RATE + UPLOAD_BASE_TIMEOUT
 		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 
 		err = V_flag
@@ -431,18 +441,16 @@ threadsafe Function [variable err, string msg] UploadJSONPayload(variable jsonID
 			sprintf S_ServerResponse, "The server responded with the HTTP status code %d: %s", V_responseCode, S_ServerResponse
 		endif
 	else
-		V_flag           = 1
+		err              = 1
 		S_ServerResponse = "fake error"
-		err              = V_flag
 	endif
 
-	JSON_Release(jsonID)
-
-	if(err)
-		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag", "V_responseCode"}, values = {S_ServerResponse, num2str(V_Flag), num2str(V_responseCode)}, stacktrace = 1)
+	// failures are reported by the caller
+	if(!err)
+		LOG_AddEntry(PACKAGE_MIES, "end", keys = {"uploadID"}, values = {uploadID})
 	endif
 
-	return [err, S_ServerResponse]
+	return [err, S_ServerResponse, uploadID]
 End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session
