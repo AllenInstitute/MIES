@@ -172,7 +172,13 @@ static Function IH_Cleanup()
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber
 
-		ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_URL, 300), "JSON Payload upload did not finish within timeout of 300s.")
+		if(ASYNC_IsWorkloadClassDone(WORKLOADCLASS_URL) == 0)
+			printf "Waiting for the upload of the diagnostic data to finish, this can take a while.\r"
+		endif
+
+		// wait without timeout as the diagnostic data should not get lost,
+		// each upload ends at the latest with the timeout of its URLRequest
+		ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_URL, Inf); AbortOnRTE
 	catch
 		ClearRTError()
 		BUG("Caught runtime error or assertion: " + num2istr(err))
