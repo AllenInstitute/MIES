@@ -409,8 +409,8 @@ End
 /// @retval uploadID unique ID of the upload, which is also part of its log entries
 threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayload(variable jsonID)
 
-	variable skip, timeout, payloadSize
-	string payload
+	variable skip, timeout, payloadSize, refTime, elapsed
+	string payload, rate
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -427,10 +427,12 @@ threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayloa
 	// time in s for uploading the payload with the minimum upload rate
 	timeout = max(payloadSize * 8 / UPLOAD_MIN_RATE, UPLOAD_MIN_TIMEOUT)
 
-	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"size", "timeout", "uploadID"}, values = {num2str(payloadSize), num2str(timeout), uploadID})
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"size", "timeout", "uploadID"}, values = {num2istr(payloadSize), num2str(timeout), uploadID})
 
 	if(!skip)
+		refTime = GetReferenceTime()
 		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+		elapsed = GetElapsedTime(refTime)
 
 		err = V_flag
 		if(err == URLREQUEST_TIMEOUT_ERROR)
@@ -447,7 +449,8 @@ threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayloa
 
 	// failures are reported by the caller
 	if(!err)
-		LOG_AddEntry(PACKAGE_MIES, "end", keys = {"uploadID"}, values = {uploadID})
+		sprintf rate, "%.1f", payloadSize * ONE_TO_KILO / elapsed
+		LOG_AddEntry(PACKAGE_MIES, "end", keys = {"rate [kB per s]", "uploadID"}, values = {rate, uploadID})
 	endif
 
 	return [err, S_ServerResponse, uploadID]
