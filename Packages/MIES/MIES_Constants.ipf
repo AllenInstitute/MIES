@@ -1691,6 +1691,10 @@ StrConstant PANELTAG_ANALYSISBROWSER = "AnalysisBrowser"
 StrConstant PANELTAG_IVSCCP          = "IVSCControlPanel"
 ///@}
 
+/// Main window userdata key for windows which are killed when the experiment is loaded,
+/// e.g. the quit message panel which is shown while the experiment is saved on quit
+StrConstant UDATA_TEMPORARY_WINDOW = "MIES_TemporaryWindow"
+
 StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH  = "Config_FileName"
 StrConstant EXPCONFIG_UDATA_SOURCEFILE_HASH  = "Config_FileHash"
 StrConstant EXPCONFIG_UDATA_STIMSET_NWB_PATH = "Config_StimsetNWBPath"
