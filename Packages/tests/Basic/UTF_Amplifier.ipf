@@ -121,3 +121,296 @@ static Function TestAmplifierStorageLabels()
 
 	CHECK_GE_VAR(WaveMin(rows), 0)
 End
+
+static Function TestChanAmpAssignLayout()
+
+	variable row
+	string   lbl
+
+	WAVE/Z chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+	CHECK_WAVE(chanAmpAssign, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(chanAmpAssign, COLS), NUM_HEADSTAGES)
+
+	Make/FREE/T labels = {"VC_DA", "VC_DAGain", "VC_AD", "VC_ADGain", "IC_DA", "IC_DAGain", "IC_AD", "IC_ADGain", "AmpSerialNo", "AmpChannelID", "AmpType"}
+	for(lbl : labels)
+		INFO("label: %s", s0 = lbl)
+		CHECK_GE_VAR(FindDimLabel(chanAmpAssign, ROWS, lbl), 0)
+	endfor
+
+	// defaults of a new wave
+	Make/FREE/T gainLabels = {"VC_DAGain", "VC_ADGain", "IC_DAGain", "IC_ADGain"}
+	for(lbl : gainLabels)
+		INFO("label: %s", s0 = lbl)
+		row = FindDimLabel(chanAmpAssign, ROWS, lbl)
+		Duplicate/FREE/RMD=[row][] chanAmpAssign, gains
+		CHECK_EQUAL_VAR(IsConstant(gains, 1, ignoreNaN = 0), 1)
+	endfor
+
+	Make/FREE/T ampLabels = {"AmpSerialNo", "AmpChannelID"}
+	for(lbl : ampLabels)
+		INFO("label: %s", s0 = lbl)
+		row = FindDimLabel(chanAmpAssign, ROWS, lbl)
+		Duplicate/FREE/RMD=[row][] chanAmpAssign, ampEntries
+		CHECK_EQUAL_VAR(IsConstant(ampEntries, NaN, ignoreNaN = 0), 1)
+	endfor
+
+	row = FindDimLabel(chanAmpAssign, ROWS, "AmpType")
+	Duplicate/FREE/RMD=[row][] chanAmpAssign, ampTypes
+	CHECK_EQUAL_VAR(IsConstant(ampTypes, AMPLIFIER_TYPE_NONE, ignoreNaN = 0), 1)
+End
+
+static Function TestChanAmpAssignUpgradeToAmplifierType()
+
+	variable row
+
+	WAVE chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+
+	// create a version 3 layout
+	Redimension/N=(10, -1) chanAmpAssign
+	MIES_WAVEGETTERS#SetWaveVersion(chanAmpAssign, 3)
+
+	// headstage 0: MCC amplifier
+	chanAmpAssign[%AmpSerialNo][0]  = 123
+	chanAmpAssign[%AmpChannelID][0] = 1
+	// headstage 1: incomplete amplifier assignment
+	chanAmpAssign[%AmpSerialNo][1]  = 456
+	chanAmpAssign[%AmpChannelID][1] = NaN
+	// all other headstages: no amplifier
+	chanAmpAssign[%AmpSerialNo][2, *]  = NaN
+	chanAmpAssign[%AmpChannelID][2, *] = NaN
+
+	Duplicate/FREE chanAmpAssign, chanAmpAssignOld
+
+	WAVE chanAmpAssign = GetChanAmpAssign("RandomDeviceName")
+	CHECK_GT_VAR(GetWaveVersion(chanAmpAssign), 3)
+
+	CHECK_EQUAL_VAR(chanAmpAssign[%AmpType][0], AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(chanAmpAssign[%AmpType][1], AMPLIFIER_TYPE_NONE)
+
+	row = FindDimLabel(chanAmpAssign, ROWS, "AmpType")
+	Duplicate/FREE/RMD=[row][2, *] chanAmpAssign, ampTypes
+	CHECK_EQUAL_VAR(IsConstant(ampTypes, AMPLIFIER_TYPE_NONE, ignoreNaN = 0), 1)
+
+	// existing entries are kept
+	Duplicate/FREE/RMD=[0, 9][] chanAmpAssign, chanAmpAssignKept
+	CHECK_EQUAL_WAVES(chanAmpAssignKept, chanAmpAssignOld, mode = WAVE_DATA)
+End
+
+static Function TestAmplifierTypeAccessors()
+
+	string device = "RandomDeviceName"
+
+	WAVE chanAmpAssign = GetChanAmpAssign(device)
+
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, 0), AMPLIFIER_TYPE_NONE)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 0), 0)
+
+	chanAmpAssign[%AmpType][1] = AMPLIFIER_TYPE_MCC
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, 1), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 1), 1)
+
+	chanAmpAssign[%AmpType][NUM_HEADSTAGES - 1] = AMPLIFIER_TYPE_SUTTER
+	CHECK_EQUAL_VAR(AI_GetAmplifierType(device, NUM_HEADSTAGES - 1), AMPLIFIER_TYPE_SUTTER)
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, NUM_HEADSTAGES - 1), 1)
+
+	try
+		AI_GetAmplifierType(device, NUM_HEADSTAGES)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function TestAmplifierDefAndParse()
+
+	string device = "RandomDeviceName"
+	string def
+	variable ampType, ampSerial, ampChannelID
+
+	WAVE chanAmpAssign = GetChanAmpAssign(device)
+
+	CHECK_EQUAL_STR(AI_GetAmplifierDef(device, 0), NONE)
+
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, NONE)
+	CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_NONE)
+	CHECK_EQUAL_VAR(ampSerial, NaN)
+	CHECK_EQUAL_VAR(ampChannelID, NaN)
+
+	chanAmpAssign[%AmpType][0]      = AMPLIFIER_TYPE_MCC
+	chanAmpAssign[%AmpSerialNo][0]  = 123
+	chanAmpAssign[%AmpChannelID][0] = 2
+
+	def = AI_GetAmplifierDef(device, 0)
+	CHECK_PROPER_STR(def)
+	CHECK_NEQ_STR(def, NONE)
+
+	[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(device, def)
+	CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(ampSerial, 123)
+	CHECK_EQUAL_VAR(ampChannelID, 2)
+End
+
+static Function TestAmplifierTypeOfDevice()
+
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice(""), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice("ITC18USB_DEV_0"), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice("Dev1"), AMPLIFIER_TYPE_MCC)
+	CHECK_EQUAL_VAR(AI_GetAmplifierTypeOfDevice(DEVICE_SUTTER_NAME_START_CLEAN + "1"), AMPLIFIER_TYPE_SUTTER)
+End
+
+static Function TestAmplifierFunctionsWithoutAmplifier()
+
+	string device = "RandomDeviceName"
+	string DAUnit, ADUnit
+	variable DAGain, ADGain
+
+	CHECK_EQUAL_VAR(AI_HasAmplifier(device, 0), 0)
+
+	CHECK_EQUAL_VAR(AI_SelectMultiClamp(device, 0), AMPLIFIER_CONNECTION_INVAL_SER)
+	CHECK_EQUAL_VAR(AI_GetMode(device, 0), NaN)
+	CHECK_EQUAL_VAR(AI_GetHoldingCommand(device, 0), NaN)
+	AI_SetClampMode(device, 0, V_CLAMP_MODE)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_VAR(AI_ReadFromAmplifier(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC), NaN)
+	CHECK_EQUAL_VAR(AI_EnsureCorrectMode(device, 0), 1)
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(device, 0, V_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, NaN)
+	CHECK_EQUAL_VAR(ADGain, NaN)
+	CHECK_EMPTY_STR(DAUnit)
+	CHECK_EMPTY_STR(ADUnit)
+End
+
+static Function TestAllowedAmplifierTypes()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/Z types = AI_GetAllowedAmplifierTypes("ITC18USB_DEV_0")
+	CHECK_EQUAL_WAVES(types, {AMPLIFIER_TYPE_MCC, AMPLIFIER_TYPE_NONE}, mode = WAVE_DATA)
+
+	WAVE/Z types = AI_GetAllowedAmplifierTypes(sutterDevice)
+	CHECK_EQUAL_WAVES(types, {AMPLIFIER_TYPE_SUTTER}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_MCC), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_NONE), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType("Dev1", AMPLIFIER_TYPE_SUTTER), 0)
+
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_SUTTER), 1)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_MCC), 0)
+	CHECK_EQUAL_VAR(AI_IsAllowedAmplifierType(sutterDevice, AMPLIFIER_TYPE_NONE), 0)
+End
+
+static Function TestSutterAmplifierList()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+	string list, def, refList
+	variable ampType, ampSerial, ampChannelID, i
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	// one double and one single IPA
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_211111;IPA_E_122222;"
+	deviceInfo[%LISTOFHEADSTAGES] = "2;1;"
+	deviceInfo[%SUMHEADSTAGES]    = "3"
+
+	refList = AddListItem(NONE, "", ";", Inf)
+	refList = AddListItem("IPA_E_211111 HS 1", refList, ";", Inf)
+	refList = AddListItem("IPA_E_211111 HS 2", refList, ";", Inf)
+	refList = AddListItem("IPA_E_122222 HS 1", refList, ";", Inf)
+
+	list = AI_GetAmplifierList(device = sutterDevice)
+	CHECK_EQUAL_STR(list, refList)
+
+	for(i = 0; i < 3; i += 1)
+		def                                = StringFromList(i + 1, list)
+		[ampType, ampSerial, ampChannelID] = AI_ParseAmplifierDef(sutterDevice, def)
+		CHECK_EQUAL_VAR(ampType, AMPLIFIER_TYPE_SUTTER)
+		CHECK_EQUAL_VAR(ampSerial, NaN)
+		CHECK_EQUAL_VAR(ampChannelID, i)
+	endfor
+
+	WAVE chanAmpAssign = GetChanAmpAssign(sutterDevice)
+	chanAmpAssign[%AmpType][2]      = AMPLIFIER_TYPE_SUTTER
+	chanAmpAssign[%AmpChannelID][2] = 2
+	CHECK_EQUAL_STR(AI_GetAmplifierDef(sutterDevice, 2), "IPA_E_122222 HS 1")
+End
+
+static Function TestFixedAmplifierDef()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_111111;"
+	deviceInfo[%LISTOFHEADSTAGES] = "1;"
+	deviceInfo[%SUMHEADSTAGES]    = "1"
+
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef("Dev1", 0), "")
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, 0), "IPA_E_111111 HS 1")
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, 1), NONE)
+	CHECK_EQUAL_STR(AI_GetFixedAmplifierDef(sutterDevice, NUM_HEADSTAGES - 1), NONE)
+End
+
+static Function TestSutterFindConnectedAmps()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+
+	deviceInfo[%LISTOFDEVICES]    = "IPA_E_211111;IPA_E_122222;"
+	deviceInfo[%LISTOFHEADSTAGES] = "2;1;"
+	deviceInfo[%SUMHEADSTAGES]    = "3"
+
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice), 3)
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice, rescanHardware = 1), 3)
+
+	deviceInfo[%SUMHEADSTAGES] = ""
+	CHECK_EQUAL_VAR(AI_FindConnectedAmps(sutterDevice), 0)
+End
+
+static Function TestClampModeSupported()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", V_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", I_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported("Dev1", I_EQUAL_ZERO_MODE), 1)
+
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, V_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_CLAMP_MODE), 1)
+	CHECK_EQUAL_VAR(AI_IsClampModeSupported(sutterDevice, I_EQUAL_ZERO_MODE), 0)
+End
+
+static Function TestSutterGainsAndUnits()
+
+	string sutterDevice = DEVICE_SUTTER_NAME_START_CLEAN + "1"
+	string DAUnit, ADUnit
+	variable DAGain, ADGain
+
+	WAVE   chanAmpAssign     = GetChanAmpAssign(sutterDevice)
+	WAVE/T chanAmpAssignUnit = GetChanAmpAssignUnit(sutterDevice)
+	chanAmpAssign[%AmpType][0]      = AMPLIFIER_TYPE_SUTTER
+	chanAmpAssign[%AmpChannelID][0] = 0
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(sutterDevice, 0, V_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, ONE_TO_MILLI)
+	CHECK_EQUAL_VAR(ADGain, PICO_TO_ONE)
+	CHECK_EQUAL_STR(DAUnit, "mV")
+	CHECK_EQUAL_STR(ADUnit, "pA")
+
+	[DAGain, ADGain, DAUnit, ADUnit] = AI_QueryGainsUnitsForClampMode(sutterDevice, 0, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAGain, ONE_TO_PICO)
+	CHECK_EQUAL_VAR(ADGain, MILLI_TO_ONE)
+	CHECK_EQUAL_STR(DAUnit, "pA")
+	CHECK_EQUAL_STR(ADUnit, "mV")
+
+	// only headstages with Sutter amplifiers are filled
+	CHECK_EQUAL_VAR(AI_QueryGainsFromMCC(sutterDevice), 1)
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_DAGain][0], ONE_TO_MILLI)
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_ADGain][0], PICO_TO_ONE)
+	CHECK_EQUAL_VAR(chanAmpAssign[%IC_DAGain][0], ONE_TO_PICO)
+	CHECK_EQUAL_VAR(chanAmpAssign[%IC_ADGain][0], MILLI_TO_ONE)
+	CHECK_EQUAL_STR(chanAmpAssignUnit[%VC_ADUnit][0], "pA")
+	CHECK_EQUAL_STR(chanAmpAssignUnit[%IC_ADUnit][0], "mV")
+	CHECK_EQUAL_VAR(chanAmpAssign[%VC_DAGain][1], 1)
+End

@@ -1768,6 +1768,11 @@ End
 /// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TestTPPublishingIEqualZero([string str])
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	INFO("I=0 is not supported for Sutter amplifiers")
+	SKIP_TESTCASE()
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_1S)
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_5S)
 	TUFXOP_Clear/Z/N=(ZMQ_FILTER_TPRESULT_10S)

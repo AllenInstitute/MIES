@@ -98,6 +98,8 @@ static Constant SUTTER_CHANNELOFFSET_TTL      = 3
 static Constant SUTTER_ACQUISITION_FOREGROUND = 1
 static Constant SUTTER_ACQUISITION_BACKGROUND = 2
 
+static StrConstant SUTTER_CURRENT_CLAMP_MASK_KEY = "CurrentClampMask"
+
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 ///@{
 
@@ -903,7 +905,17 @@ End
 /// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param channelType  One of @ref XopChannelConstants
 /// @param isAssociated For Sutter hardware the voltage range differs for associated channels or unassociated ones
-Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated)
+/// @param clampMode    [optional] Clamp mode of the headstage, required for associated DA channels on Sutter hardware
+///                     as the output is in Ampere for current clamp
+Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareType, variable channelType, variable isAssociated, [variable clampMode])
+
+	if(ParamIsDefault(clampMode))
+		clampMode = NaN
+	endif
+
+	if(hardwareType == HARDWARE_SUTTER_DAC && isAssociated && channelType == XOP_CHANNEL_TYPE_DAC)
+		AI_AssertOnInvalidClampMode(clampMode)
+	endif
 
 	switch(hardwareType)
 		case HARDWARE_NI_DAC: // fallthrough
@@ -922,6 +934,9 @@ Function [variable minimum, variable maximum] HW_GetDataRange(variable hardwareT
 		case HARDWARE_SUTTER_DAC: // fallthrough
 			if(isAssociated)
 				ASSERT(channelType != XOP_CHANNEL_TYPE_TTL, "Associated must be 0 for TTL")
+				if(channelType == XOP_CHANNEL_TYPE_DAC && clampMode == I_CLAMP_MODE)
+					return [SU_HS_OUT_I_MIN, SU_HS_OUT_I_MAX]
+				endif
 				return [SU_HS_OUT_MIN, SU_HS_OUT_MAX]
 			endif
 
@@ -3375,13 +3390,20 @@ Function HW_SU_StopAcq(variable deviceID, [variable zeroDAC, variable flags])
 
 	device = HW_GetMainDeviceName(HARDWARE_SUTTER_DAC, deviceID, flags = flags)
 	NVAR acq = $GetSU_IsAcquisitionRunning(device)
-	if(acq)
-		SutterDAQReset()
-		acq = 0
-	endif
+
+	// Always reset, even if no acquisition is running at the moment:
+	// `acq` is already cleared by HW_SU_AcqDone() when a single sweep has finished,
+	// e.g. between two test pulse sweeps, but the output stays in the streaming
+	// state of the last SutterDAQWriteWave call. In that state the amplifier holding
+	// command has no effect until SutterDAQReset() is called.
+	SutterDAQReset()
+	acq = 0
 
 	if(zeroDAC)
 		HW_SU_ZeroDAC(deviceID, flags = flags)
+		// zeroing the DACs is an acquisition on its own, which leaves the output
+		// in the streaming state as well, see above
+		SutterDAQReset()
 	endif
 End
 
@@ -3398,7 +3420,7 @@ End
 Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, WAVE/Z config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags, variable offset, variable ADCConfig])
 
 	string device, encodeInfo
-	variable channels, i, haveTTL, unassocADCIndex, unassocDACIndex
+	variable channels, i, haveTTL, unassocADCIndex, unassocDACIndex, currentClampMask
 	variable headStage, channelNumber, amp0Type
 	variable outIndex, inIndex, outChannel, inChannel
 
@@ -3472,6 +3494,12 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 					unassocDACIndex         += 1
 				else
 					[outChannel, encodeInfo] = HW_SU_GetEncodeFromHS(headstage)
+					ASSERT(config[i][%CLAMPMODE] != I_EQUAL_ZERO_MODE, "I=0 is not supported for Sutter amplifiers")
+					if(config[i][%CLAMPMODE] == I_CLAMP_MODE)
+						// the output of this headstage is a current in Ampere
+						// @todo confirm with Sutter that the bit is the headstage index over all IPA devices
+						currentClampMask = currentClampMask | (1 << headstage)
+					endif
 				endif
 				output[outIndex][%CHANNEL]    = num2istr(outChannel)
 				output[outIndex][%ENCODEINFO] = encodeInfo
@@ -3506,6 +3534,8 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 	Redimension/N=(outIndex, -1) output
 	Redimension/N=(inIndex, -1) input
 	Redimension/N=(inIndex, -1) hwGainTable
+
+	SetNumberInWaveNote(output, SUTTER_CURRENT_CLAMP_MASK_KEY, currentClampMask)
 End
 
 static Function [variable channel, string encode] HW_SU_GetEncodeFromHS(variable headstage)
@@ -3616,6 +3646,9 @@ Function HW_SU_ZeroDAC(variable deviceID, [variable flags])
 	endfor
 	Redimension/N=(outIndex, -1) output
 
+	// all outputs are zero, so the current clamp mode does not matter
+	SetNumberInWaveNote(output, SUTTER_CURRENT_CLAMP_MASK_KEY, 0)
+
 	// we need to run some input as well to have the command hook from SutterDAQScanWave
 	Redimension/N=(1, -1) input
 	input[0][%INPUTWAVE]    = GetWavesDataFolder(channelAD, 2)
@@ -3694,7 +3727,7 @@ End
 static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE/Z gain, variable mode, [variable timeout, variable inputOnly])
 
 	string cmdError, cmdDone
-	variable to
+	variable to, currentClampMask
 
 	inputOnly = ParamIsDefault(inputOnly) ? 0 : !!inputOnly
 
@@ -3714,7 +3747,13 @@ static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE
 	acq = 1
 	if(!inputOnly)
 		ASSERT(WaveExists(output), "definition wave for output is a null wave")
-		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=0 output
+		// headstages in current clamp have their output in Ampere, one bit per headstage
+		currentClampMask = GetNumberFromWaveNote(output, SUTTER_CURRENT_CLAMP_MASK_KEY)
+		currentClampMask = IsFinite(currentClampMask) ? currentClampMask : 0
+
+		// write the output relative to the holding command of the amplifier (RHP=1),
+		// with absolute values the holding command has no effect during acquisition
+		SutterDAQWriteWave/MULT=1/T=1/R=0/RHP=1/CC=(currentClampMask) output
 	endif
 	if(WaveExists(gain))
 		SutterDAQScanWave/MULT=1/T=1/C=0/B=1/G=gain/E=cmdError/H=cmdDone input

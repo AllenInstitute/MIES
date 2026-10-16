@@ -8,6 +8,8 @@
 ///
 /// The test cases use the package directly. They restore the amplifier settings at the end
 /// and discard the package without saving its preferences.
+///
+/// The test cases with a device lock it, which initializes the package via MIES.
 
 static Constant    IPA_PROBE          = 1
 static StrConstant IPA_PACKAGE_FOLDER = "root:SutterIPAControl"
@@ -227,6 +229,220 @@ static Function IPANotInitialized()
 	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_V_HOLD, 0), 0)
 	CHECK_EQUAL_VAR(IPA_Shutdown(), 0)
 	CHECK_NO_RTE()
+End
+
+/// @brief Lock the device with the first headstage in the given clamp mode
+///
+/// Skips the test case for non-Sutter hardware.
+static Function SetupIPA_IGNORE(string device, variable clampMode)
+
+	string clampModeStr
+
+	if(GetHardwareType(device) != HARDWARE_SUTTER_DAC)
+		INFO("Requires Sutter hardware")
+		SKIP_TESTCASE()
+	endif
+
+	clampModeStr = SelectString(clampMode == V_CLAMP_MODE, "IC", "VC")
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                   \
+	                                                           + "__HS0_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	CHECK_EQUAL_VAR(IPA_MIES_ReadClampModeFromHardware(IPA_PROBE), clampMode == I_CLAMP_MODE)
+End
+
+/// @brief Switch the amplifier back to the clamp mode of MIES
+static Function RestoreClampMode_IGNORE(string device)
+
+	variable currentClamp
+
+	currentClamp = DAG_GetHeadstageMode(device, 0) == I_CLAMP_MODE
+	CHECK_EQUAL_VAR(IPA_MIES_SetClampMode(IPA_PROBE, currentClamp), 1)
+End
+
+/// Locking the device initializes the package and unlocking it shuts it down
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAIsInitialized([string str])
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	CHECK_EQUAL_VAR(IPA_MIES_IsInitialized(), 1)
+
+	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
+	CHECK_EQUAL_VAR(IPA_MIES_IsInitialized(), 0)
+End
+
+/// Locking the device resets the settings of the previous session and the GUI shows the reset state
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAResetOnLock([string str])
+
+	string unlockedDevice
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	// settings with and without GUI control, the package stores them when unlocking
+	CHECK_EQUAL_VAR(AI_WriteToAmplifier(str, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, 20), 0)
+	CHECK_EQUAL_VAR(AI_WriteToAmplifier(str, 0, V_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1), 0)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_FILTER, 1000), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_I_GAIN, 25e9), 1)
+
+	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
+	unlockedDevice = GetCurrentWindow()
+	ACD_CreateLockedDAEphys(str, unlockedDevice = unlockedDevice)
+
+	// package defaults
+	CHECK_EQUAL_VAR(IPA_MIES_GetValue(IPA_PROBE, IPA_SET_V_HOLD), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_V_HOLD_ON), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_FILTER), 5000)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_I_GAIN), 5e9)
+	// stored in single precision
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_E_COMP_MAG), 0.1e-12, tol = 1e-6)
+
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(str)
+	CHECK_EQUAL_VAR(AmpStorageWave[%HoldingPotential][0][0], 0)
+	CHECK_EQUAL_VAR(AmpStorageWave[%HoldingPotentialEnable][0][0], 0)
+
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_Hold_VC"), 0)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DatAcq_HoldEnableVC"), 0)
+End
+
+/// The reset to the package defaults keeps the DAC offset trim of the hardware
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAResetKeepsDACOffset([string str])
+
+	variable dacOffset
+
+	STRUCT IPASeries SIPA
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	IPAControl#GetStructure(SIPA)
+	dacOffset                            = SIPA.ipa.HS[IPA_PROBE - 1].DACOffset
+	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset + 1
+	IPAControl#SaveStructure(SIPA)
+
+	CHECK_EQUAL_VAR(IPA_MIES_ResetToDefaults(), 1)
+
+	IPAControl#GetStructure(SIPA)
+	CHECK_EQUAL_VAR(SIPA.ipa.HS[IPA_PROBE - 1].DACOffset, dacOffset + 1)
+
+	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset
+	IPAControl#SaveStructure(SIPA)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAClampModeKeywords([string str])
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_CC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_MIES_ReadClampModeFromHardware(IPA_PROBE), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_CC_MODE), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_VC_MODE), 0)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_VC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_MIES_ReadClampModeFromHardware(IPA_PROBE), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_CC_MODE), 0)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_VC_MODE), 1)
+
+	RestoreClampMode_IGNORE(str)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPADynamicHold([string str])
+
+	SetupIPA_IGNORE(str, I_CLAMP_MODE)
+
+	// setting the level with dynamic hold off does not enable it
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON, 0), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD, 0.01), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD), 0.01, tol = 1e-6)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON), 0)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON, 1), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD, -0.02), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD), -0.02, tol = 1e-6)
+
+	// limited to +/- 1 V
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD, 5), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD), 1, tol = 1e-6)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON, 0), 1)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_DYN_HOLD_ON), 0)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_DYN_HOLD, 0), 1)
+
+	RestoreClampMode_IGNORE(str)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPASealTest([string str])
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_SEAL_TEST, 2), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_SEAL_TEST, 0), 1)
+
+	RestoreClampMode_IGNORE(str)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPABuzz([string str])
+
+	SetupIPA_IGNORE(str, I_CLAMP_MODE)
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_BUZZ, 5), 1)
+	CHECK_EQUAL_VAR(IPA_MIES_ReadClampModeFromHardware(IPA_PROBE), 1)
+
+	RestoreClampMode_IGNORE(str)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAAuxChannels([string str])
+
+	string auxChannel
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	Make/FREE/T auxOutputs = {IPA_SET_AUX_OUT1, IPA_SET_AUX_OUT2}
+	for(auxChannel : auxOutputs)
+		INFO("%s", s0 = auxChannel)
+		CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, auxChannel, 0.5), 1)
+		CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, auxChannel), 0.5, tol = 1e-6)
+		CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, auxChannel, 0), 1)
+		CHECK_SMALL_VAR(IPA_GetValue(IPA_PROBE, auxChannel))
+	endfor
+
+	Make/FREE/T auxInputs = {IPA_SET_AUX_IN1, IPA_SET_AUX_IN2, IPA_SET_AUX_IN3, IPA_SET_AUX_IN4}
+	for(auxChannel : auxInputs)
+		INFO("%s", s0 = auxChannel)
+		CHECK_EQUAL_VAR(IsFinite(IPA_GetValue(IPA_PROBE, auxChannel)), 1)
+	endfor
+
+	RestoreClampMode_IGNORE(str)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPAInvalidArguments([string str])
+
+	variable invalidProbe, probe
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	invalidProbe = IPA_GetValue(IPA_PROBE, IPA_SET_NUM_PROBES) + 1
+
+	Make/FREE/D probes = {0, invalidProbe}
+	for(probe : probes)
+		INFO("probe %d", n0 = probe)
+		CHECK_EQUAL_VAR(IPA_MIES_GetValue(probe, IPA_SET_V_HOLD), NaN)
+		CHECK_EQUAL_VAR(IPA_MIES_ReadClampModeFromHardware(probe), NaN)
+		CHECK_EQUAL_VAR(IPA_MIES_SetValue(probe, IPA_SET_V_HOLD, 0), 0)
+		CHECK_EQUAL_VAR(IPA_MIES_SetClampMode(probe, 0), 0)
+		CHECK_EQUAL_VAR(IPA_SetValue(probe, IPA_SET_V_HOLD, 0), 0)
+	endfor
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, "NoSuchKeyword", 0), 0)
 End
 
 #else
