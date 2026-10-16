@@ -93,8 +93,8 @@ End
 /// @{
 static Function TestUploadJsonPayload()
 
-	variable jsonID
-	string filename, logs
+	variable jsonID, err
+	string filename, logs, msg
 
 	WAVE overrideResults = CreateOverrideResults(1)
 	overrideResults[] = 1
@@ -102,12 +102,14 @@ static Function TestUploadJsonPayload()
 	filename = LOG_GetFile(PACKAGE_MIES)
 	DeleteFile/Z filename
 
-	jsonID = JSON_New()
-	UploadJSONPayload(jsonID)
+	jsonID     = JSON_New()
+	[err, msg] = UploadJSONPayload(jsonID)
+	CHECK_EQUAL_VAR(err, 1)
+	CHECK_EQUAL_STR(msg, "fake error")
 
 	logs = LoadTextFile(filename)
 	CHECK_PROPER_STR(logs)
-	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
+	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"V_responseCode\":\"0\",\"action\":\"URLRequest failed"))
 End
 /// @}
 

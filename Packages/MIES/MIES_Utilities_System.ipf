@@ -12,6 +12,9 @@
 static Constant UPLOAD_MIN_RATE    = 2e6 ///< Minimum upload rate in bit/s, slower uploads time out
 static Constant UPLOAD_MIN_TIMEOUT = 15  ///< Minimum upload timeout in s for the overhead of small uploads
 
+static Constant URLREQUEST_TIMEOUT_ERROR = 8028 ///< Igor error code of URLRequest for "The network library timeout was reached."
+static Constant HTTP_STATUS_OK           = 200
+
 /// @brief Return the name of the experiment without the file suffix
 threadsafe Function/S GetExperimentName()
 
@@ -360,29 +363,51 @@ End
 
 threadsafe Function/DF UploadJSONPayloadAsyncWorker(DFREF threadDFR)
 
-	variable jsonID, ret
+	variable jsonID, err
+	string msg
 
 	jsonID = ASYNC_FetchVariable(threadDFR, "jsonID")
 
-	ret = UploadJSONPayload(jsonID)
+	[err, msg] = UploadJSONPayload(jsonID)
 
-	DFREF      dfrOut        = NewFreeDataFolder()
-	variable/G dfrOut:result = ret
+	DFREF      dfrOut     = NewFreeDataFolder()
+	variable/G dfrOut:err = err
+	string/G   dfrOut:msg = msg
 
 	return dfrOut
 End
 
 Function UploadJSONPayloadAsyncReadout(STRUCT ASYNC_ReadOutStruct &ar)
 
-	// nothing to do
+	PerformSubsystemEntry()
+
+	if(ar.rtErr)
+		BUG("Uploading the JSON payload finished with RTE: " + ar.rtErrMsg)
+		return NaN
+	endif
+
+	if(ar.abortCode)
+		BUG("Uploading the JSON payload finished with Abort: " + num2str(ar.abortCode))
+		return NaN
+	endif
+
+	NVAR/SDFR=ar.dfr err
+	SVAR/SDFR=ar.dfr msg
+
+	if(err)
+		BUG("Uploading the JSON payload failed with error " + num2str(err) + ": " + msg)
+	endif
 End
 
 /// @brief Upload the given JSON document and release it
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-threadsafe Function UploadJSONPayload(variable jsonID)
+///
+/// @retval err Igor error code of URLRequest or the HTTP status code of a failed request, zero on success
+/// @retval msg response of the server or the error message
+threadsafe Function [variable err, string msg] UploadJSONPayload(variable jsonID)
 
-	variable skip, timeout
+	variable skip, timeout, payloadSize
 	string payload
 
 #ifdef AUTOMATED_TESTING
@@ -391,23 +416,33 @@ threadsafe Function UploadJSONPayload(variable jsonID)
 #endif // AUTOMATED_TESTING
 
 	if(!skip)
-		payload = JSON_Dump(jsonID)
+		payload     = JSON_Dump(jsonID)
+		payloadSize = strlen(payload)
 		// time in s for uploading the payload with the minimum upload rate
-		timeout = max(strlen(payload) * 8 / UPLOAD_MIN_RATE, UPLOAD_MIN_TIMEOUT)
+		timeout = max(payloadSize * 8 / UPLOAD_MIN_RATE, UPLOAD_MIN_TIMEOUT)
 		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+
+		err = V_flag
+		if(err == URLREQUEST_TIMEOUT_ERROR)
+			sprintf S_ServerResponse, "The upload of %d bytes timed out after %g s, the upload rate was below %g MBit/s.", payloadSize, timeout, UPLOAD_MIN_RATE * ONE_TO_MEGA
+		elseif(!err && V_responseCode != HTTP_STATUS_OK)
+			// V_responseCode is only valid without error
+			err = V_responseCode
+			sprintf S_ServerResponse, "The server responded with the HTTP status code %d: %s", V_responseCode, S_ServerResponse
+		endif
 	else
 		V_flag           = 1
 		S_ServerResponse = "fake error"
+		err              = V_flag
 	endif
 
 	JSON_Release(jsonID)
 
-	if(V_Flag)
-		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag"}, values = {S_ServerResponse, num2str(V_Flag)}, stacktrace = 1)
-		return 1
+	if(err)
+		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag", "V_responseCode"}, values = {S_ServerResponse, num2str(V_Flag), num2str(V_responseCode)}, stacktrace = 1)
 	endif
 
-	return 0
+	return [err, S_ServerResponse]
 End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session
