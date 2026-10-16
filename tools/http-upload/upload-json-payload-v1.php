@@ -47,9 +47,17 @@ function create_unique_folder($basefolder)
 {
   $folder = $basefolder;
 
+  // mkdir is atomic, so parallel uploads with the same basefolder get different folders,
+  // suppress its warning for existing folders as it would prevent setting the status code
   $count=0;
-  while(!mkdir($folder, 0700, true))
+  while(!@mkdir($folder, 0700, true))
   {
+    if(!file_exists($folder))
+    {
+      http_response_code(500);
+      die("Problem creating folder " . $folder);
+    }
+
     $folder = $basefolder . "_" . $count++;
   }
 
@@ -77,12 +85,14 @@ function decode_contents($elem)
 
       if($contents == False) # not base64 encoded
       {
+        http_response_code(400);
         die("Contents could not be base64 decoded");
       }
 
       return $contents;
     }
 
+    http_response_code(400);
     die("Invalid encoding value.");
 }
 
@@ -91,6 +101,7 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 if($method != "PUT")
 {
+  http_response_code(405);
   die("Unsupported HTTP method");
 }
 
@@ -98,13 +109,21 @@ $received_data = file_get_contents("php://input");
 
 if($received_data == False)
 {
+  http_response_code(400);
   die("Missing data on HTTP PUT method.");
 }
 
 $input = json_decode($received_data, true);
 
+if(!is_array($input))
+{
+  http_response_code(400);
+  die("Invalid JSON");
+}
+
 if(!array_key_exists("payload", $input))
 {
+  http_response_code(400);
   die("Missing payload");
 }
 
@@ -118,6 +137,7 @@ $filename = tempnam($folder, "ip_");
 $ret = file_put_contents($filename, $_SERVER['REMOTE_ADDR']);
 if($ret == 0 || $ret == FALSE)
 {
+  http_response_code(500);
   die("Problem writing file " . $filename);
 }
 
@@ -133,6 +153,7 @@ foreach($input["payload"] as $elem)
       $ret = file_put_contents($filename, $contents);
       if($ret == 0 || $ret == FALSE)
       {
+        http_response_code(500);
         die("Problem writing file " . $filename);
       }
     }

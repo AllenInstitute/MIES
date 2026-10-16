@@ -9,6 +9,12 @@
 /// @file MIES_Utilities_System.ipf
 /// @brief utility functions for system operations
 
+static Constant UPLOAD_MIN_RATE    = 2e6 ///< Minimum upload rate in bit/s, slower uploads time out
+static Constant UPLOAD_MIN_TIMEOUT = 15  ///< Minimum upload timeout in s for the overhead of small uploads
+
+static Constant URLREQUEST_TIMEOUT_ERROR = 8028 ///< Igor error code of URLRequest for "The network library timeout was reached."
+static Constant HTTP_STATUS_OK           = 200
+
 /// @brief Return the name of the experiment without the file suffix
 threadsafe Function/S GetExperimentName()
 
@@ -357,50 +363,97 @@ End
 
 threadsafe Function/DF UploadJSONPayloadAsyncWorker(DFREF threadDFR)
 
-	variable jsonID, ret
+	variable jsonID, err
+	string msg, uploadID
 
 	jsonID = ASYNC_FetchVariable(threadDFR, "jsonID")
 
-	ret = UploadJSONPayload(jsonID)
+	[err, msg, uploadID] = UploadJSONPayload(jsonID)
 
-	DFREF      dfrOut        = NewFreeDataFolder()
-	variable/G dfrOut:result = ret
+	DFREF      dfrOut          = NewFreeDataFolder()
+	variable/G dfrOut:err      = err
+	string/G   dfrOut:msg      = msg
+	string/G   dfrOut:uploadID = uploadID
 
 	return dfrOut
 End
 
 Function UploadJSONPayloadAsyncReadout(STRUCT ASYNC_ReadOutStruct &ar)
 
-	// nothing to do
+	PerformSubsystemEntry()
+
+	if(ar.rtErr)
+		BUG("Uploading the JSON payload finished with RTE: " + ar.rtErrMsg)
+		return NaN
+	endif
+
+	if(ar.abortCode)
+		BUG("Uploading the JSON payload finished with Abort: " + num2str(ar.abortCode))
+		return NaN
+	endif
+
+	NVAR/SDFR=ar.dfr err
+	SVAR/SDFR=ar.dfr msg, uploadID
+
+	if(err)
+		BUG("Uploading the JSON payload failed with error " + num2str(err) + ": " + msg, keys = {"uploadID"}, values = {uploadID})
+	endif
 End
 
 /// @brief Upload the given JSON document and release it
 ///
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-threadsafe Function UploadJSONPayload(variable jsonID)
+///
+/// @retval err Igor error code of URLRequest or the HTTP status code of a failed request, zero on success
+/// @retval msg      response of the server or the error message
+/// @retval uploadID unique ID of the upload, which is also part of its log entries
+threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayload(variable jsonID)
 
-	variable skip
+	variable skip, timeout, payloadSize, refTime, elapsed
+	string payload, rate
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
 	skip = WaveExists(overrideResults) ? overrideResults[0] : 0
 #endif // AUTOMATED_TESTING
 
+	// allows to match the log entries of uploads running in parallel threads
+	uploadID = GenerateRFC4122UUID()
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	payloadSize = strlen(payload)
+	// time in s for uploading the payload with the minimum upload rate
+	timeout = max(payloadSize * 8 / UPLOAD_MIN_RATE, UPLOAD_MIN_TIMEOUT)
+
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"size", "timeout", "uploadID"}, values = {num2istr(payloadSize), num2str(timeout), uploadID})
+
 	if(!skip)
-		URLRequest/Z=1/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+		refTime = GetReferenceTime()
+		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+		elapsed = GetElapsedTime(refTime)
+
+		err = V_flag
+		if(err == URLREQUEST_TIMEOUT_ERROR)
+			sprintf S_ServerResponse, "The upload of %d bytes timed out after %g s, the upload rate was below %g MBit/s.", payloadSize, timeout, UPLOAD_MIN_RATE * ONE_TO_MEGA
+		elseif(!err && V_responseCode != HTTP_STATUS_OK)
+			// V_responseCode is only valid without error
+			err = V_responseCode
+			sprintf S_ServerResponse, "The server responded with the HTTP status code %d: %s", V_responseCode, S_ServerResponse
+		endif
 	else
-		V_flag           = 1
+		err              = 1
 		S_ServerResponse = "fake error"
 	endif
 
-	JSON_Release(jsonID)
-
-	if(V_Flag)
-		LOG_AddEntry(PACKAGE_MIES, "URLRequest failed", keys = {"S_ServerResponse", "V_Flag"}, values = {S_ServerResponse, num2str(V_Flag)}, stacktrace = 1)
-		return 1
+	// failures are reported by the caller
+	if(!err)
+		sprintf rate, "%.1f", payloadSize * ONE_TO_KILO / elapsed
+		LOG_AddEntry(PACKAGE_MIES, "end", keys = {"rate [kB per s]", "uploadID"}, values = {rate, uploadID})
 	endif
 
-	return 0
+	return [err, S_ServerResponse, uploadID]
 End
 
 /// @brief Returns a hex string which is unique for the given Igor Pro session

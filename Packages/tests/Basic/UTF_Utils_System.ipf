@@ -28,6 +28,12 @@
 // GetIgorInstanceID
 // CleanupOperationQueueResult
 
+/// @name Log entries of UploadJSONPayload for an upload of an empty JSON, which is dumped as "null"
+///@{
+static StrConstant UPLOAD_START_REGEXP = "\"action\":\"start\",.*\"size\":\"4\",\"source\":\"UploadJSONPayload\",\"timeout\":\"15\""
+static StrConstant UPLOAD_END_REGEXP   = "\"action\":\"end\",.*\"source\":\"UploadJSONPayload\""
+///@}
+
 /// GetMachineEpsilon
 /// @{
 
@@ -93,8 +99,8 @@ End
 /// @{
 static Function TestUploadJsonPayload()
 
-	variable jsonID
-	string filename, logs
+	variable jsonID, err
+	string filename, logs, msg, uploadID
 
 	WAVE overrideResults = CreateOverrideResults(1)
 	overrideResults[] = 1
@@ -102,12 +108,18 @@ static Function TestUploadJsonPayload()
 	filename = LOG_GetFile(PACKAGE_MIES)
 	DeleteFile/Z filename
 
-	jsonID = JSON_New()
-	UploadJSONPayload(jsonID)
+	jsonID               = JSON_New()
+	[err, msg, uploadID] = UploadJSONPayload(jsonID)
+	CHECK_EQUAL_VAR(err, 1)
+	CHECK_EQUAL_STR(msg, "fake error")
+	CHECK_PROPER_STR(uploadID)
 
 	logs = LoadTextFile(filename)
 	CHECK_PROPER_STR(logs)
-	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_START_REGEXP), 1)
+	CHECK_GE_VAR(strsearch(logs, "\"uploadID\":\"" + uploadID + "\"", 0), 0)
+	// a failed upload has no end entry
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_END_REGEXP), 0)
 End
 /// @}
 
