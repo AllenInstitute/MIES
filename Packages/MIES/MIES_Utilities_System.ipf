@@ -9,6 +9,9 @@
 /// @file MIES_Utilities_System.ipf
 /// @brief utility functions for system operations
 
+static Constant UPLOAD_MIN_RATE    = 2e6 ///< Minimum upload rate in bit/s, slower uploads time out
+static Constant UPLOAD_MIN_TIMEOUT = 15  ///< Minimum upload timeout in s for the overhead of small uploads
+
 /// @brief Return the name of the experiment without the file suffix
 threadsafe Function/S GetExperimentName()
 
@@ -379,7 +382,8 @@ End
 /// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
 threadsafe Function UploadJSONPayload(variable jsonID)
 
-	variable skip
+	variable skip, timeout
+	string payload
 
 #ifdef AUTOMATED_TESTING
 	WAVE/Z overrideResults = GetOverrideResults()
@@ -387,7 +391,10 @@ threadsafe Function UploadJSONPayload(variable jsonID)
 #endif // AUTOMATED_TESTING
 
 	if(!skip)
-		URLRequest/Z=1/DSTR=(JSON_Dump(jsonID)) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+		payload = JSON_Dump(jsonID)
+		// time in s for uploading the payload with the minimum upload rate
+		timeout = max(strlen(payload) * 8 / UPLOAD_MIN_RATE, UPLOAD_MIN_TIMEOUT)
+		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 	else
 		V_flag           = 1
 		S_ServerResponse = "fake error"
