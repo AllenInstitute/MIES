@@ -15,6 +15,9 @@ static Constant    SCOPE_BLUE                      = 39168
 static StrConstant RES_FORMAT_STR                  = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
 static Constant    PRESSURE_SPECTRUM_PERCENT       = 0.05
 
+// DateTime has a coarse and irregular resolution of up to 50 ms
+static Constant SCOPE_TIMESTAMP_TOLERANCE = 0.1 // [s]
+
 Function/S SCOPE_GetGraph(string device)
 
 	return SCOPE_GetPanel(device) + "#oscilloscope"
@@ -604,7 +607,7 @@ Function SCOPE_UpdateOscilloscopeData(string device, variable dataAcqOrTP, [vari
 			tpInput.timeStamp     = UTCTimeToLocal(tpInput.timeStampUTC)
 			tpInput.sendTPMessage = 1
 
-			ASSERT(tpInput.timeStampUTC < DateTimeInUTC(), "Invalid timestamp ordering")
+			ASSERT(tpInput.timeStampUTC < (DateTimeInUTC() + SCOPE_TIMESTAMP_TOLERANCE), "Invalid timestamp ordering")
 
 			for(j = 0; j < numADCs; j += 1)
 				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
