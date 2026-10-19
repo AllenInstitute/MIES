@@ -29,9 +29,11 @@
 // CleanupOperationQueueResult
 
 /// @name Log entries of UploadJSONPayload for an upload of an empty JSON, which is dumped as "null"
+///
+/// The upload ID is appended to the regular expressions.
 ///@{
-static StrConstant UPLOAD_START_REGEXP = "\"action\":\"start\",.*\"size\":\"4\",\"source\":\"UploadJSONPayload\",\"timeout\":\"15\""
-static StrConstant UPLOAD_END_REGEXP   = "\"action\":\"end\",.*\"source\":\"UploadJSONPayload\""
+static StrConstant UPLOAD_START_REGEXP = "\"action\":\"start\",.*\"size\":\"4\",\"source\":\"UploadJSONPayload\",\"timeout\":\"15\",\"ts\":\"[^\"]*\",\"uploadID\":\""
+static StrConstant UPLOAD_END_REGEXP   = "\"action\":\"end\",.*\"rate \[kB per s\]\":\"[0-9.]+\",\"source\":\"UploadJSONPayload\",\"ts\":\"[^\"]*\",\"uploadID\":\""
 ///@}
 
 /// GetMachineEpsilon
@@ -97,29 +99,29 @@ End
 
 /// UploadJSONPayload
 /// @{
-static Function TestUploadJsonPayload()
+// UTF_TD_GENERATOR DataGenerators#UploadJSONPayloadOutcomes
+static Function TestUploadJsonPayload([WAVE wv])
 
-	variable jsonID, err
+	variable err
 	string filename, logs, msg, uploadID
 
-	WAVE overrideResults = CreateOverrideResults(1)
-	overrideResults[] = 1
+	WAVE overrideResults = CreateOverrideResults(2)
+	overrideResults[0] = wv[%V_flag]
+	overrideResults[1] = wv[%V_responseCode]
 
 	filename = LOG_GetFile(PACKAGE_MIES)
 	DeleteFile/Z filename
 
-	jsonID               = JSON_New()
-	[err, msg, uploadID] = UploadJSONPayload(jsonID)
-	CHECK_EQUAL_VAR(err, 1)
-	CHECK_EQUAL_STR(msg, "fake error")
+	[err, msg, uploadID] = UploadJSONPayload(JSON_New())
+	CHECK_EQUAL_VAR(err, wv[%err])
+	CHECK_EQUAL_VAR(GrepString(msg, note(wv)), 1)
 	CHECK_PROPER_STR(uploadID)
 
 	logs = LoadTextFile(filename)
 	CHECK_PROPER_STR(logs)
-	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_START_REGEXP), 1)
-	CHECK_GE_VAR(strsearch(logs, "\"uploadID\":\"" + uploadID + "\"", 0), 0)
-	// a failed upload has no end entry
-	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_END_REGEXP), 0)
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_START_REGEXP + uploadID), 1)
+	// only a successful upload has an end entry
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_END_REGEXP + uploadID), !err)
 End
 /// @}
 

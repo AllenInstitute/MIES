@@ -428,8 +428,9 @@ threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayloa
 	string payload, rate
 
 #ifdef AUTOMATED_TESTING
+	// overrideResults fakes the outcome of URLRequest: V_flag in row 0 and V_responseCode in row 1
 	WAVE/Z overrideResults = GetOverrideResults()
-	skip = WaveExists(overrideResults) ? overrideResults[0] : 0
+	skip = WaveExists(overrideResults)
 #endif // AUTOMATED_TESTING
 
 	// allows to match the log entries of uploads running in parallel threads
@@ -448,18 +449,22 @@ threadsafe Function [variable err, string msg, string uploadID] UploadJSONPayloa
 		refTime = GetReferenceTime()
 		URLRequest/Z=1/TIME=(timeout)/DSTR=payload url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 		elapsed = GetElapsedTime(refTime)
-
-		err = V_flag
-		if(err == URLREQUEST_TIMEOUT_ERROR)
-			sprintf S_ServerResponse, "The upload of %d bytes timed out after %g s, which allows for an upload rate of at least %g MBit/s and %g s for connecting and waiting for the server.", payloadSize, timeout, UPLOAD_MIN_RATE * ONE_TO_MEGA, UPLOAD_BASE_TIMEOUT
-		elseif(!err && V_responseCode != HTTP_STATUS_OK)
-			// V_responseCode is only valid without error
-			err = V_responseCode
-			sprintf S_ServerResponse, "The server responded with the HTTP status code %d: %s", V_responseCode, S_ServerResponse
-		endif
 	else
-		err              = 1
-		S_ServerResponse = "fake error"
+#ifdef AUTOMATED_TESTING
+		V_flag           = overrideResults[0]
+		V_responseCode   = overrideResults[1]
+		S_ServerResponse = "fake response"
+		elapsed          = 1
+#endif // AUTOMATED_TESTING
+	endif
+
+	err = V_flag
+	if(err == URLREQUEST_TIMEOUT_ERROR)
+		sprintf S_ServerResponse, "The upload of %d bytes timed out after %g s, which allows for an upload rate of at least %g MBit/s and %g s for connecting and waiting for the server.", payloadSize, timeout, UPLOAD_MIN_RATE * ONE_TO_MEGA, UPLOAD_BASE_TIMEOUT
+	elseif(!err && V_responseCode != HTTP_STATUS_OK)
+		// V_responseCode is only valid without error
+		err = V_responseCode
+		sprintf S_ServerResponse, "The server responded with the HTTP status code %d: %s", V_responseCode, S_ServerResponse
 	endif
 
 	// failures are reported by the caller
