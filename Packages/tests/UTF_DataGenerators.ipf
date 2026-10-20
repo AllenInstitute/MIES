@@ -2488,3 +2488,12 @@ static Function/WAVE IVSCCAPFrequencyOffsets()
 
 	return wv
 End
+
+static Function/WAVE MultiDeviceBackgroundTasks()
+
+	Make/FREE/T wv = {TASKNAME_TPMD, TASKNAME_TIMERMD, TASKNAME_FIFOMONMD}
+
+	SetDimensionLabels(wv, TextWaveToList(wv, ";"), ROWS)
+
+	return wv
+End
