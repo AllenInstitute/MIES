@@ -381,6 +381,11 @@ static Function TPM_AddDevice(string device)
 	variable idx
 	string   msg
 
+	if(TPM_IsDeviceActive(device))
+		BUG("The device " + device + " is already registered in the TPMD background task.")
+		return NaN
+	endif
+
 	NVAR deviceID          = $GetDAQDeviceID(device)
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
