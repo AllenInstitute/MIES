@@ -293,13 +293,58 @@ Function TPM_StopTestPulseMultiDevice(string device, [variable fast])
 	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE) \
 	   && HW_IsRunning(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1)
+	endif
+
+	// The bookkeeping must not depend on the hardware state, as the hardware
+	// can already be stopped, e.g. by a FIFO thread released while restarting
+	// the acquisition. Otherwise the device stays registered and is added a
+	// second time on the next start.
+	if(TPM_IsDeviceActive(device))
 		TPM_RemoveDevice(device)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
 		endif
+	endif
 
+	if(ROVar(GetTestpulseRunMode(device)) != TEST_PULSE_NOT_RUNNING)
 		TP_Teardown(device, fast = fast)
 	endif
+End
+
+/// @brief Return true if the device is registered in the TPMD background task
+static Function TPM_IsDeviceActive(string device)
+
+	return IsFinite(TPM_FindDevice(device))
+End
+
+/// @brief Return the row of the device in the list of active devices, or NaN if it is not registered
+///
+/// Device IDs are only unique per hardware type, so both have to match.
+static Function TPM_FindDevice(string device)
+
+	variable numActive, hardwareType, row
+
+	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+	NVAR deviceID          = $GetDAQDeviceID(device)
+
+	numActive = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
+	if(!numActive)
+		return NaN
+	endif
+
+	WAVE/Z indizes = FindIndizes(ActiveDevicesTPMD, colLabel = "DeviceID", var = deviceID, endRow = numActive - 1)
+	if(!WaveExists(indizes))
+		return NaN
+	endif
+
+	hardwareType = GetHardwareType(device)
+	for(row : indizes)
+		if(ActiveDevicesTPMD[row][%HardwareType] == hardwareType)
+			return row
+		endif
+	endfor
+
+	return NaN
 End
 
 static Function TPM_HasActiveDevices()
@@ -311,25 +356,23 @@ End
 
 static Function TPM_RemoveDevice(string device)
 
-	variable idx
-	string   msg
+	variable idx, row
+	string msg
 
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
-	NVAR deviceID          = $GetDAQDeviceID(device)
+
+	row = TPM_FindDevice(device)
+	ASSERT(IsFinite(row), "Could not find the device")
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
-	ASSERT(idx >= 0, "Invalid index")
-
-	FindValue/V=(deviceID)/RMD=[0, idx][0] ActiveDevicesTPMD
-	ASSERT(V_Value != -1, "Could not find the device")
 
 	// overwrite the to be removed device with the last one
-	ActiveDevicesTPMD[V_Value][] = ActiveDevicesTPMD[idx][q]
-	ActiveDevicesTPMD[idx][]     = NaN
+	ActiveDevicesTPMD[row][] = ActiveDevicesTPMD[idx][q]
+	ActiveDevicesTPMD[idx][] = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx)
 
-	sprintf msg, "Remove device %s in row %d", device, V_Value
+	sprintf msg, "Remove device %s in row %d", device, row
 	DEBUGPRINT(msg)
 End
 
