@@ -344,6 +344,33 @@ static Function CheckTPEntriesFromLBN_REENTRY([string str])
 	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End
 
+/// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function StopTPWithHardwareAlreadyStopped([string str])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP1" + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+
+	ACD_AcquireData(s, str)
+
+	CtrlNamedBackGround StopTPWithHardwareAlreadyStopped, start, period=30, proc=StopTPWithHardwareAlreadyStopped_IGNORE
+End
+
+static Function StopTPWithHardwareAlreadyStopped_REENTRY([string str])
+
+	variable hardwareType
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	CHECK_EQUAL_VAR(IsBackgroundTaskRunning(TASKNAME_TPMD), 0)
+
+	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX), 0)
+
+	NVAR deviceID = $GetDAQDeviceID(str)
+	hardwareType = GetHardwareType(str)
+	CHECK_EQUAL_VAR(HW_IsRunning(hardwareType, deviceID), 0)
+End
+
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function TPCachingWorks([string str])
 
