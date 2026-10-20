@@ -3,9 +3,24 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DAEphysTestsWithoutHardware
 
+/// @name Devices with the same device ID but different hardware types for IsDeviceActiveWithBGTask
+///@{
+static StrConstant DEVICE_ITC = "ITC18USB_Dev_0"
+static StrConstant DEVICE_NI  = "Dev1"
+///@}
+
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
 	TestCaseBeginCommon(testname)
+End
+
+static Function TEST_CASE_END_OVERRIDE(string testname)
+
+	CtrlNamedBackground $TASKNAME_TPMD, kill
+	CtrlNamedBackground $TASKNAME_TIMERMD, kill
+	CtrlNamedBackground $TASKNAME_FIFOMONMD, kill
+
+	TestCaseEndCommon(testname)
 End
 
 static Function/S HAH_FillMockGuiStateWave(WAVE statusHS, WAVE clampModes)
@@ -239,5 +254,60 @@ Function CreatesReproducibleResults()
 	Make/FREE/N=1024/D dataDouble = GetNextRandomNumberForDevice(device)
 
 	CHECK_EQUAL_WAVES(dataInt, dataDouble, mode = WAVE_DATA)
+End
+/// @}
+
+Function DummyBackgroundTask_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	return 0
+End
+
+/// @brief Register the device in the device list of the given multi device background task
+static Function RegisterDeviceForBGTask_IGNORE(string device, string task)
+
+	strswitch(task)
+		case TASKNAME_TPMD:
+			WAVE activeDevicesTPMD = GetActiveDevicesTPMD()
+			activeDevicesTPMD[0][%DeviceID]     = ROVar(GetDAQDeviceID(device))
+			activeDevicesTPMD[0][%HardwareType] = GetHardwareType(device)
+			SetNumberInWaveNote(activeDevicesTPMD, NOTE_INDEX, 1)
+			break
+		case TASKNAME_TIMERMD:
+			DFREF dfr = GetActiveDAQDevicesTimerFolder()
+			Make/O/T/N=(1, 2) dfr:TimerFunctionListWave/WAVE=timerFunctionList
+			timerFunctionList[0][0] = device
+			break
+		case TASKNAME_FIFOMONMD:
+			WAVE activeDeviceList = GetDQMActiveDeviceList()
+			Redimension/N=(1, -1) activeDeviceList
+			activeDeviceList[0][%DeviceID]     = ROVar(GetDAQDeviceID(device))
+			activeDeviceList[0][%HardwareType] = GetHardwareType(device)
+			break
+		default:
+			FATAL_ERROR("Unknown task")
+	endswitch
+End
+
+/// IsDeviceActiveWithBGTask
+/// @{
+// UTF_TD_GENERATOR DataGenerators#MultiDeviceBackgroundTasks
+static Function IsDeviceActiveWithBGTaskDistinguishesHardwareTypes([string str])
+
+	NVAR deviceIDITC = $GetDAQDeviceID(DEVICE_ITC)
+	NVAR deviceIDNI  = $GetDAQDeviceID(DEVICE_NI)
+	deviceIDITC = 0
+	deviceIDNI  = 0
+
+	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_ITC), HARDWARE_ITC_DAC)
+	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_NI), HARDWARE_NI_DAC)
+
+	RegisterDeviceForBGTask_IGNORE(DEVICE_NI, str)
+
+	CHECK_EQUAL_VAR(IsDeviceActiveWithBGTask(DEVICE_NI, str), 0)
+
+	CtrlNamedBackground $str, period=1e6, start=(ticks + 1e6), proc=DummyBackgroundTask_IGNORE
+
+	CHECK_EQUAL_VAR(IsDeviceActiveWithBGTask(DEVICE_NI, str), 1)
+	CHECK_EQUAL_VAR(IsDeviceActiveWithBGTask(DEVICE_ITC, str), 0)
 End
 /// @}
