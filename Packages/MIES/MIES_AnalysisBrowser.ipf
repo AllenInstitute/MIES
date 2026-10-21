@@ -25,6 +25,12 @@ static Constant AB_LOADOPT_COMMENTS = 0x02
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
 static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
+/// Free memory [GB] below which the sweeps are loaded without backup waves, see AB_DisableSweepBackupsIfLowMemory()
+static Constant AB_SWEEP_BACKUPS_MIN_FREE_MEMORY = 4
+
+/// Waves next to the per sweep folders which are only needed with backups, see AB_RemoveSweepBackups()
+static StrConstant AB_SWEEP_BACKUP_WAVES_REGEXP = "(?i)^Sweep_[[:digit:]]+_(bak|preUpgrade[[:digit:]]*)$"
+
 static Function AB_ResetListBoxWaves()
 
 	variable col, val, newSize
@@ -1974,11 +1980,13 @@ static Function AB_LoadSweepFromFile(string discLocation, string dataFolder, str
 	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
 
 	// sweep already loaded
-	if(DataFolderExists(sweepFolder))
-		if(!overwrite)
-			return 0
-		endif
+	if(DataFolderExists(sweepFolder) && !overwrite)
+		return 0
+	endif
 
+	AB_DisableSweepBackupsIfLowMemory()
+
+	if(DataFolderExists(sweepFolder))
 		KillOrMoveToTrash(dfr = $sweepFolder)
 		KillOrMoveToTrash(wv = GetAnalysisConfigWave(dataFolder, device, sweep))
 	endif
@@ -3357,8 +3365,9 @@ End
 
 /// @brief Stop creating backup waves for the sweeps loaded into SweepBrowsers
 ///
-/// This applies to all SweepBrowsers, as they share the loaded sweep data. The functionality which modifies the sweep
-/// data in place, and needs the backup waves to undo it, is disabled in all SweepBrowsers, see
+/// This applies to all SweepBrowsers, as they share the loaded sweep data. The already loaded sweeps are restored from
+/// their backup waves, which are deleted afterwards, see AB_RemoveSweepBackups(). The functionality which modifies the
+/// sweep data in place, and needs the backup waves to undo it, is disabled in all SweepBrowsers, see
 /// BSP_SetBackupDependentControlStatus().
 Function AB_DisableSweepBackups()
 
@@ -3366,12 +3375,83 @@ Function AB_DisableSweepBackups()
 
 	PerformSubsystemEntry()
 
+	if(!AB_UseSweepBackups())
+		return NaN
+	endif
+
+	AB_RemoveSweepBackups()
+
 	NVAR useBackups = $GetAnalysisBrowserSweepBackups()
 	useBackups = 0
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(win : wList)
 		BSP_SetBackupDependentControlStatus(win)
+
+		WAVE/Z mapIndizes = SB_GetMapIndizes(win)
+		if(!WaveExists(mapIndizes))
+			continue
+		endif
+
+		UpdateSweepPlot(win)
+	endfor
+End
+
+/// @brief Disable the sweep backup waves if the free memory is below `minFreeMemory`, see AB_DisableSweepBackups()
+///
+/// @param minFreeMemory [optional, defaults to #AB_SWEEP_BACKUPS_MIN_FREE_MEMORY] free memory [GB]
+static Function AB_DisableSweepBackupsIfLowMemory([variable minFreeMemory])
+
+	if(ParamIsDefault(minFreeMemory))
+		minFreeMemory = AB_SWEEP_BACKUPS_MIN_FREE_MEMORY
+	endif
+
+	if(!AB_UseSweepBackups() || GetFreeMemory() >= minFreeMemory)
+		return NaN
+	endif
+
+	printf "The free memory is below %g GB, therefore the sweeps are loaded without backup waves from now on.\r", minFreeMemory
+	printf "The loaded sweeps are restored to their original data, and zeroing traces, time alignment and artefact removal are disabled.\r"
+	ControlWindowToFront()
+
+	AB_DisableSweepBackups()
+End
+
+/// @brief Restore all loaded sweeps from their backup waves and delete the backup waves
+///
+/// Also deletes the backup and the copy of the original data of sweeps upgraded from the 2D format, which are not needed
+/// without backups.
+static Function AB_RemoveSweepBackups()
+
+	string folder, name, parentFolder
+	string parentFolders = ""
+
+	WAVE/T folders = ListToTextWave(GetListOfObjects(GetAnalysisFolder(), "^X_[[:digit:]]+$", typeFlag = COUNTOBJECTS_DATAFOLDER, recursive = 1, fullPath = 1), ";")
+	for(folder : folders)
+		DFREF  sweepDFR = $folder
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, ".*", typeFlag = COUNTOBJECTS_WAVES), ";")
+		for(name : names)
+			if(StringEndsWith(name, WAVE_BACKUP_SUFFIX))
+				continue
+			endif
+
+			WAVE/SDFR=sweepDFR wv = $name
+			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0)
+		endfor
+
+		parentFolder = RemoveEnding(GetFolder(RemoveEnding(folder, ":")), ":")
+		if(WhichListItem(parentFolder, parentFolders) == -1)
+			parentFolders = AddListItem(parentFolder, parentFolders, ";", Inf)
+		endif
+	endfor
+
+	for(parentFolder : ListToTextWave(parentFolders, ";"))
+		DFREF  parentDFR = $parentFolder
+		WAVE/T names     = ListToTextWave(GetListOfObjects(parentDFR, AB_SWEEP_BACKUP_WAVES_REGEXP, typeFlag = COUNTOBJECTS_WAVES), ";")
+		for(name : names)
+			WAVE/SDFR=parentDFR wv = $name
+			KillOrMoveToTrash(wv = wv)
+		endfor
 	endfor
 End
 

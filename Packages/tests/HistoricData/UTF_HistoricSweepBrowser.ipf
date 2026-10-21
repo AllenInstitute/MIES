@@ -119,32 +119,6 @@ Function TestSweepFormulaPowerSpectrumAverage()
 	ExecuteSweepFormulaCode(sweepBrowser, code)
 End
 
-/// @brief Apply `offset` to all sweep data waves (not the backups) of the SweepBrowser and return the number of modified waves
-static Function ModifyAllSweepData_IGNORE(string win, variable offset)
-
-	variable i, numSweeps, numModified
-	string name
-
-	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
-	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
-	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-
-	for(i = 0; i < numSweeps; i += 1)
-		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
-		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, ".*", typeFlag = COUNTOBJECTS_WAVES), ";")
-		for(name : names)
-			if(StringEndsWith(name, WAVE_BACKUP_SUFFIX))
-				continue
-			endif
-			WAVE/SDFR=sweepDFR wv = $name
-			wv          += offset
-			numModified += 1
-		endfor
-	endfor
-
-	return numModified
-End
-
 static Function RestoreDataRestoresAllSweeps()
 
 	string abWin, sweepBrowsers, win, name
@@ -162,7 +136,7 @@ static Function RestoreDataRestoresAllSweeps()
 
 	// more than one sweep per experiment/device, as sweep zero was the only one restored before
 	CHECK_GT_VAR(numSweeps, 2)
-	CHECK_GT_VAR(ModifyAllSweepData_IGNORE(win, 1), numSweeps)
+	CHECK_GT_VAR(ModifySweepBrowserData(win, 1), numSweeps)
 
 	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_Calculation_RestoreData")
 
@@ -185,4 +159,10 @@ End
 static Function SweepBrowserWithoutBackupWaves([string str])
 
 	CheckLoadingSweepsWithoutBackups("input:" + str)
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBackupsAreRemovedOnLowMemory([string str])
+
+	CheckRemovingSweepBackupsOnLowMemory("input:" + str)
 End

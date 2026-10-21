@@ -1368,7 +1368,7 @@ End
 /// @param file file path relative to the symbolic path `home`, see OpenAnalysisBrowser()
 Function CheckLoadingSweepsWithoutBackups(string file)
 
-	string abWin, sweepBrowsers, win, bsPanel, ctrl
+	string abWin, sweepBrowsers, win
 
 	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
 	win                    = StringFromList(0, sweepBrowsers)
@@ -1388,17 +1388,88 @@ Function CheckLoadingSweepsWithoutBackups(string file)
 
 	CHECK_EQUAL_WAVES(withoutBackups, withBackups, mode = WAVE_DATA | DIMENSION_LABELS)
 
+	CheckBackupDependentControlsDisabled(win)
+End
+
+/// @brief Check that the controls of the functionality needing the sweep backup waves are unchecked and disabled
+Function CheckBackupDependentControlsDisabled(string win)
+
+	string bsPanel, ctrl
+
 	bsPanel = BSP_GetPanel(win)
 	Make/FREE/T checkboxes = {"check_Calculation_ZeroTraces", "check_BrowserSettings_TA", "check_auto_remove"}
 	for(ctrl : checkboxes)
 		CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, ctrl), CHECKBOX_UNSELECTED)
 		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
+		CHECK_EQUAL_STR(GetUserData(bsPanel, ctrl, EXPCONFIG_UDATA_EXCLUDE_RESTORE), "1")
 	endfor
 
 	Make/FREE/T buttons = {"button_Calculation_RestoreData", "button_RemoveRanges", "button_TimeAlignment_Action"}
 	for(ctrl : buttons)
 		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
 	endfor
+End
+
+/// @brief Apply `offset` to all sweep data waves (not the backups) of the SweepBrowser `win` and return the number of modified waves
+Function ModifySweepBrowserData(string win, variable offset)
+
+	variable i, numSweeps, numModified
+	string name
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, ".*", typeFlag = COUNTOBJECTS_WAVES), ";")
+		for(name : names)
+			if(StringEndsWith(name, WAVE_BACKUP_SUFFIX))
+				continue
+			endif
+			WAVE/SDFR=sweepDFR wv = $name
+			wv          += offset
+			numModified += 1
+		endfor
+	endfor
+
+	return numModified
+End
+
+/// @brief Load the sweeps of `file` into a SweepBrowser with backup waves, modify them, and check that falling below
+///        the free memory threshold restores the sweeps, removes all backup waves and disables the functionality
+///        needing them
+///
+/// @param file file path relative to the symbolic path `home`, see OpenAnalysisBrowser()
+Function CheckRemovingSweepBackupsOnLowMemory(string file)
+
+	string abWin, sweepBrowsers, win, leftOver, emptyWin
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+
+	// a new SweepBrowser is still empty while its first sweeps are loaded
+	DFREF emptySBDFR = SB_OpenSweepBrowser()
+	SVAR/SDFR=emptySBDFR graph
+	emptyWin = graph
+
+	WAVE original = GetSweepBrowserDataChecksums(win)
+	CHECK_GT_VAR(DimSize(original, ROWS), 0)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_Calculation_ZeroTraces", val = CHECKBOX_SELECTED)
+	CHECK_GT_VAR(ModifySweepBrowserData(win, 1), 0)
+
+	MIES_AB#AB_DisableSweepBackupsIfLowMemory(minFreeMemory = Inf)
+	CHECK_EQUAL_VAR(AB_UseSweepBackups(), 0)
+
+	WAVE restored = GetSweepBrowserDataChecksums(win)
+	CHECK_EQUAL_WAVES(restored, original, mode = WAVE_DATA | DIMENSION_LABELS)
+
+	leftOver = GetListOfObjects(GetAnalysisFolder(), "(?i)^Sweep_[[:digit:]]+_(bak|preUpgrade[[:digit:]]*)$", recursive = 1)
+	CHECK_EMPTY_STR(leftOver)
+
+	CheckBackupDependentControlsDisabled(win)
+	CheckBackupDependentControlsDisabled(emptyWin)
 End
 
 Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
