@@ -3052,7 +3052,7 @@ static Function HW_NI_CalibrateDevice(string device, [variable force, variable f
 		force = !!force
 	endif
 
-	if((DateTime - fDAQmx_SelfCalDate(device)) >= 86400 || force)
+	if((DateTimeHighPrec() - fDAQmx_SelfCalDate(device)) >= 86400 || force)
 		ret = fDAQmx_selfCalibration(device, 0)
 		if(ret)
 			print fDAQmx_ErrorString()
@@ -3727,10 +3727,10 @@ static Function HW_SU_AcquireImpl(string device, WAVE input, WAVE/Z output, WAVE
 		return NaN
 	endif
 
-	to = DateTime + timeout
+	to = DateTimeHighPrec() + timeout
 	do
 		DoXOPIdle
-	while(acq && err == 0 && DateTime < to)
+	while(acq && err == 0 && DateTimeHighPrec() < to)
 
 	ASSERT(err == 0, "Hardware Error on foreground acquisition")
 	ASSERT(acq == 0, "Hardware Error: Reached timeout in foreground acquisition")
