@@ -147,3 +147,9 @@ static Function RestoreDataRestoresAllSweeps()
 		CHECK_EQUAL_WAVES(wv, backup, mode = WAVE_DATA)
 	endfor
 End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBrowserWithoutBackupWaves([string str])
+
+	CheckLoadingSweepsWithoutBackups("input:" + str)
+End

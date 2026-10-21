@@ -23,6 +23,13 @@ static StrConstant BROWSERTYPE_SWEEPBROWSER = "S"
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER    = "popup_DB_lockedDevices;"
 static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 
+/// @name Controls of functionality which modifies the sweep data in place and needs the backup waves to undo it
+///@{
+static StrConstant BSP_BACKUP_DEPENDENT_CHECKBOXES = "check_Calculation_ZeroTraces;check_BrowserSettings_TA;check_auto_remove;"
+static StrConstant BSP_BACKUP_DEPENDENT_CONTROLS   = "button_Calculation_RestoreData;button_RemoveRanges;popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action;"
+static StrConstant BSP_NO_BACKUP_HELP              = "Not available, as the sweeps are loaded without backup waves to save memory, which are required to undo the modification of the sweep data"
+///@}
+
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER  = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
@@ -231,6 +238,8 @@ Function BSP_DynamicStartupSettings(string mainPanel)
 	else
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	endif
+
+	BSP_SetBackupDependentControlStatus(mainPanel)
 	PopupMenu popup_TimeAlignment_Master, win=$bsPanel, value=#("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
@@ -570,6 +579,35 @@ Function BSP_SetARControlStatus(string win)
 	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
 
 	BSP_SetControlStatus(win, controlList, AR_IsActive(win))
+	BSP_SetBackupDependentControlStatus(win)
+End
+
+/// @brief Disable the controls of the functionality which modifies the sweep data in place, if the SweepBrowser has
+///        no backup waves to undo it, see AB_DisableSweepBackups()
+///
+/// The checkboxes are also excluded from the configuration restore, as it sets checkboxes even if they are disabled.
+///
+/// @param win specify mainPanel or bsPanel
+Function BSP_SetBackupDependentControlStatus(string win)
+
+	string bsPanel, checkbox
+
+	PerformSubsystemEntry()
+
+	if(BSP_IsDataBrowser(win) || AB_UseSweepBackups())
+		return NaN
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+
+	WAVE/T checkboxes = ListToTextWave(BSP_BACKUP_DEPENDENT_CHECKBOXES, ";")
+	for(checkbox : checkboxes)
+		SetCheckBoxState(bsPanel, checkbox, CHECKBOX_UNSELECTED)
+	endfor
+
+	DisableControls(bsPanel, BSP_BACKUP_DEPENDENT_CHECKBOXES + BSP_BACKUP_DEPENDENT_CONTROLS)
+	ModifyControlList BSP_BACKUP_DEPENDENT_CHECKBOXES + BSP_BACKUP_DEPENDENT_CONTROLS, win=$bsPanel, help={BSP_NO_BACKUP_HELP}
+	ModifyControlList BSP_BACKUP_DEPENDENT_CHECKBOXES, win=$bsPanel, userdata($EXPCONFIG_UDATA_EXCLUDE_RESTORE)="1"
 End
 
 /// @brief enable/disable the SF buttons

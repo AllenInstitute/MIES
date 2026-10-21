@@ -2204,7 +2204,9 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 			FATAL_ERROR("wave with same name, but different content, already exists: " + channelName)
 		endif
 		Duplicate/O loaded, sweepDFR:$channelName/WAVE=targetRef
-		CreateBackupWave(targetRef)
+		if(AB_UseSweepBackups())
+			CreateBackupWave(targetRef)
+		endif
 		WaveClear loaded
 	endfor
 
@@ -2251,7 +2253,7 @@ End
 /// @returns name of loaded sweep
 static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFREF sweepDFR, string device, variable sweep)
 
-	variable i, numWavesLoaded, numComponentsLoaded, numChannels
+	variable i, numWavesLoaded, numComponentsLoaded, numChannels, useBackups
 	string sweepWaveList = ""
 	string sweepWaveName, sweepWaveNameBak, dataPath, componentsDataPath, sweepComponent
 	string channelName, channelWaveList
@@ -2296,11 +2298,19 @@ static Function AB_LoadSweepFromIgor(string discLocation, string expFolder, DFRE
 			return 1
 		endif
 
+		useBackups = AB_UseSweepBackups()
 		for(sweepComponent : sweepT)
 			WAVE wv = sweepComponentsDFR:$sweepComponent
-			MoveWave wv, sweepDFR
+			if(useBackups)
+				MoveWave wv, sweepDFR
+			else
+				MoveWave wv, sweepDFR:$RemoveEnding(sweepComponent, WAVE_BACKUP_SUFFIX)
+			endif
 		endfor
-		RestoreFromBackupWavesForAll(sweepDFR)
+
+		if(useBackups)
+			RestoreFromBackupWavesForAll(sweepDFR)
+		endif
 	else
 		// old sweep format
 		if(numWavesLoaded == 2)
@@ -2647,7 +2657,11 @@ static Function AB_SplitSweepIntoComponents(string expFolder, string device, var
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
 
-	SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR = sweepFolder)
+	if(AB_UseSweepBackups())
+		SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR = sweepFolder)
+	else
+		SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 0, targetDFR = sweepFolder, createBackup = 0)
+	endif
 	KillOrMoveToTrash(wv = sweepWave)
 
 	return 0
@@ -3331,6 +3345,34 @@ Function AB_CheckboxProc_PXP(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Return true if backup waves are created for the sweeps loaded into SweepBrowsers, see AB_DisableSweepBackups()
+Function AB_UseSweepBackups()
+
+	PerformSubsystemEntry()
+
+	return ROVar(GetAnalysisBrowserSweepBackups())
+End
+
+/// @brief Stop creating backup waves for the sweeps loaded into SweepBrowsers
+///
+/// This applies to all SweepBrowsers, as they share the loaded sweep data. The functionality which modifies the sweep
+/// data in place, and needs the backup waves to undo it, is disabled in all SweepBrowsers, see
+/// BSP_SetBackupDependentControlStatus().
+Function AB_DisableSweepBackups()
+
+	string win
+
+	PerformSubsystemEntry()
+
+	NVAR useBackups = $GetAnalysisBrowserSweepBackups()
+	useBackups = 0
+
+	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
+	for(win : wList)
+		BSP_SetBackupDependentControlStatus(win)
+	endfor
 End
 
 Function/S AB_GetSweepBrowserTitles()
