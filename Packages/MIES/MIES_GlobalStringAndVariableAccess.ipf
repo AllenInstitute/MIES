@@ -578,6 +578,14 @@ Function/S GetAnalysisExpSessionStartTime(string dataFolder)
 	return GetSVARAsString(GetAnalysisExpFolder(dataFolder), "sessionStartTime", initialValue = "")
 End
 
+/// @brief Returns the global that stores if the AnalysisBrowser creates backup waves for the sweeps it loads
+///
+/// Applies to all SweepBrowsers, as they share the loaded sweep data, see AB_DisableSweepBackups().
+Function/S GetAnalysisBrowserSweepBackups()
+
+	return GetNVARAsString(GetAnalysisFolder(), "sweepBackups", initialValue = 1)
+End
+
 /// @brief Returns the global that stores the last acquisition start time
 Function/S GetLastAcquisitionStartTime(string device)
 

@@ -1325,6 +1325,82 @@ static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
 	endfor
 End
 
+/// @brief Return the CRC of all sweep data waves of the SweepBrowser `win`, with dimension labels from their device and folder
+///
+/// Fails if one of the sweep folders holds backup waves although backups are disabled.
+Function/WAVE GetSweepBrowserDataChecksums(string win)
+
+	variable i, numSweeps, idx
+	string name, path
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) checksums
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, ".*", typeFlag = COUNTOBJECTS_WAVES), ";")
+		for(name : names)
+			if(StringEndsWith(name, WAVE_BACKUP_SUFFIX))
+				CHECK_EQUAL_VAR(AB_UseSweepBackups(), 1)
+				continue
+			endif
+
+			WAVE/SDFR=sweepDFR wv = $name
+			path = sweepMap[i][%Device] + "/" + GetDataFolder(0, sweepDFR) + "/" + name
+
+			EnsureLargeEnoughWave(checksums, indexShouldExist = idx)
+			checksums[idx] = WaveCRC(0, wv)
+			SetDimLabel ROWS, idx, $path, checksums
+			idx += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx) checksums
+
+	return checksums
+End
+
+/// @brief Load the sweeps of `file` into a SweepBrowser with and without backup waves, see AB_DisableSweepBackups(),
+///        and check that the loaded data is the same and that the functionality needing backups is disabled
+///
+/// @param file file path relative to the symbolic path `home`, see OpenAnalysisBrowser()
+Function CheckLoadingSweepsWithoutBackups(string file)
+
+	string abWin, sweepBrowsers, win, bsPanel, ctrl
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+	WAVE withBackups = GetSweepBrowserDataChecksums(win)
+	CHECK_GT_VAR(DimSize(withBackups, ROWS), 0)
+
+	KillWindow $win
+	KillWindow $abWin
+	KillOrMoveToTrash(dfr = GetAnalysisFolder())
+
+	AB_DisableSweepBackups()
+	CHECK_EQUAL_VAR(AB_UseSweepBackups(), 0)
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+	WAVE withoutBackups = GetSweepBrowserDataChecksums(win)
+
+	CHECK_EQUAL_WAVES(withoutBackups, withBackups, mode = WAVE_DATA | DIMENSION_LABELS)
+
+	bsPanel = BSP_GetPanel(win)
+	Make/FREE/T checkboxes = {"check_Calculation_ZeroTraces", "check_BrowserSettings_TA", "check_auto_remove"}
+	for(ctrl : checkboxes)
+		CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, ctrl), CHECKBOX_UNSELECTED)
+		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
+	endfor
+
+	Make/FREE/T buttons = {"button_Calculation_RestoreData", "button_RemoveRanges", "button_TimeAlignment_Action"}
+	for(ctrl : buttons)
+		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
+	endfor
+End
+
 Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
 
 	string   sweepBrowsers

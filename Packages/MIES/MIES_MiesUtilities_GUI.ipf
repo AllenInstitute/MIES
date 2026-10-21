@@ -247,6 +247,8 @@ Function TimeAlignUpdateControls(string win)
 		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
 	endif
 
+	BSP_SetBackupDependentControlStatus(win)
+
 	TimeAlignHandleCursorDisplay(graph)
 End
 
