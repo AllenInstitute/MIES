@@ -370,7 +370,7 @@ Function AE_NumericHasCorrectTimeStamps()
 		endif
 
 		// and at most 1s old
-		CHECK_LT_VAR((DateTime - ts), 1)
+		CHECK_LT_VAR((DateTimeHighPrec() - ts), 1)
 
 		// same for UTC variant
 		ts = numericalValues[0][2][0]
@@ -620,7 +620,7 @@ Function AE_TextHasCorrectTimeStamps()
 		endif
 
 		// and at most 1s old
-		CHECK_LT_VAR((DateTime - ts), 1)
+		CHECK_LT_VAR((DateTimeHighPrec() - ts), 1)
 
 		// same for UTC variant
 		ts = str2num(textualValues[0][2][0])

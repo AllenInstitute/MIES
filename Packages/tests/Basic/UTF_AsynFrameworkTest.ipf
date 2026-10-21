@@ -583,14 +583,14 @@ static Function TASYNC_Execute_Valid()
 	ASYNC_Execute(threadDF)
 
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == 1)
 			break
 		endif
-		if(datetime > endtime)
+		if(DateTimeHighPrec() > endtime)
 			timeout = 1
 			break
 		endif
@@ -619,14 +619,14 @@ static Function TASYNC_WorkerRealDF()
 	ASYNC_Execute(threadDF)
 
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == 1)
 			break
 		endif
-		if(datetime > endtime)
+		if(DateTimeHighPrec() > endtime)
 			timeout = 1
 			break
 		endif
@@ -680,14 +680,14 @@ static Function TASYNC_WorkerNoDF()
 	ASYNC_Execute(threadDF)
 
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == 1)
 			break
 		endif
-		if(datetime > endtime)
+		if(DateTimeHighPrec() > endtime)
 			timeout = 1
 			break
 		endif
@@ -718,14 +718,14 @@ static Function TASYNC_WorkerThreadErrors([string str])
 	ASYNC_Execute(threadDF)
 
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == 1)
 			break
 		endif
-		if(datetime > endtime)
+		if(DateTimeHighPrec() > endtime)
 			timeout = 1
 			break
 		endif
@@ -763,13 +763,13 @@ static Function TASYNC_RunOrderless()
 
 	// We can not use the background task for readout, so we have to do it manually
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == WORK_COUNT_GENERIC)
 			break
 		endif
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif
@@ -807,13 +807,13 @@ static Function TASYNC_RunInOrder()
 	endfor
 	// We can not use the background task for readout, so we have to do it manually
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == WORK_COUNT_GENERIC)
 			break
 		endif
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif
@@ -865,14 +865,14 @@ static Function TASYNC_InOrderDiffWL()
 	// We can not use the background task for readout, so we have to do it manually
 	Make/N=0 returnOrder
 	Make/N=0 returnOrder2
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == (workCnt / 2) && numpnts(returnOrder2) == (workCnt / 2))
 			break
 		endif
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif
@@ -912,14 +912,14 @@ static Function TASYNC_RunErrorWorker()
 		ASYNC_Execute(threadDF)
 	endfor
 	// We can not use the background task for readout, so we have to do it manually
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == workCnt)
 			break
 		endif
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif
@@ -948,7 +948,7 @@ static Function TASYNC_RunErrorReadOut([string str])
 	ASYNC_Execute(threadDF)
 
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 
@@ -964,7 +964,7 @@ static Function TASYNC_RunErrorReadOut([string str])
 		if(numpnts(returnOrder) == 1)
 			break
 		endif
-		if(datetime > endtime)
+		if(DateTimeHighPrec() > endtime)
 			timeout = 1
 			break
 		endif
@@ -1130,7 +1130,7 @@ static Function TASYNC_RunClassSingle()
 	// We can not use the background task for readout, so we have to do it manually
 	// Correlate our own returnOrder counter with the tracking done by the frame work
 	Make/N=0 returnOrder
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	for(;;)
 		ASYNC_ThreadReadOut()
 		if(numpnts(returnOrder) == WORK_COUNT_GENERIC)
@@ -1139,7 +1139,7 @@ static Function TASYNC_RunClassSingle()
 		endif
 
 		CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif
@@ -1185,7 +1185,7 @@ static Function TASYNC_RunClassDouble()
 	// We can not use the background task for readout, so we have to do it manually
 	Make/N=0 returnOrder
 	Make/N=0 returnOrder2
-	endtime = datetime + THREADING_TEST_TIMEOUT
+	endtime = DateTimeHighPrec() + THREADING_TEST_TIMEOUT
 	timeout = 0
 	for(;;)
 		ASYNC_ThreadReadOut()
@@ -1201,7 +1201,7 @@ static Function TASYNC_RunClassDouble()
 			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass2"))
 		endif
 
-		if(endtime < datetime)
+		if(endtime < DateTimeHighPrec())
 			timeout = 1
 			break
 		endif

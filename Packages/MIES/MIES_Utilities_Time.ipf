@@ -18,7 +18,7 @@
 Function/S GetTimeStamp([variable secondsSinceIgorEpoch, variable humanReadable])
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
-		secondsSinceIgorEpoch = DateTime
+		secondsSinceIgorEpoch = DateTimeHighPrec()
 	endif
 
 	if(ParamIsDefault(humanReadable))
@@ -99,7 +99,7 @@ threadsafe Function/S GetISO8601TimeStamp([variable secondsSinceIgorEpoch, varia
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
 		if(localTimeZone)
-			secondsSinceIgorEpoch = DateTime
+			secondsSinceIgorEpoch = DateTimeHighPrec()
 		else
 			secondsSinceIgorEpoch = DateTimeInUTC()
 		endif

@@ -123,7 +123,7 @@ static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, 
 
 		// store the current time in a variable first
 		// so that all layers have the same timestamp
-		timestampStr           = num2strHighPrec(DateTime, precision = 3)
+		timestampStr           = num2strHighPrec(DateTimeHighPrec(), precision = 3)
 		valuesT[rowIndex][1][] = timestampStr
 		timestampStr           = num2strHighPrec(DateTimeInUTC(), precision = 3)
 		valuesT[rowIndex][2][] = timestampStr
@@ -135,7 +135,7 @@ static Function ED_InitNewRow(WAVE values, variable rowIndex, variable sweepNo, 
 
 		// store the current time in a variable first
 		// so that all layers have the same timestamp
-		timestamp             = DateTime
+		timestamp             = DateTimeHighPrec()
 		values[rowIndex][1][] = timestamp
 		timestamp             = DateTimeInUTC()
 		values[rowIndex][2][] = timestamp

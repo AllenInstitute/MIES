@@ -162,7 +162,7 @@ End
 
 Function AcceptsValid11()
 
-	variable now      = DateTime
+	variable now      = DateTimeHighPrec()
 	string   actual   = GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1)
 	string   expected = GetIso8601TimeStamp(secondsSinceIgorEpoch = now - Date2Secs(-1, -1, -1))
 
@@ -171,7 +171,7 @@ End
 
 Function AcceptsValid12()
 
-	variable now      = DateTime
+	variable now      = DateTimeHighPrec()
 	variable expected = trunc(now) - Date2Secs(-1, -1, -1)
 	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1))
 
