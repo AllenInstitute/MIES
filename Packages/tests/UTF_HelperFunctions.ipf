@@ -18,6 +18,9 @@
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
 
+/// All waves of a single sweep folder except the backup waves
+static StrConstant SINGLE_SWEEP_DATA_WAVES_REGEXP = "(?i)^(?!.*_bak$)"
+
 Function/S PrependExperimentFolder_IGNORE(string filename)
 
 	PathInfo home
@@ -1323,6 +1326,44 @@ static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
 	for(i = 0; i < numTags; i += 1)
 		MIES_AB#AB_AddTagToRow(indizes[i], {tagList[i]})
 	endfor
+End
+
+/// @brief Return the data waves of all sweeps of the SweepBrowser `win`, without their backup waves
+Function/WAVE GetSweepBrowserDataWaves(string win)
+
+	variable i, numSweeps, idx
+	string name
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) dataWaves
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, SINGLE_SWEEP_DATA_WAVES_REGEXP), ";")
+		for(name : names)
+			EnsureLargeEnoughWave(dataWaves, indexShouldExist = idx)
+			WAVE/SDFR=sweepDFR wv = $name
+			dataWaves[idx] = wv
+			idx           += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx) dataWaves
+
+	return dataWaves
+End
+
+/// @brief Apply `offset` to all sweep data waves (not the backups) of the SweepBrowser `win` and return the number of modified waves
+Function ModifySweepBrowserData(string win, variable offset)
+
+	WAVE/WAVE dataWaves = GetSweepBrowserDataWaves(win)
+	for(WAVE wv : dataWaves)
+		wv += offset
+	endfor
+
+	return DimSize(dataWaves, ROWS)
 End
 
 Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)
