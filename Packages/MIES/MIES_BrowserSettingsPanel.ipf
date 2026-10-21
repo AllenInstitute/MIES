@@ -1253,7 +1253,7 @@ End
 Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 	string bspPanel, bsPanel, graph, device
-	variable numEntries, i, sweepNo
+	variable numEntries, i
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1276,7 +1276,7 @@ Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 				numEntries = DimSize(sweeps, ROWS)
 				for(i = 0; i < numEntries; i += 1)
-					DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, i)
+					DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweeps[i])
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor
 			else
@@ -1285,8 +1285,11 @@ Function BSP_ButtonProc_RestoreData(STRUCT WMButtonAction &ba) : ButtonControl
 
 				numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 				for(i = 0; i < numEntries; i += 1)
-					DFREF sweepDFR       = SB_GetSweepDataFolder(sweepMap, i)
-					DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+					DFREF singleSweepDFR = SB_GetSweepDataPathFromIndex(sweepBrowserDFR, i)
+					if(!DataFolderExistsDFR(singleSweepDFR))
+						continue
+					endif
+
 					ReplaceWaveWithBackupForAll(singleSweepDFR)
 				endfor
 			endif
