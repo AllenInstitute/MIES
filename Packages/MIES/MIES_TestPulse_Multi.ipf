@@ -131,7 +131,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 		s.count += 1
 	endif
 
-	now = DateTime
+	now = DateTimeHighPrec()
 
 	debTime = DEBUG_TIMER_START()
 
@@ -208,7 +208,7 @@ Function TPM_BkrdTPFuncMD(STRUCT BackgroundStruct &s)
 						endtry
 
 						tpCounter += 1
-						if((DateTime - now) < TPM_NI_TASKTIMEOUT)
+						if((DateTimeHighPrec() - now) < TPM_NI_TASKTIMEOUT)
 							checkAgain = 1
 						else
 							DEBUGPRINT("Warning: NI DAC readout is late, aborted further reading.")
