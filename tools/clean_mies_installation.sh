@@ -11,6 +11,43 @@ usage()
   exit 1
 }
 
+# Usage: mklnk TARGET SHORTCUT_PATH
+# TARGET can be a file or a directory.
+# Example: mklnk ~/Projects ~/Desktop/Projects
+#          mklnk ~/bin/tool.exe ~/Desktop/Tool
+mklnk() {
+    if [[ $# -ne 2 ]]; then
+        echo "usage: mklnk TARGET SHORTCUT_PATH" >&2
+        return 1
+    fi
+    [[ -e $1 ]] || { echo "mklnk: no such file or directory: $1" >&2; return 1; }
+
+    local target workdir shortcut="$2"
+    [[ $shortcut == *.lnk ]] || shortcut+=".lnk"
+
+    target=$(cygpath -wa "$1") || return 1
+    shortcut=$(cygpath -wa "$shortcut") || return 1
+
+    # Folders: "Start in" is the folder itself; files: their parent folder
+    if [[ -d $1 ]]; then
+        workdir=$target
+    else
+        workdir=$(cygpath -wa "$(dirname -- "$1")") || return 1
+    fi
+
+    # Escape single quotes for PowerShell ('' inside '...')
+    target=${target//\'/\'\'}
+    workdir=${workdir//\'/\'\'}
+    shortcut=${shortcut//\'/\'\'}
+
+    powershell.exe -NoProfile -Command "
+        \$s = (New-Object -ComObject WScript.Shell).CreateShortcut('$shortcut');
+        \$s.TargetPath = '$target';
+        \$s.WorkingDirectory = '$workdir';
+        \$s.Save()
+    "
+}
+
 skipHardwareXOPs=0
 sourceLoc=git
 
@@ -122,13 +159,12 @@ do
   mkdir -p "$user_proc"
 
   # install testing files from git repo
-  mkdir -p "$user_proc/igortest"
-  cp -r  "$top_level"/Packages/igortest/procedures "$user_proc/igortest"
-  cp -r  "$top_level"/Packages/tests  "$user_proc"
-  cp -r  "$top_level"/Packages/doc/ipf  "$user_proc"
+  mklnk "$top_level"/Packages/igortest/procedures "$user_proc/igortest"
+  mklnk "$top_level"/Packages/tests  "$user_proc/tests"
+  mklnk "$top_level"/Packages/doc/ipf  "$user_proc/ipf"
 
   # only install to $user_proc as it contains specialized igor hooks
-  cp -r  "$top_level"/Packages/conversion  "$user_proc"
+  mklnk "$top_level"/Packages/conversion  "$user_proc/conversion"
 
   if [ "$sourceLoc" = "installer" ]
   then
@@ -138,37 +174,36 @@ do
     continue
   fi
 
-  cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
-  cp -r  "$base_folder"/Packages/MIES_Include.ipf  "$user_proc"
-  cp -r  "$base_folder"/Packages/MIES  "$user_proc"
-  cp -r  "$base_folder"/Packages/Settings  "$user_proc"
-  cp -r  "$base_folder"/Packages/Stimsets  "$user_proc"
+  mklnk "$base_folder"/Packages/IPNWB  "$user_proc/IPNWB"
+  mklnk "$base_folder"/Packages/MIES_Include.ipf  "$user_proc/MIES_Include.ipf"
+  mklnk "$base_folder"/Packages/MIES  "$user_proc/MIES"
+  mklnk "$base_folder"/Packages/Settings  "$user_proc/Settings"
+  mklnk "$base_folder"/Packages/Stimsets  "$user_proc/Stimsets"
 
   mkdir -p "$user_proc/ITCXOP2"
-  cp -r  "$base_folder"/Packages/ITCXOP2/tools "$user_proc/ITCXOP2"
+  mklnk "$base_folder"/Packages/ITCXOP2/tools "$user_proc/ITCXOP2"
 
   mkdir -p "$xops64"
 
   if [ "$skipHardwareXOPs" = "0" ]
   then
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/*  "$xops64"
+    mklnk "$base_folder"/XOPs-IP${i}-64bit  "$xops64/IP${i}"
+    mklnk "$base_folder"/XOPs-64bit  "$xops64/generic"
   else
-    cp -r  "$base_folder"/XOPs-64bit/MIESUtils*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/JSON*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/ZeroMQ*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/TUF*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/libzmq*  "$xops64"
-    cp -r  "$base_folder"/XOPs-64bit/mies-nwb2-compound*  "$xops64"
+    mklnk "$base_folder"/XOPs-64bit/MIESUtils*  "$xops64/MIESUtils"
+    mklnk "$base_folder"/XOPs-64bit/JSON*  "$xops64/JSON"
+    mklnk "$base_folder"/XOPs-64bit/ZeroMQ*  "$xops64/ZeroMQ"
+    mklnk "$base_folder"/XOPs-64bit/TUF*  "$xops64/TUF"
+    mklnk "$base_folder"/XOPs-64bit/libzmq*  "$xops64/libzmq"
+    mklnk "$base_folder"/XOPs-64bit/mies-nwb2-compound*  "$xops64/mies-nwb2-compound"
   fi
 
   if [ "$sourceLoc" = "git" ]
   then
-    echo "Release: FAKE MIES VERSION" > "$igor_user_files"/version.txt
-  elif [ "$sourceLoc" = "release" ]
-  then
-    cp "$base_folder"/version.txt "$igor_user_files"
+    echo "Release: FAKE MIES VERSION" > "$base_folder"/version.txt
   fi
+
+  mklnk "$base_folder"/version.txt "$igor_user_files/version.txt"
 done
 
 exit 0
