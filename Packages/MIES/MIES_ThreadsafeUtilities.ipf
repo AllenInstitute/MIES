@@ -8,6 +8,7 @@
 
 static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 1
 static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or index.
+static Constant TS_STOP_TIMEOUT_IN_MS       = 2000
 
 /// @file MIES_ThreadsafeUtilities.ipf
 /// @brief __TS__ Helper functions for threadsafe code and main/worker function interactions.
@@ -236,11 +237,9 @@ End
 /// @brief Stop the given thread group
 ///
 /// Assumes that the running worker functions finish on getting the `abort`
-/// variable sent.
+/// variable sent. Worker functions which don't finish within #TS_STOP_TIMEOUT_IN_MS
+/// are aborted, which is reported as bug.
 Function TS_StopThreadGroup(variable tgID)
-
-	variable numThreadsRunning
-	string   msg
 
 	if(!IsFinite(tgID) || TS_ThreadGroupFinished(tgID))
 		// nothing to do
@@ -249,15 +248,11 @@ Function TS_StopThreadGroup(variable tgID)
 
 	TS_ThreadGroupPutVariable(tgID, "abort", 1)
 
-	numThreadsRunning = ThreadGroupWait(tgID, 100)
-	sprintf msg, "num running threads: %d\r", numThreadsRunning
-	DEBUGPRINT(msg)
-
-	if(numThreadsRunning)
-		printf "WARNING: The thread group %d will be forcefully stopped. This might turn out ugly!\r", tgID
-		ControlWindowToFront()
+	if(ThreadGroupWait(tgID, TS_STOP_TIMEOUT_IN_MS))
+		BUG("The thread group " + num2istr(tgID) + " did not finish in time and is aborted.")
 	endif
 
-	sprintf msg, "return value %g, thread release %g\r", ThreadReturnValue(tgID, 0), ThreadGroupRelease(tgID)
-	DEBUGPRINT(msg)
+	if(ThreadGroupRelease(tgID) == -2)
+		BUG("The thread group " + num2istr(tgID) + " had to be killed.")
+	endif
 End

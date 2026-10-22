@@ -247,7 +247,13 @@ End
 
 /// @brief Check wether the given background task is running and that the
 ///        device is active in multi device mode.
+///
+/// Device IDs are only unique per hardware type, so the device is identified by its device ID
+/// and hardware type. The list of the multi device DAQ timer holds no hardware type, there the
+/// device is identified by its name.
 Function IsDeviceActiveWithBGTask(string device, string task)
+
+	variable hardwareType, row
 
 	if(!IsBackgroundTaskRunning(task))
 		return 0
@@ -255,13 +261,19 @@ Function IsDeviceActiveWithBGTask(string device, string task)
 
 	strswitch(task)
 		case TASKNAME_TPMD:
-			WAVE deviceIDList = GetActiveDevicesTPMD()
+			WAVE deviceList = GetActiveDevicesTPMD()
 			break
 		case TASKNAME_TIMERMD:
-			WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
-			break
+			WAVE/Z/T/SDFR=GetActiveDAQDevicesTimerFolder() deviceNameList = TimerFunctionListWave
+			if(!WaveExists(deviceNameList))
+				DEBUGPRINT("Inconsistent state encountered in IsDeviceActiveWithBGTask")
+				return 1
+			endif
+
+			WAVE/Z indizes = FindIndizes(deviceNameList, col = 0, str = device)
+			return WaveExists(indizes)
 		case TASKNAME_FIFOMONMD:
-			WAVE deviceIDList = GetDQMActiveDeviceList()
+			WAVE deviceList = GetDQMActiveDeviceList()
 			break
 		case TASKNAME_TP: // fallthrough
 		case TASKNAME_TIMER: // fallthrough
@@ -274,7 +286,7 @@ Function IsDeviceActiveWithBGTask(string device, string task)
 			break
 	endswitch
 
-	if(!WaveExists(deviceIDList))
+	if(!WaveExists(deviceList))
 		DEBUGPRINT("Inconsistent state encountered in IsDeviceActiveWithBGTask")
 		return 1
 	endif
@@ -282,8 +294,19 @@ Function IsDeviceActiveWithBGTask(string device, string task)
 	NVAR deviceID = $GetDAQDeviceID(device)
 
 	// running in multi device mode
-	FindValue/V=(deviceID)/RMD=[][0] deviceIDList
-	return V_Value != -1
+	WAVE/Z indizes = FindIndizes(deviceList, colLabel = "DeviceID", var = deviceID)
+	if(!WaveExists(indizes))
+		return 0
+	endif
+
+	hardwareType = GetHardwareType(device)
+	for(row : indizes)
+		if(deviceList[row][%HardwareType] == hardwareType)
+			return 1
+		endif
+	endfor
+
+	return 0
 End
 
 /// @brief Return the next random number using the device specific RNG seed

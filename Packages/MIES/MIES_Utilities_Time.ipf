@@ -189,13 +189,13 @@ End
 /// 	// you can also store all times via
 /// 	StoreElapsedTime(referenceTime)
 /// \endrst
-Function GetReferenceTime()
+threadsafe Function GetReferenceTime()
 
 	return stopmstimer(-2)
 End
 
 /// @brief Get the elapsed time in seconds
-Function GetElapsedTime(variable referenceTime)
+threadsafe Function GetElapsedTime(variable referenceTime)
 
 	return (stopmstimer(-2) - referenceTime) * MICRO_TO_ONE
 End
