@@ -300,6 +300,33 @@ Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
 	return 0
 End
 
+/// @brief Stop the hardware of the running test pulse behind the back of MIES, as a FIFO thread
+///        released while restarting the acquisition does, and then stop the test pulse
+Function StopTPWithHardwareAlreadyStopped_IGNORE(STRUCT WMBackgroundStruct &s)
+
+	variable hardwareType
+
+	SVAR   devices = $GetLockedDevices()
+	string device  = StringFromList(0, devices)
+
+	if(!TP_TestPulseHasCycled(device, 1))
+		return 0
+	endif
+
+	NVAR deviceID = $GetDAQDeviceID(device)
+	hardwareType = GetHardwareType(device)
+
+	if(hardwareType == HARDWARE_ITC_DAC)
+		TFH_StopFifoDaemon(hardwareType, deviceID)
+	endif
+
+	HW_StopAcq(hardwareType, deviceID)
+
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
 
 	SVAR   devices = $GetLockedDevices()
