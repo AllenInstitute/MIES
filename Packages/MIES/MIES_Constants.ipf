@@ -128,6 +128,20 @@ StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
 /// Amount of free memory required to perform data aquisition in GiB
 Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
+/// @name Types of MU_GetMemoryStatistics
+/// @anchor MemoryStatisticsTypes
+///@{
+Constant MEMORY_STATISTICS_TOTAL_PHYSICAL   = 0 ///< total physical memory [bytes]
+Constant MEMORY_STATISTICS_FREE_PHYSICAL    = 1 ///< free physical memory, i.e. available to all processes [bytes]
+Constant MEMORY_STATISTICS_USED_PHYSICAL    = 2 ///< physical memory used by all processes [bytes]
+Constant MEMORY_STATISTICS_MEMORY_LOAD      = 3 ///< memory load [%]
+Constant MEMORY_STATISTICS_COMMIT_LIMIT     = 4 ///< physical memory plus page file [bytes]
+Constant MEMORY_STATISTICS_FREE_COMMIT      = 5 ///< free commit [bytes]
+Constant MEMORY_STATISTICS_WORKING_SET      = 6 ///< working set of Igor Pro [bytes]
+Constant MEMORY_STATISTICS_PEAK_WORKING_SET = 7 ///< peak working set of Igor Pro [bytes]
+Constant MEMORY_STATISTICS_PRIVATE_BYTES    = 8 ///< private bytes of Igor Pro [bytes]
+///@}
+
 /// @name Pressure Control constants
 ///@{
 /// Max, min and atmospheric pressure regulator pressure in psi
