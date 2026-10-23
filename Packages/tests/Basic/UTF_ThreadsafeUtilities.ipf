@@ -20,6 +20,8 @@ static Function TEST_CASE_END_OVERRIDE(string testname)
 	TestCaseEndCommon(testname)
 End
 
+#ifndef THREADING_DISABLED
+
 /// @brief Worker which waits for input from the main thread, then for `delay` [s] and finishes
 ///
 /// With an infinite delay it does not finish on its own.
@@ -87,6 +89,8 @@ static Function StopThreadGroupAbortsHangingWorker()
 
 	DisableBugChecks()
 End
+
+#endif // !THREADING_DISABLED
 
 static Function StopThreadGroupIgnoresInvalidThreadGroup()
 
