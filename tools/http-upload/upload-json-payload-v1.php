@@ -54,9 +54,16 @@ function create_unique_folder($basefolder)
 {
   $folder = $basefolder;
 
+  // mkdir is atomic, so parallel uploads with the same basefolder get different folders,
+  // suppress its warning for existing folders as it would prevent setting the status code
   $count=0;
-  while(!mkdir($folder, 0700, true))
+  while(!@mkdir($folder, 0700, true))
   {
+    if(!file_exists($folder))
+    {
+      die_with_http_status_code(500, "Problem creating folder " . $folder);
+    }
+
     $folder = $basefolder . "_" . $count++;
   }
 
