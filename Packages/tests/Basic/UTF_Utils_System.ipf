@@ -123,6 +123,22 @@ static Function TestUploadJsonPayload()
 End
 /// @}
 
+// Marking the experiment as unmodified can not be tested, as igortest copies the history into the
+// HistoryCarbonCopy notebook, which marks the experiment as modified again after history output
+
+static Function GetExperimentModifiedWorks()
+
+	ExperimentModified 1
+	CHECK_EQUAL_VAR(GetExperimentModified(), 1)
+End
+
+static Function RestoreExperimentModifiedKeepsModified()
+
+	ExperimentModified 1
+	RestoreExperimentModified(1)
+	CHECK_EQUAL_VAR(GetExperimentModified(), 1)
+End
+
 static Function TestCacheBackupAndRestore()
 
 	string name

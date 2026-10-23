@@ -248,13 +248,11 @@ static Function IgorBeforeNewHook(string igorApplicationNameStr)
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	ExperimentModified
-	modifiedBefore = V_flag
+	modifiedBefore = GetExperimentModified()
 
 	IH_Cleanup()
 
-	ExperimentModified
-	modifiedAfter = V_flag
+	modifiedAfter = GetExperimentModified()
 
 	if(!modifiedBefore && modifiedAfter && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
 		LOG_AddEntry(PACKAGE_MIES, "before save")
@@ -276,8 +274,7 @@ static Function IgorStartOrNewHook(string igorApplicationNameStr)
 	string   miesVersion
 	variable modifiedBefore
 
-	ExperimentModified
-	modifiedBefore = V_flag
+	modifiedBefore = GetExperimentModified()
 
 	RestoreCacheWaves()
 
@@ -297,9 +294,7 @@ static Function IgorStartOrNewHook(string igorApplicationNameStr)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
-	if(!modifiedBefore)
-		ExperimentModified 0
-	endif
+	RestoreExperimentModified(modifiedBefore)
 
 	return 0
 End
@@ -340,8 +335,7 @@ static Function AfterCompiledHook()
 
 	variable modifiedBefore
 
-	ExperimentModified
-	modifiedBefore = V_flag
+	modifiedBefore = GetExperimentModified()
 
 	PS_FixPackageLocation(PACKAGE_MIES)
 
@@ -357,9 +351,7 @@ static Function AfterCompiledHook()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
-	if(!modifiedBefore)
-		ExperimentModified 0
-	endif
+	RestoreExperimentModified(modifiedBefore)
 End
 
 #endif // MIES_PXP_NWB_CONVERSION_SKIP_SAVING

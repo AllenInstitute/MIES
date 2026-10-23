@@ -28,6 +28,21 @@ threadsafe Function/S GetExperimentFileType()
 
 End
 
+/// @brief Return the modified state of the experiment
+Function GetExperimentModified()
+
+	ExperimentModified
+	return V_flag
+End
+
+/// @brief Mark the experiment as unmodified if it was unmodified before, see GetExperimentModified()
+Function RestoreExperimentModified(variable modifiedBefore)
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
+End
+
 /// @brief Return the amount of free memory in GB
 ///
 /// Due to memory fragmentation you can not assume that you can still create a wave
