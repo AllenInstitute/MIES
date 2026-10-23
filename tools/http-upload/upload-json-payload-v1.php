@@ -110,6 +110,11 @@ if($received_data == False)
 
 $input = json_decode($received_data, true);
 
+if(!is_array($input))
+{
+  die_with_http_status_code(400, "Invalid JSON");
+}
+
 if(!array_key_exists("payload", $input))
 {
   die_with_http_status_code(400, "Missing payload");
