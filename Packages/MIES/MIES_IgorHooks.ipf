@@ -9,6 +9,8 @@
 /// @file MIES_IgorHooks.ipf
 /// @brief __IH__ Various hooks which influence the behaviour at certain global events
 
+static StrConstant IH_QUIT_PANEL = "MIES_QuitMessage"
+
 /// @brief Remove all strings/variables/waves which should not
 /// survive experiment reload/quit/saving
 ///
@@ -199,6 +201,7 @@ static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebook
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
+	ShowQuitMessage()
 	IH_Cleanup()
 
 	// save the experiment silently if it was saved before
@@ -208,24 +211,65 @@ static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebook
 		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
 
+	// The quit message is saved with the experiment and killed on loading, see IH_KillTemporaryWindows().
+	HideQuitMessage()
+
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 0
 End
 
+/// @brief Show the quit message
+///
+/// The quit message does not change the modified state of the experiment.
 static Function ShowQuitMessage()
 
-	variable xPos, yPos
+	variable xPos, yPos, modifiedBefore
+
+	if(WindowExists(IH_QUIT_PANEL))
+		return NaN
+	endif
+
+	modifiedBefore = GetExperimentModified()
 
 	GetWindow kwFrameInner, wSizeDC
 	xPos = (V_right - V_left) / 2 - 400
 	yPos = (V_bottom - V_top) / 3
-	NewPanel/K=1/W=(xPos, yPos, xPos + 800, yPos + 75) as "Just a moment"
+	NewPanel/K=1/N=$IH_QUIT_PANEL/W=(xPos, yPos, xPos + 800, yPos + 75) as "Just a moment"
+	SetWindow $IH_QUIT_PANEL, userdata($UDATA_TEMPORARY_WINDOW)="1"
 	ModifyPanel fixedSize=0
 	TitleBox title_Counts, pos={0.00, 0.00}, size={800, 90.00}, title="Quitting MIES..."
 	TitleBox title_Counts, font="Courier New", fSize=72, frame=0, fStyle=1
 	TitleBox title_Counts, anchor=MC, fixedSize=1
 	DoUpdate
+
+	RestoreExperimentModified(modifiedBefore)
+End
+
+static Function HideQuitMessage()
+
+	variable modifiedBefore
+
+	modifiedBefore = GetExperimentModified()
+
+	KillWindow/Z $IH_QUIT_PANEL
+
+	RestoreExperimentModified(modifiedBefore)
+End
+
+/// @brief Kill all windows marked with the userdata #UDATA_TEMPORARY_WINDOW
+///
+/// These windows are saved with the experiment and recreated when it is loaded.
+static Function IH_KillTemporaryWindows()
+
+	string win
+
+	WAVE/Z/T wins = ListToTextWave(WinList("*", ";", "WIN:" + num2istr(WINDOWTYPE_GRAPH | WINDOWTYPE_TABLE | WINDOWTYPE_LAYOUT | WINDOWTYPE_NOTEBOOK | WINDOWTYPE_PANEL)), ";")
+	for(win : wins)
+		if(!cmpstr(GetUserData(win, "", UDATA_TEMPORARY_WINDOW), "1"))
+			KillWindow/Z $win
+		endif
+	endfor
 End
 
 static Function IgorQuitHook(string igorApplicationNameStr)
@@ -340,6 +384,10 @@ static Function AfterCompiledHook()
 	PS_FixPackageLocation(PACKAGE_MIES)
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
+
+	// the saved windows are already recreated when an experiment is loaded
+	// and Igor Pro marks the experiment as unmodified after this hook
+	IH_KillTemporaryWindows()
 
 	ASYNC_Start(threadprocessorCount, disableTask = 1)
 
