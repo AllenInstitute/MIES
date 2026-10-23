@@ -124,12 +124,15 @@ static Function BeforeExperimentSaveHook(variable rN, string fileName, string pa
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
+	IH_ShowQuitAction("Storing comments and settings")
 	DAP_SerializeAllCommentNBs()
 	IH_SerializeSettings()
 
+	IH_ShowQuitAction("Removing temporary data")
 	IH_KillTemporaries()
 	CA_Compactify()
 
+	IH_ShowQuitAction("Flushing NWB files")
 	WAVE/T devicesWithContent = ListToTextWave(GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL), ";")
 	for(device : devicesWithContent)
 		NVAR fileIDExport = $GetNWBFileIDExport(device)
@@ -139,6 +142,9 @@ static Function BeforeExperimentSaveHook(variable rN, string fileName, string pa
 	endfor
 
 	UpdateXOPLoggingTemplate()
+
+	// Igor Pro writes the experiment file after this hook
+	IH_ShowQuitAction("Saving the experiment")
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
@@ -164,17 +170,21 @@ static Function IH_Cleanup()
 	// and ignore them
 	AssertOnAndClearRTError()
 	try
+		IH_ShowQuitAction("Unlocking devices")
 		DAP_UnlockAllDevices(); AbortOnRTE
+		IH_ShowQuitAction("Removing temporary data")
 		IH_RemoveAmplifierConnWaves(); AbortOnRTE
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
 		CA_FlushCache(); AbortOnRTE
+		IH_ShowQuitAction("Storing settings")
 		IH_SerializeSettings(); AbortOnRTE
 
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber
 
 		if(ASYNC_IsWorkloadClassDone(WORKLOADCLASS_URL) == 0)
+			IH_ShowQuitAction("Uploading diagnostic data")
 			printf "Waiting for the upload of the diagnostic data to finish, this can take a while.\r"
 		endif
 
@@ -209,6 +219,12 @@ static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebook
 		LOG_AddEntry(PACKAGE_MIES, "before save")
 		SaveExperiment; err = GetRTError(1)
 		LOG_AddEntry(PACKAGE_MIES, "after save")
+
+		// The quit message updated during saving can leave the experiment marked as modified,
+		// keep it marked if saving failed.
+		if(!err)
+			ExperimentModified 0
+		endif
 	endif
 
 	// The quit message is saved with the experiment and killed on loading, see IH_KillTemporaryWindows().
@@ -219,7 +235,7 @@ static Function IgorBeforeQuitHook(variable unsavedExp, variable unsavedNotebook
 	return 0
 End
 
-/// @brief Show the quit message
+/// @brief Show the quit message with a line for the current action, see IH_ShowQuitAction()
 ///
 /// The quit message does not change the modified state of the experiment.
 static Function ShowQuitMessage()
@@ -235,13 +251,35 @@ static Function ShowQuitMessage()
 	GetWindow kwFrameInner, wSizeDC
 	xPos = (V_right - V_left) / 2 - 400
 	yPos = (V_bottom - V_top) / 3
-	NewPanel/K=1/N=$IH_QUIT_PANEL/W=(xPos, yPos, xPos + 800, yPos + 75) as "Just a moment"
+	NewPanel/K=1/N=$IH_QUIT_PANEL/W=(xPos, yPos, xPos + 800, yPos + 100) as "Just a moment"
 	SetWindow $IH_QUIT_PANEL, userdata($UDATA_TEMPORARY_WINDOW)="1"
 	ModifyPanel fixedSize=0
-	TitleBox title_Counts, pos={0.00, 0.00}, size={800, 90.00}, title="Quitting MIES..."
+	TitleBox title_Counts, pos={0.00, 0.00}, size={800, 75.00}, title="Quitting MIES..."
 	TitleBox title_Counts, font="Courier New", fSize=72, frame=0, fStyle=1
 	TitleBox title_Counts, anchor=MC, fixedSize=1
+	TitleBox title_Action, pos={0.00, 75.00}, size={800, 25.00}, title=""
+	TitleBox title_Action, font="Courier New", fSize=16, frame=0
+	TitleBox title_Action, anchor=MC, fixedSize=1
 	DoUpdate
+
+	RestoreExperimentModified(modifiedBefore)
+End
+
+/// @brief Show the current action in the quit message
+///
+/// Does nothing if the quit message is not shown, e.g. when IH_Cleanup() is called before a new experiment.
+static Function IH_ShowQuitAction(string action)
+
+	variable modifiedBefore
+
+	if(!WindowExists(IH_QUIT_PANEL))
+		return NaN
+	endif
+
+	modifiedBefore = GetExperimentModified()
+
+	TitleBox title_Action, win=$IH_QUIT_PANEL, title=action
+	DoUpdate/W=$IH_QUIT_PANEL
 
 	RestoreExperimentModified(modifiedBefore)
 End
@@ -277,7 +315,9 @@ static Function IgorQuitHook(string igorApplicationNameStr)
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	ShowQuitMessage()
+	IH_ShowQuitAction("Stopping ZeroMQ")
 	zeromq_stop()
+	IH_ShowQuitAction("Archiving log files")
 	ArchiveLogFilesOnceAndKeepMonth()
 	IH_Cleanup()
 
