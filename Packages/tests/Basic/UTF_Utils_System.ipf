@@ -6,7 +6,6 @@
 // Missing Tests for:
 // GetExperimentName
 // GetExperimentFileType
-// GetFreeMemory
 // IsBackgroundTaskRunning
 // QuerySetIgorOption
 // ForceRecompile
@@ -110,6 +109,20 @@ static Function TestUploadJsonPayload()
 	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
 End
 /// @}
+
+static Function GetFreeMemoryReturnsFreePhysicalMemory()
+
+	variable freeMem, totalMem
+
+	freeMem  = GetFreeMemory()
+	totalMem = MU_GetMemoryStatistics(MEMORY_STATISTICS_TOTAL_PHYSICAL) / 1024 / 1024 / 1024
+
+	CHECK_GT_VAR(freeMem, 0)
+	CHECK_LT_VAR(freeMem, totalMem)
+
+	// free memory changes constantly
+	CHECK_CLOSE_VAR(freeMem, MU_GetMemoryStatistics(MEMORY_STATISTICS_FREE_PHYSICAL) / 1024 / 1024 / 1024, tol = 1)
+End
 
 static Function TestCacheBackupAndRestore()
 
