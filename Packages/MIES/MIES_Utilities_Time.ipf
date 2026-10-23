@@ -47,10 +47,33 @@ threadsafe Function LocalTimeToUTC(variable localTime)
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
+///
+/// The time has sub-microsecond resolution on Windows, see MU_GetDateTimeUTC().
 threadsafe Function DateTimeInUTC()
 
-	return LocalTimeToUTC(DateTime)
+	return MU_GetDateTimeUTC()
 End
+
+/// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in the local time zone
+///
+/// High precision replacement for `DateTime`, see DateTimeInUTC().
+threadsafe Function DateTimeHighPrec()
+
+	return UTCTimeToLocal(DateTimeInUTC())
+End
+
+#ifdef MACINTOSH
+
+/// @brief Replacement for the function of the MIES Utils XOP, which is only available on Windows
+///
+/// Has the coarse resolution of DateTime of up to 50 ms. MIES only analyzes data on macOS, so no
+/// acquisition relies on the higher resolution.
+threadsafe Function MU_GetDateTimeUTC()
+
+	return LocalTimeToUTC(DateTime) // NOLINT
+End
+
+#endif // MACINTOSH
 
 /// @brief Return a string in ISO 8601 format with timezone UTC
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
