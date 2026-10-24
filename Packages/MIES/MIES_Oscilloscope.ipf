@@ -106,7 +106,7 @@ Function SCOPE_UpdateGraph(string device, variable dataAcqOrTP)
 
 	NVAR timestamp = $GetLastAcqHookCallTimeStamp(device)
 	updateInt = DAG_GetNumericalValue(device, "setvar_Settings_OsciUpdInt")
-	now       = DateTime
+	now       = DateTimeHighPrec()
 	if((now - timestamp) < (updateInt * MILLI_TO_ONE))
 		return 0
 	endif

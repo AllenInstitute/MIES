@@ -1334,7 +1334,7 @@ static Function TP_RecordTP(string device, WAVE TPResults)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN
 
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
-	now              = DateTime
+	now              = DateTimeHighPrec()
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(device)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format = "%.06f")

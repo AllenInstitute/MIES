@@ -939,7 +939,7 @@ End
 threadsafe static Function PUB_CheckPublishingTime(string pubFilter, variable period)
 
 	variable lastTime
-	variable curTime = DateTime
+	variable curTime = DateTimeHighPrec()
 
 	TUFXOP_AcquireLock/N=(pubFilter)
 	lastTime = TSDS_ReadVar(pubFilter, defValue = 0, create = 1)
