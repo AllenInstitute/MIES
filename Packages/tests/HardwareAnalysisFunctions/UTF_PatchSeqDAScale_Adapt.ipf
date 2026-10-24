@@ -70,6 +70,18 @@ static Function GlobalPreAcq(string device)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
+static Function/WAVE GetAsyncQCChannels_IGNORE()
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// Sutter hardware has only four async channels
+	Make/FREE/D asyncChannels = {2, 3}
+#else
+	Make/FREE/D asyncChannels = {2, 4}
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
+	return asyncChannels
+End
+
 static Function/WAVE GetResultsSingleEntry_IGNORE(string name)
 
 	variable nameCol, typeCol
@@ -382,7 +394,7 @@ static Function PS_DS_AD1_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -521,7 +533,7 @@ static Function PS_DS_AD1a_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -706,7 +718,7 @@ static Function PS_DS_AD2_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -818,7 +830,7 @@ static Function PS_DS_AD2a_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -934,7 +946,7 @@ static Function PS_DS_AD2b_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1048,7 +1060,7 @@ static Function PS_DS_AD3_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1162,7 +1174,7 @@ static Function PS_DS_AD4_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1215,7 +1227,7 @@ static Function PS_DS_AD4a_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1268,7 +1280,7 @@ static Function PS_DS_AD5_preAcq(string device)
 
 	// defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1320,7 +1332,7 @@ static Function PS_DS_AD6_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1432,7 +1444,7 @@ static Function PS_DS_AD7_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1548,7 +1560,7 @@ static Function PS_DS_AD8_preAcq(string device)
 
 	// defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1598,7 +1610,7 @@ static Function PS_DS_AD10_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1711,7 +1723,7 @@ static Function PS_DS_AD12_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1839,7 +1851,7 @@ static Function PS_DS_AD12a_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -1967,7 +1979,7 @@ static Function PS_DS_AD13_preAcq(string device)
 
 	// defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2080,7 +2092,7 @@ static Function PS_DS_AD14_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2193,7 +2205,7 @@ static Function PS_DS_AD15_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2309,7 +2321,7 @@ static Function PS_DS_AD16_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2427,7 +2439,7 @@ static Function PS_DS_AD17_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2537,7 +2549,7 @@ static Function PS_DS_AD18_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2635,7 +2647,7 @@ static Function PS_DS_AD19_preAcq(string device)
 
 	// use defaults
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2651,6 +2663,12 @@ static Function PS_DS_AD19_preAcq(string device)
 
 	Make/FREE/D apFrequenciesFromRhSuAd = {1, 2, 3, 4}
 	JWN_SetWaveInWaveNote(overrideResults, "APFrequenciesRhSuAd", apFrequenciesFromRhSuAd)
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// the Sutter amplifier has a five times larger current clamp output range, scale the pulse
+	// so that the future DAScale value is out-of-range as with the other hardware
+	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Amplitude", epochIndex = 1, var = 5)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
@@ -2725,6 +2743,10 @@ static Function PS_DS_AD19_REENTRY([string str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	// restore the stimset for the following test cases, the epoch checks above require the scaled one
+	ST_SetStimsetParameter("PSQ_DaScale_Adapt_DA_0", "Amplitude", epochIndex = 1, var = 1)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 End
 
 static Function PS_DS_AD20_preAcq(string device)
@@ -2745,7 +2767,7 @@ static Function PS_DS_AD20_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2857,7 +2879,7 @@ static Function PS_DS_AD21_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
@@ -2975,7 +2997,7 @@ static Function PS_DS_AD22_preAcq(string device)
 
 	// use defaults for the rest
 
-	Make/FREE asyncChannels = {2, 4}
+	WAVE asyncChannels = GetAsyncQCChannels_IGNORE()
 	AFH_AddAnalysisParameter("PSQ_DaScale_Adapt_DA_0", "AsyncQCChannels", wv = asyncChannels)
 
 	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)

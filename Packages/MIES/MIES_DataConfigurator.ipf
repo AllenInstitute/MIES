@@ -10,6 +10,12 @@
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the DAQ data and config waves
 
+/// @name Tolerances for detecting border values in floating point DAQ data
+///@{
+static Constant DC_BORDER_VAL_TOL_VOLTAGE = 1E-6  ///< [V]
+static Constant DC_BORDER_VAL_TOL_CURRENT = 1E-15 ///< [A], Sutter headstage outputs in current clamp
+///@}
+
 /// @brief Update global variables used by the Testpulse or DAQ
 static Function DC_UpdateGlobals(string device, variable dataAcqOrTP)
 
@@ -1422,7 +1428,7 @@ static Function DC_FillDAQDataWaveForTP(string device, STRUCT DataConfigurationR
 					ASSERT(!mod(DimSize(SUChannel, ROWS), s.testPulseLength), "Sutter TP channel length is not integer multiple of test pulse length")
 					tpAmp = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-					[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]))
+					[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, !IsNaN(config[i][%HEADSTAGE]), clampMode = config[i][%CLAMPMODE])
 					Multithread SUChannel[] = limit(tpAmp * s.testPulse[mod(p, s.testPulseLength)], minLimit, maxLimit); AbortOnRTE
 				endfor
 
@@ -1456,7 +1462,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 		isAssociated = IsAssociatedChannel(headstage)
 		tpAmp        = s.DACAmp[i][%TPAMP] * s.gains[i]
 
-		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated)
+		[minLimit, maxLimit] = HW_GetDataRange(s.hardwareType, XOP_CHANNEL_TYPE_DAC, isAssociated, clampMode = config[i][%CLAMPMODE])
 
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			ASSERT(GetWaveDimensionality(s.testPulse) == ROWS, "Expected a 1D testpulse wave")
@@ -1932,7 +1938,7 @@ End
 
 static Function [variable result, variable row, variable column] DC_CheckIfDataWaveHasBorderVals(string device, variable dataAcqOrTP)
 
-	variable i, minVal, maxVal, channelType
+	variable i, minVal, maxVal, channelType, tol, isAssociated, clampMode
 	variable hardwareType = GetHardwareType(device)
 	WAVE     configWave   = GetDAQConfigWave(device)
 
@@ -1968,14 +1974,23 @@ static Function [variable result, variable row, variable column] DC_CheckIfDataW
 					i += 1
 					continue
 				endif
-				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, !IsNaN(configWave[i][%HEADSTAGE]))
+				isAssociated     = !IsNaN(configWave[i][%HEADSTAGE])
+				clampMode        = configWave[i][%CLAMPMODE]
+				[minVal, maxVal] = HW_GetDataRange(hardwareType, channelType, isAssociated, clampMode = clampMode)
 
-				FindValue/UOFV/V=(minVal)/T=1E-6 channel
+				// Sutter headstages output a current in current clamp, see HW_GetDataRange()
+				if(hardwareType == HARDWARE_SUTTER_DAC && isAssociated && clampMode == I_CLAMP_MODE)
+					tol = DC_BORDER_VAL_TOL_CURRENT
+				else
+					tol = DC_BORDER_VAL_TOL_VOLTAGE
+				endif
+
+				FindValue/UOFV/V=(minVal)/T=(tol) channel
 				if(V_Value != -1)
 					return [1, V_row, i]
 				endif
 
-				FindValue/UOFV/V=(maxVal)/T=1E-6 channel
+				FindValue/UOFV/V=(maxVal)/T=(tol) channel
 				if(V_Value != -1)
 					return [1, V_row, i]
 				endif
