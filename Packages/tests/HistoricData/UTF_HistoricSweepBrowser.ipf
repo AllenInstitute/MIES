@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = SweepBrowserTests
 
+static StrConstant RESTORE_DATA_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"
+
 /// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
 static Function TestTTLDisplayWithNoEpochInfo([string str])
 
@@ -115,4 +117,52 @@ Function TestSweepFormulaPowerSpectrumAverage()
 	       "powerspectrum($dat, default, avg)"
 
 	ExecuteSweepFormulaCode(sweepBrowser, code)
+End
+
+static Function RestoreDataRestoresAllSweeps()
+
+	string abWin, sweepBrowsers, win, name
+	variable i, numSweeps
+
+	Make/FREE/T files = {RESTORE_DATA_FILENAME}
+	DownloadFilesIfRequired(files)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
+
+	win = StringFromList(0, sweepBrowsers)
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	// more than one sweep per experiment/device, as sweep zero was the only one restored before
+	CHECK_GT_VAR(numSweeps, 2)
+	CHECK_GT_VAR(ModifySweepBrowserData(win, 1), numSweeps)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_Calculation_RestoreData")
+
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, ".*", typeFlag = COUNTOBJECTS_WAVES), ";")
+		for(name : names)
+			if(StringEndsWith(name, WAVE_BACKUP_SUFFIX))
+				continue
+			endif
+			WAVE/SDFR=sweepDFR wv     = $name
+			WAVE/Z             backup = GetBackupWave(wv)
+			CHECK_WAVE(backup, NUMERIC_WAVE)
+			CHECK_EQUAL_WAVES(wv, backup, mode = WAVE_DATA)
+		endfor
+	endfor
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBrowserWithoutBackupWaves([string str])
+
+	CheckLoadingSweepsWithoutBackups("input:" + str)
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBackupsAreRemovedOnLowMemory([string str])
+
+	CheckRemovingSweepBackupsOnLowMemory("input:" + str)
 End
