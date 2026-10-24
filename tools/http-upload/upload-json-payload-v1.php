@@ -42,14 +42,28 @@ function sanitize_filename($str)
   return preg_replace("/[^a-zA-Z0-9.: ]+/", "-", $str);
 }
 
+/// @brief Respond with the HTTP status `code` and the error message `msg` and stop the script
+function die_with_http_status_code($code, $msg)
+{
+  http_response_code($code);
+  die($msg);
+}
+
 /// @brief Create a unique folder named `basefolder_XXX` and return its name
 function create_unique_folder($basefolder)
 {
   $folder = $basefolder;
 
+  // mkdir is atomic, so parallel uploads with the same basefolder get different folders,
+  // suppress its warning for existing folders as it would prevent setting the status code
   $count=0;
-  while(!mkdir($folder, 0700, true))
+  while(!@mkdir($folder, 0700, true))
   {
+    if(!file_exists($folder))
+    {
+      die_with_http_status_code(500, "Problem creating folder " . $folder);
+    }
+
     $folder = $basefolder . "_" . $count++;
   }
 
@@ -77,13 +91,13 @@ function decode_contents($elem)
 
       if($contents == False) # not base64 encoded
       {
-        die("Contents could not be base64 decoded");
+        die_with_http_status_code(400, "Contents could not be base64 decoded");
       }
 
       return $contents;
     }
 
-    die("Invalid encoding value.");
+    die_with_http_status_code(400, "Invalid encoding value.");
 }
 
 // get the HTTP method, path and body of the request
@@ -91,21 +105,26 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 if($method != "PUT")
 {
-  die("Unsupported HTTP method");
+  die_with_http_status_code(405, "Unsupported HTTP method");
 }
 
 $received_data = file_get_contents("php://input");
 
 if($received_data == False)
 {
-  die("Missing data on HTTP PUT method.");
+  die_with_http_status_code(400, "Missing data on HTTP PUT method.");
 }
 
 $input = json_decode($received_data, true);
 
+if(!is_array($input))
+{
+  die_with_http_status_code(400, "Invalid JSON");
+}
+
 if(!array_key_exists("payload", $input))
 {
-  die("Missing payload");
+  die_with_http_status_code(400, "Missing payload");
 }
 
 $computer = get_array_value($input, "computer", "unknown");
@@ -118,7 +137,7 @@ $filename = tempnam($folder, "ip_");
 $ret = file_put_contents($filename, $_SERVER['REMOTE_ADDR']);
 if($ret == 0 || $ret == FALSE)
 {
-  die("Problem writing file " . $filename);
+  die_with_http_status_code(500, "Problem writing file " . $filename);
 }
 
 foreach($input["payload"] as $elem)
@@ -133,7 +152,7 @@ foreach($input["payload"] as $elem)
       $ret = file_put_contents($filename, $contents);
       if($ret == 0 || $ret == FALSE)
       {
-        die("Problem writing file " . $filename);
+        die_with_http_status_code(500, "Problem writing file " . $filename);
       }
     }
   }
