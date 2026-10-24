@@ -28,6 +28,14 @@
 // GetIgorInstanceID
 // CleanupOperationQueueResult
 
+/// @name Log entries of UploadJSONPayload for an upload of an empty JSON, which is dumped as "null"
+///
+/// The upload ID is appended to the regular expressions.
+///@{
+static StrConstant UPLOAD_START_REGEXP = "\"action\":\"start\",.*\"size\":\"4\",\"source\":\"UploadJSONPayload\",\"timeout\":\"15\",\"ts\":\"[^\"]*\",\"uploadID\":\""
+static StrConstant UPLOAD_END_REGEXP   = "\"action\":\"end\",.*\"rate \[kB per s\]\":\"[0-9.]+\",\"source\":\"UploadJSONPayload\",\"ts\":\"[^\"]*\",\"uploadID\":\""
+///@}
+
 /// GetMachineEpsilon
 /// @{
 
@@ -91,25 +99,47 @@ End
 
 /// UploadJSONPayload
 /// @{
-static Function TestUploadJsonPayload()
+// UTF_TD_GENERATOR DataGenerators#UploadJSONPayloadOutcomes
+static Function TestUploadJsonPayload([WAVE wv])
 
-	variable jsonID
-	string filename, logs
+	variable err
+	string filename, logs, msg, uploadID
 
-	WAVE overrideResults = CreateOverrideResults(1)
-	overrideResults[] = 1
+	WAVE overrideResults = CreateOverrideResults(2)
+	overrideResults[0] = wv[%V_flag]
+	overrideResults[1] = wv[%V_responseCode]
 
 	filename = LOG_GetFile(PACKAGE_MIES)
 	DeleteFile/Z filename
 
-	jsonID = JSON_New()
-	UploadJSONPayload(jsonID)
+	[err, msg, uploadID] = UploadJSONPayload(JSON_New())
+	CHECK_EQUAL_VAR(err, wv[%err])
+	CHECK_EQUAL_VAR(GrepString(msg, note(wv)), 1)
+	CHECK_PROPER_STR(uploadID)
 
 	logs = LoadTextFile(filename)
 	CHECK_PROPER_STR(logs)
-	CHECK(GrepString(logs, "\"S_ServerResponse\":\"fake error\",\"V_Flag\":\"1\",\"action\":\"URLRequest failed"))
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_START_REGEXP + uploadID), 1)
+	// only a successful upload has an end entry
+	CHECK_EQUAL_VAR(GrepString(logs, UPLOAD_END_REGEXP + uploadID), !err)
 End
 /// @}
+
+// Marking the experiment as unmodified can not be tested, as igortest copies the history into the
+// HistoryCarbonCopy notebook, which marks the experiment as modified again after history output
+
+static Function GetExperimentModifiedWorks()
+
+	ExperimentModified 1
+	CHECK_EQUAL_VAR(GetExperimentModified(), 1)
+End
+
+static Function RestoreExperimentModifiedKeepsModified()
+
+	ExperimentModified 1
+	RestoreExperimentModified(1)
+	CHECK_EQUAL_VAR(GetExperimentModified(), 1)
+End
 
 static Function TestCacheBackupAndRestore()
 

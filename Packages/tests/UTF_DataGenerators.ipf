@@ -3,6 +3,14 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DataGenerators
 
+/// @name Expected messages of UploadJSONPayload for an upload of an empty JSON, see UploadJSONPayloadOutcomes()
+///@{
+static StrConstant UPLOAD_MSG_FAKE_RESPONSE_REGEXP = "^fake response$"
+static StrConstant UPLOAD_MSG_TIMEOUT_REGEXP       = "^The upload of 4 bytes timed out after 15 s, "
+static StrConstant UPLOAD_MSG_HTTP_404_REGEXP      = "^The server responded with the HTTP status code 404: fake response$"
+static StrConstant UPLOAD_MSG_HTTP_500_REGEXP      = "^The server responded with the HTTP status code 500: fake response$"
+///@}
+
 static Function/WAVE MajorNWBVersions()
 
 	Make/FREE wv = {1, 2}
@@ -2494,6 +2502,32 @@ static Function/WAVE MultiDeviceBackgroundTasks()
 	Make/FREE/T wv = {TASKNAME_TPMD, TASKNAME_TIMERMD, TASKNAME_FIFOMONMD}
 
 	SetDimensionLabels(wv, TextWaveToList(wv, ";"), ROWS)
+
+	return wv
+End
+
+/// @brief Fake outcome of URLRequest for UploadJSONPayload with the expected error
+///
+/// The wave note holds the regular expression for the expected message.
+static Function/WAVE UploadJSONPayloadOutcome(variable vFlag, variable responseCode, variable err, string msgRegExp)
+
+	Make/FREE/D wv = {vFlag, responseCode, err}
+	SetDimensionLabels(wv, "V_flag;V_responseCode;err", ROWS)
+	Note/K wv, msgRegExp
+
+	return wv
+End
+
+static Function/WAVE UploadJSONPayloadOutcomes()
+
+	Make/FREE/WAVE/N=5 wv
+	wv[0] = UploadJSONPayloadOutcome(0, 200, 0, UPLOAD_MSG_FAKE_RESPONSE_REGEXP)
+	wv[1] = UploadJSONPayloadOutcome(8028, 0, 8028, UPLOAD_MSG_TIMEOUT_REGEXP)
+	wv[2] = UploadJSONPayloadOutcome(8027, 0, 8027, UPLOAD_MSG_FAKE_RESPONSE_REGEXP)
+	wv[3] = UploadJSONPayloadOutcome(0, 404, 404, UPLOAD_MSG_HTTP_404_REGEXP)
+	wv[4] = UploadJSONPayloadOutcome(0, 500, 500, UPLOAD_MSG_HTTP_500_REGEXP)
+
+	SetDimensionLabels(wv, "Success;Timeout;OtherError;HTTPClientError;HTTPServerError", ROWS)
 
 	return wv
 End
