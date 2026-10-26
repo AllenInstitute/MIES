@@ -172,6 +172,15 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts -e '^(?:(?!//).)*\bDateTime\b' --and --not -e '//[[:space:]]*NOLINT$' '**/MIES_*.ipf' '**/UTF*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The DateTime check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
+  echo "$matches"
+  ret=1
+fi
+
 matches=$(git grep $opts '^// I?UTF_TD_GENERATOR [^#]+$' '**/MIES_*.ipf' '**/UTF*.ipf')
 
 if [[ -n "$matches" ]]

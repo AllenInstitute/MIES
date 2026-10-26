@@ -314,7 +314,7 @@ Function ASYNC_WaitForWLCToFinishAndRemove(string workloadClass, variable timeou
 
 	PerformSubsystemEntry()
 
-	timeout += datetime
+	timeout += DateTimeHighPrec()
 	for(;;)
 		result = ASYNC_IsWorkloadClassDone(workloadClass, removeClass = 1)
 		if(IsNaN(result))
@@ -325,7 +325,7 @@ Function ASYNC_WaitForWLCToFinishAndRemove(string workloadClass, variable timeou
 		endif
 
 		ASYNC_ThreadReadOut()
-		if(datetime > timeout)
+		if(DateTimeHighPrec() > timeout)
 			return 1
 		endif
 		Sleep/S ASYNC_SLEEP_ON_WAIT
@@ -479,7 +479,7 @@ Function ASYNC_Stop([variable timeout, variable fromAssert])
 		timeout = Inf
 	endif
 
-	endTime = dateTime + timeout
+	endTime = DateTimeHighPrec() + timeout
 	do
 		AssertOnAndClearRTError()
 		try
@@ -489,7 +489,7 @@ Function ASYNC_Stop([variable timeout, variable fromAssert])
 			waitResult = 0
 		endtry
 
-		if(dateTime >= endtime)
+		if(DateTimeHighPrec() >= endtime)
 			outatime = 1
 			break
 		endif
@@ -527,7 +527,7 @@ Function ASYNC_Stop([variable timeout, variable fromAssert])
 					ASYNC_ThreadReadOut()
 				endif
 
-				if(datetime >= endtime)
+				if(DateTimeHighPrec() >= endtime)
 					outatime = 1
 					break
 				endif
