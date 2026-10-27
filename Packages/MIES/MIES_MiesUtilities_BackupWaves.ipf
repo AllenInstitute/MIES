@@ -9,6 +9,9 @@
 /// @file MIES_MiesUtilities_BackupWaves.ipf
 /// @brief This file holds MIES utility functions for wave backup
 
+static StrConstant BACKUP_WAVES_REGEXP     = "(?i)_bak$"
+static StrConstant NOT_BACKUP_WAVES_REGEXP = "(?i)^(?!.*_bak$)"
+
 /// @brief Looks for backup waves in the datafolder and recreates the original waves from them.
 ///        The original waves do not need to be present. If present they are overwritten.
 ///        This is different to @ref RestoreFromBackupWavesForAll, where the original waves need
@@ -110,14 +113,36 @@ Function/WAVE GetBackupWave(WAVE wv)
 End
 
 /// @brief Replace all waves from the datafolder with their backup
-Function ReplaceWaveWithBackupForAll(DFREF dfr)
+///
+/// @param dfr        datafolder
+/// @param keepBackup [optional, defaults to true] don't delete the backups after restoring from them
+Function ReplaceWaveWithBackupForAll(DFREF dfr, [variable keepBackup])
 
-	variable numWaves, i
+	string name
 
-	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
-	for(i = 0; i < numWaves; i += 1)
-		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
-		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0, keepBackup = 1)
+	if(ParamIsDefault(keepBackup))
+		keepBackup = 1
+	else
+		keepBackup = !!keepBackup
+	endif
+
+	// the names are gathered first, as deleting the backups changes the indizes of the waves
+	WAVE/T names = ListToTextWave(GetListOfObjects(dfr, NOT_BACKUP_WAVES_REGEXP), ";")
+	for(name : names)
+		WAVE/SDFR=dfr wv = $name
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0, keepBackup = keepBackup)
+	endfor
+End
+
+/// @brief Delete all backup waves of the datafolder
+Function RemoveBackupWaves(DFREF dfr)
+
+	string name
+
+	WAVE/T names = ListToTextWave(GetListOfObjects(dfr, BACKUP_WAVES_REGEXP), ";")
+	for(name : names)
+		WAVE/SDFR=dfr wv = $name
+		KillOrMoveToTrash(wv = wv)
 	endfor
 End
 

@@ -153,3 +153,9 @@ static Function SweepBrowserWithoutBackupWaves([string str])
 
 	CheckLoadingSweepsWithoutBackups("input:" + str)
 End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBackupsAreRemovedOnLowMemory([string str])
+
+	CheckRemovingSweepBackupsOnLowMemory("input:" + str)
+End

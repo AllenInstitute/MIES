@@ -25,6 +25,12 @@ static Constant AB_LOADOPT_COMMENTS = 0x02
 static StrConstant AB_UDATA_WORKINGDF = "datafolder"
 static StrConstant AB_WORKFOLDER_NAME = "workFolder"
 
+/// Free memory [GiB] below which the sweeps are loaded without backup waves, see AB_DisableSweepBackupsIfLowMemory()
+static Constant AB_SWEEP_BACKUPS_MIN_FREE_MEMORY = 4
+
+/// Folders of the single sweeps, see GetAnalysisSweepDataPathAS()
+static StrConstant AB_SINGLE_SWEEP_FOLDER_REGEXP = "^X_[[:digit:]]+$"
+
 static Function AB_ResetListBoxWaves()
 
 	variable col, val, newSize
@@ -1974,11 +1980,13 @@ static Function AB_LoadSweepFromFile(string discLocation, string dataFolder, str
 	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
 
 	// sweep already loaded
-	if(DataFolderExists(sweepFolder))
-		if(!overwrite)
-			return 0
-		endif
+	if(DataFolderExists(sweepFolder) && !overwrite)
+		return 0
+	endif
 
+	AB_DisableSweepBackupsIfLowMemory()
+
+	if(DataFolderExists(sweepFolder))
 		KillOrMoveToTrash(dfr = $sweepFolder)
 		KillOrMoveToTrash(wv = GetAnalysisConfigWave(dataFolder, device, sweep))
 	endif
@@ -3358,8 +3366,9 @@ End
 
 /// @brief Stop creating backup waves for the sweeps loaded into SweepBrowsers
 ///
-/// This applies to all SweepBrowsers, as they share the loaded sweep data. The functionality which modifies the sweep
-/// data in place, and needs the backup waves to undo it, is disabled in all SweepBrowsers, see
+/// This applies to all SweepBrowsers, as they share the loaded sweep data. The already loaded sweeps are restored from
+/// their backup waves, which are deleted afterwards, see AB_RemoveSweepBackups(). The functionality which modifies the
+/// sweep data in place, and needs the backup waves to undo it, is disabled in all SweepBrowsers, see
 /// BSP_SetBackupDependentControlStatus().
 Function AB_DisableSweepBackups()
 
@@ -3367,12 +3376,67 @@ Function AB_DisableSweepBackups()
 
 	PerformSubsystemEntry()
 
+	if(!AB_UseSweepBackups())
+		return NaN
+	endif
+
+	AB_RemoveSweepBackups()
+
 	NVAR useBackups = $GetAnalysisBrowserSweepBackups()
 	useBackups = 0
 
 	WAVE/T wList = ListToTextWave(WinList(SWEEPBROWSER_WINDOW_NAME + "*", ";", "WIN:1"), ";")
 	for(win : wList)
 		BSP_SetBackupDependentControlStatus(win)
+
+		WAVE/Z mapIndizes = SB_GetMapIndizes(win)
+		if(!WaveExists(mapIndizes))
+			continue
+		endif
+
+		UpdateSweepPlot(win)
+	endfor
+End
+
+/// @brief Disable the sweep backup waves if the free memory is below `minFreeMemory`, see AB_DisableSweepBackups()
+///
+/// @param minFreeMemory [optional, defaults to #AB_SWEEP_BACKUPS_MIN_FREE_MEMORY] free memory [GiB]
+static Function AB_DisableSweepBackupsIfLowMemory([variable minFreeMemory])
+
+	if(ParamIsDefault(minFreeMemory))
+		minFreeMemory = AB_SWEEP_BACKUPS_MIN_FREE_MEMORY
+	endif
+
+	if(!AB_UseSweepBackups() || GetFreeMemory() >= minFreeMemory)
+		return NaN
+	endif
+
+	printf "The free memory is below %g GiB, therefore the sweeps are loaded without backup waves from now on.\r", minFreeMemory
+	printf "The loaded sweeps are restored to their original data, and zeroing traces, time alignment and artefact removal are disabled.\r"
+	ControlWindowToFront()
+
+	AB_DisableSweepBackups()
+End
+
+/// @brief Restore all loaded sweeps from their backup waves and delete the backup waves, also the ones of the sweep
+///        waves next to the single sweep folders
+static Function AB_RemoveSweepBackups()
+
+	string folder, parentFolder
+	string parentFolders = ""
+
+	WAVE/T folders = ListToTextWave(GetListOfObjects(GetAnalysisFolder(), AB_SINGLE_SWEEP_FOLDER_REGEXP, typeFlag = COUNTOBJECTS_DATAFOLDER, recursive = 1, fullPath = 1), ";")
+	for(folder : folders)
+		ReplaceWaveWithBackupForAll($folder, keepBackup = 0)
+
+		parentFolder = RemoveEnding(GetFolder(RemoveEnding(folder, ":")), ":")
+		if(WhichListItem(parentFolder, parentFolders) == -1)
+			parentFolders = AddListItem(parentFolder, parentFolders, ";", Inf)
+		endif
+	endfor
+
+	for(parentFolder : ListToTextWave(parentFolders, ";"))
+		RemoveBackupWaves($parentFolder)
 	endfor
 End
 
