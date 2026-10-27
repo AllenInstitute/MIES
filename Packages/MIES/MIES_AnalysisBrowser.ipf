@@ -2658,7 +2658,8 @@ static Function AB_SplitSweepIntoComponents(string expFolder, string device, var
 	WAVE/SDFR=dfr $LBN_NUMERICAL_VALUES_NAME
 
 	if(AB_UseSweepBackups())
-		SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR = sweepFolder)
+		// the original data stays in the loaded file
+		SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 1, targetDFR = sweepFolder, keepOriginal = 0)
 	else
 		SplitAndUpgradeSweep(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, 0, targetDFR = sweepFolder, createBackup = 0)
 	endif
