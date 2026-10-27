@@ -521,7 +521,7 @@ End
 /// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called
 Function/S GetLastAcqHookCallTimeStamp(string device)
 
-	return GetNVARAsString(GetDeviceTestPulse(device), "acqHookTimeStamp", initialValue = DateTime)
+	return GetNVARAsString(GetDeviceTestPulse(device), "acqHookTimeStamp", initialValue = DateTimeHighPrec())
 End
 
 /// @brief Returns FIFO file reference

@@ -5,7 +5,6 @@
 
 // Missing Tests for:
 // GetTimeStamp
-// DateTimeInUTC
 // GetISO8601TimeStamp
 // ParseISO8601TimeStampToComponents
 // StopAllMSTimers
@@ -14,6 +13,48 @@
 // GetElapsedTime
 // StoreElapsedTime
 // GetDayOfWeek
+
+/// DateTimeInUTC
+/// DateTimeHighPrec
+/// @{
+static Function DateTimeInUTCAgreesWithDateTime()
+
+	// DateTime has a coarse resolution of up to 50 ms
+	CHECK_CLOSE_VAR(DateTimeInUTC(), LocalTimeToUTC(DateTime), tol = 0.1) // NOLINT
+	CHECK_CLOSE_VAR(DateTimeHighPrec(), DateTime, tol = 0.1) // NOLINT
+End
+
+#ifndef MACINTOSH
+
+static Function DateTimeInUTCHasHighResolution()
+
+	variable numPoints = 1000
+
+	Make/FREE/D/N=(numPoints) times = DateTimeInUTC()
+	Make/FREE/D/N=(numPoints - 1) deltas = times[p + 1] - times[p]
+
+	CHECK_GE_VAR(WaveMin(deltas), 0)
+
+	// DateTime advances in steps of 16 ms and more
+	Extract/FREE deltas, steps, deltas > 0
+	CHECK_GT_VAR(DimSize(steps, ROWS), 0)
+	CHECK_LT_VAR(WaveMin(steps), 1e-3)
+End
+
+#endif // !MACINTOSH
+
+static Function DateTimeInUTCWorksInThreads()
+
+	variable now
+
+	Make/FREE/D/N=(ThreadProcessorCount * 4) times
+	MultiThread times = DateTimeInUTC()
+	now = LocalTimeToUTC(DateTime) // NOLINT
+
+	CHECK_CLOSE_VAR(WaveMin(times), now, tol = 0.1)
+	CHECK_CLOSE_VAR(WaveMax(times), now, tol = 0.1)
+End
+/// @}
 
 /// ISO8601Tests
 /// @{
@@ -121,7 +162,7 @@ End
 
 Function AcceptsValid11()
 
-	variable now      = DateTime
+	variable now      = DateTimeHighPrec()
 	string   actual   = GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1)
 	string   expected = GetIso8601TimeStamp(secondsSinceIgorEpoch = now - Date2Secs(-1, -1, -1))
 
@@ -130,7 +171,7 @@ End
 
 Function AcceptsValid12()
 
-	variable now      = DateTime
+	variable now      = DateTimeHighPrec()
 	variable expected = trunc(now) - Date2Secs(-1, -1, -1)
 	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1))
 
