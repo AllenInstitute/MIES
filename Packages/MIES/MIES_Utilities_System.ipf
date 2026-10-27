@@ -43,7 +43,7 @@ Function RestoreExperimentModified(variable modifiedBefore)
 	endif
 End
 
-/// @brief Return the amount of free memory in GB
+/// @brief Return the amount of free memory in GiB
 ///
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
@@ -57,7 +57,7 @@ threadsafe Function GetFreeMemory()
 	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
 #endif
 
-	return freeMem / 1024 / 1024 / 1024
+	return freeMem * ONE_TO_GIBI
 End
 
 /// @brief Check wether the given background task is currently running

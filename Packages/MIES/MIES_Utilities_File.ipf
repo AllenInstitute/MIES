@@ -416,7 +416,7 @@ End
 /// @brief Check that the given path on disk has enough free space
 ///
 /// @param diskPath          path on disk to check
-/// @param requiredFreeSpace required free space in GB
+/// @param requiredFreeSpace required free space in bytes
 Function HasEnoughDiskspaceFree(string diskPath, variable requiredFreeSpace)
 
 	variable leftOverBytes

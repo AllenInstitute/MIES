@@ -1099,7 +1099,7 @@ Function DisableBugChecks()
 	TSDS_WriteVar(TSDS_BUGCOUNT, NaN)
 End
 
-/// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
+/// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GiB] is left
 ///
 /// Unwise use of this function can break Igor!
 Function ExhaustMemory(variable amountOfFreeMemoryLeft)
@@ -1117,7 +1117,7 @@ Function ExhaustMemory(variable amountOfFreeMemoryLeft)
 			expo -= 1
 		endif
 
-		printf "Free Memory: %gGB\r", GetFreeMemory()
+		printf "Free Memory: %g GiB\r", GetFreeMemory()
 
 		if(GetFreeMemory() < amountOfFreeMemoryLeft)
 			break

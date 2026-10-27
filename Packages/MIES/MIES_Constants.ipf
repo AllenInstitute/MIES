@@ -125,7 +125,7 @@ StrConstant DATA_CONFIG_REGEXP_BAK   = "(?i)^Config_Sweep_[[:digit:]]+_bak$"
 StrConstant UNTITLED_EXPERIMENT           = "Untitled"
 StrConstant PACKED_FILE_EXPERIMENT_SUFFIX = ".pxp"
 
-/// Amount of free memory required to perform data aquisition in GB
+/// Amount of free memory required to perform data aquisition in GiB
 Constant FREE_MEMORY_LOWER_LIMIT = 0.75
 
 /// @name Pressure Control constants
@@ -1564,7 +1564,7 @@ Constant DELTA_OPERATION_ALTERNATE = 5
 Constant DELTA_OPERATION_EXPLICIT  = 6
 ///@}
 
-Constant MINIMUM_FREE_DISK_SPACE = 10737418240 // 10GB
+Constant MINIMUM_FREE_DISK_SPACE = 10737418240 // 10 GiB
 
 /// @name Stimset wave note entry types for WB_GetWaveNoteEntry()
 /// @anchor StimsetWaveNoteEntryTypes
@@ -2129,6 +2129,10 @@ StrConstant DEFAULT_LIST_SEP = ";"
 StrConstant PREFIX_SHORT_LIST = ";Y;Z;E;P;T;G;M;k;h;da;d;c;m;mu;μ;n;p;f;a;z;y"
 StrConstant PREFIX_LONG_LIST  = "one;yotta;zetta;exa;peta;tera;giga;mega;kilo;hecto;deca;deci;centi;milli;micro;micro;nano;pico;femto;atto;zepto;yocto"
 StrConstant PREFIX_VALUE_LIST = "1;1e24;1e21;1e18;1e15;1e12;1e9;1e6;1e3;1e2;1e1;1e-1;1e-2;1e-3;1e-6;1e-6;1e-9;1e-12;1e-15;1e-18;1e-21;1e-24"
+
+/// @brief Binary prefixes (IEC 80000-13), e.g. 1 MiB = 1024^2 bytes
+StrConstant PREFIX_BINARY_LONG_LIST  = "one;kibi;mebi;gibi;tebi"
+StrConstant PREFIX_BINARY_VALUE_LIST = "1;1024;1048576;1073741824;1099511627776"
 
 /// @name Possible return values for PSQ_DetermineSweepQCResults()
 /// @anchor DetermineSweepQCReturns
