@@ -2123,10 +2123,11 @@ End
 
 static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVersion, string channelList, DFREF sweepDFR, WAVE/I configSweep)
 
-	string channel, channelName
+	string channel, channelName, name
 	variable numChannels, numEntries, i
 	STRUCT ReadChannelParams p
 	variable waveNoteLoaded, fakeConfigWave
+	string ttlBaseWaves = ""
 
 	numChannels = ItemsInList(channelList)
 
@@ -2160,6 +2161,7 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 						base           = 0
 						fakeConfigWave = 1
 						SetNumberInWaveNote(base, "fake", 1)
+						ttlBaseWaves = AddListItem(channelName, ttlBaseWaves, ";", Inf)
 					endif
 
 					if(WaveMax(loaded) < 2)
@@ -2217,6 +2219,14 @@ static Function AB_LoadSweepFromNWBgeneric(variable h5_groupID, variable nwbVers
 		endif
 		WaveClear loaded
 	endfor
+
+	// the TTL base waves are complete only after all their bits are loaded
+	if(AB_UseSweepBackups())
+		for(name : ListToTextWave(ttlBaseWaves, ";"))
+			WAVE/Z/I base = sweepDFR:$name
+			CreateBackupWave(base)
+		endfor
+	endif
 
 	AB_SortConfigSweeps(configSweep)
 

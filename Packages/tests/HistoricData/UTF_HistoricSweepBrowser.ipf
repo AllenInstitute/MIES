@@ -159,3 +159,20 @@ static Function SweepBackupsAreRemovedOnLowMemory([string str])
 
 	CheckRemovingSweepBackupsOnLowMemory("input:" + str)
 End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
+static Function AllSweepDataWavesHaveBackups([string str])
+
+	string abWin, sweepBrowsers, win
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({"input:" + str}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+
+	WAVE/WAVE dataWaves = GetSweepBrowserDataWaves(win)
+	CHECK_GT_VAR(DimSize(dataWaves, ROWS), 0)
+
+	for(WAVE wv : dataWaves)
+		WAVE/Z backup = GetBackupWave(wv)
+		CHECK_WAVE(backup, NUMERIC_WAVE)
+	endfor
+End
