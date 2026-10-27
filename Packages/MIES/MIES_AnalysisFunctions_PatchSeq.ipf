@@ -9495,7 +9495,7 @@ Function PSQ_AccessResistanceSmoke(string device, STRUCT AnalysisFunction_V3 &s)
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_ACC_RES_SMOKE, s.sweepNo, s.headstage) >= PSQ_PB_NUM_SWEEPS_PASS
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_ACC_RES_SMOKE, s.sweepNo, s.headstage) >= PSQ_AR_NUM_SWEEPS_PASS
 
 			WAVE result = LBN_GetNumericWave()
 			result[INDEP_HEADSTAGE] = setPassed
