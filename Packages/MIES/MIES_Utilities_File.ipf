@@ -908,3 +908,11 @@ Function/S GetCmdPath()
 
 	return GetEnvironmentVariable("COMSPEC")
 End
+
+/// @brief Returns the truth that the given path is a Windows UNC path
+///
+/// See https://en.wikipedia.org/wiki/Path_(computing)#Universal_Naming_Convention
+Function IsUNCPath(string str)
+
+	return StringStartsWith(str, "\\\\")
+End

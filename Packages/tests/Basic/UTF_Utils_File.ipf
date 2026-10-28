@@ -504,3 +504,10 @@ static Function TestCompareFiles()
 	DeleteFile tmpFile2
 	DeleteFile tmpFile3
 End
+
+static Function TestIsUNCPath()
+
+	CHECK_EQUAL_VAR(IsUNCPath(""), 0)
+	CHECK_EQUAL_VAR(IsUNCPath("\\\\serv\share"), 1)
+	CHECK_EQUAL_VAR(IsUNCPath("c:\\windows"), 0)
+End
