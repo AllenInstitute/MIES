@@ -426,7 +426,7 @@ static Function/S GetVerboseMIESState()
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s:\r", msg, GetStacktraceHeader()
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
@@ -453,7 +453,7 @@ threadsafe static Function/S GetVerboseMIESState_TS()
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s:\r", msg, GetStacktraceHeader()
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
