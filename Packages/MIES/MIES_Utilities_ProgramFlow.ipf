@@ -242,7 +242,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
-	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	string stacktraceHeader
 	variable doCallDebugger
 
 	try
@@ -331,6 +331,8 @@ End
 /// @hidecallergraph
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
+
+	string stacktraceHeader
 
 	try
 		AbortOnValue var == 0, 1

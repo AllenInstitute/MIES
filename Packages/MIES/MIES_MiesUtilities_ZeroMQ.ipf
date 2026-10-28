@@ -137,6 +137,8 @@ End
 
 Function ZeroMQ_Interceptor(string json, string ident, variable mode)
 
+
+	print "interceptor"
 	SVAR info = $GetZeroMQXOPCallInfo()
 
 	switch(mode)
