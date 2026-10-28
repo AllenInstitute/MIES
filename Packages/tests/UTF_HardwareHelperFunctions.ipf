@@ -382,6 +382,13 @@ Function StopAllBackgroundTasks()
 			continue
 		endif
 
+#if exists("ZBR#ZBR_EnsureZeroMQBound")
+		// ignore the Igor Pro Bridge background functions
+		if(stringmatch(name, "ZBR*"))
+			continue
+		endif
+#endif
+
 		CtrlNamedBackGround $name, stop
 	endfor
 End
