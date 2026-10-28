@@ -84,7 +84,7 @@ operation, see :ref:`SweepFormula`.
 Paste Notebook
 --------------
 
-The paste notebook allows to quickly input files/folders/cellnames to load NWBs/PXPs from.
+The paste notebook allows to quickly input files/folders/cell_specimens to load NWBs/PXPs from.
 
 The expected input format consists of labels and input.
 
@@ -95,7 +95,7 @@ The following minimal example defines that the file ``data.nwb`` in the folder `
   file:
    c:\folderA\data.nwb
 
-The available labels are ``file``, ``folder`` (can also be an UNC path), ``cellname`` or ``tag``.
+The available labels are ``file``, ``folder`` (can also be an UNC path), ``cell_specimen`` or ``tag``.
 
 Alternatively if one would want to load all files one could do
 
@@ -120,7 +120,7 @@ one can also query files directly via
 
 .. code:: text
 
-  cellname:
+  cell_specimen:
   cell1
   cell4
 
@@ -134,7 +134,7 @@ Assigning tags to files can be done via
   tagA
   tagB
 
-  cellname:
+  cell_specimen:
   cell1
   cell4
 
@@ -142,7 +142,7 @@ which would set the tags ``tabA,tabB`` to all files from ``cell1`` and ``cell4``
 
 The tags are valid until new tags are set, which then completely override the old tags.
 
-It is also possible to set the tags per ``file``/``folder``/``cellname`` via
+It is also possible to set the tags per ``file``/``folder``/``cell_specimen`` via
 
 .. code:: text
 
@@ -150,7 +150,7 @@ It is also possible to set the tags per ``file``/``folder``/``cellname`` via
   tagA
   tagB
 
-  cellname:
+  cell_specimen:
   cell1	tagC	tagD
   cell4
 

@@ -282,13 +282,13 @@ End
 
 Function TestParseFormat1()
 
-	Make/T/FREE entries = {"tag:", "tagA", "tagB",                                                    \
-	                       "file:", "fileA", "fileB",                                                 \
-	                       "tag:", "tagC", "tagD",                                                    \
-	                       "folder:", "folderC", "folderD",                                           \
-	                       "# comment",                                                               \
-	                       "tag:", "tagE", "tagF",                                                    \
-	                       "cellname:", "cellnameE\ttagG\ttagH", "cellnameF", "cellnameG\ttagI\ttagJ" \
+	Make/T/FREE entries = {"tag:", "tagA", "tagB",                                                         \
+	                       "file:", "fileA", "fileB",                                                      \
+	                       "tag:", "tagC", "tagD",                                                         \
+	                       "folder:", "folderC", "folderD",                                                \
+	                       "# comment",                                                                    \
+	                       "tag:", "tagE", "tagF",                                                         \
+	                       "cell_specimen:", "cellnameE\ttagG\ttagH", "cellnameF", "cellnameG\ttagI\ttagJ" \
 	                      }
 
 	WAVE/Z/WAVE result = AB_ParsePasteFormat(entries)
@@ -303,9 +303,9 @@ Function TestParseFormat1()
 	CHECK_EQUAL_TEXTWAVES(result[%Folder], {{"folderC", "folderD"}, {"tagC,tagD,", "tagC,tagD,"}}, mode = WAVE_DATA)
 	CHECK_EQUAL_STR(note(result[%Folder]), "Index:2;")
 
-	CHECK_WAVE(result[%cellname], TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(result[%cellname], {{"cellnameE", "cellnameF", "cellnameG"}, {"tagG,tagH,", "tagE,tagF,", "tagI,tagJ,"}}, mode = WAVE_DATA)
-	CHECK_EQUAL_STR(note(result[%cellname]), "Index:3;")
+	CHECK_WAVE(result[%cell_specimen], TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(result[%cell_specimen], {{"cellnameE", "cellnameF", "cellnameG"}, {"tagG,tagH,", "tagE,tagF,", "tagI,tagJ,"}}, mode = WAVE_DATA)
+	CHECK_EQUAL_STR(note(result[%cell_specimen]), "Index:3;")
 End
 
 Function TestParseFormatNoTags()
@@ -320,5 +320,5 @@ Function TestParseFormatNoTags()
 	CHECK_EQUAL_TEXTWAVES(result[%File], {{"fileA", "fileB"}, {"", ""}}, mode = WAVE_DATA)
 	CHECK_EQUAL_STR(note(result[%File]), "Index:2;")
 	CHECK_WAVE(result[%Folder], NULL_WAVE)
-	CHECK_WAVE(result[%cellname], NULL_WAVE)
+	CHECK_WAVE(result[%cell_specimen], NULL_WAVE)
 End

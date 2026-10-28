@@ -3580,19 +3580,19 @@ static Function AB_AddEntriesFromParseResult(string win, WAVE/Z/WAVE results)
 	AB_AddEntriesFromParseResultImpl(win, results[%File])
 	AB_AddEntriesFromParseResultImpl(win, results[%Folder])
 
-	if(WaveExists(results[%CellName]))
+	if(WaveExists(results[%cell_specimen]))
 #if IgorVersion() >= 10
-		WAVE/T single = results[%CellName]
-		Duplicate/FREE/RMD=[][FindDimlabel(results, COLS, "Content")] single, cellNames
-		Redimension/N=(DimSize(cellNames, ROWS))/E=1 cellnames
-		WAVE/Z/T paths = PY_FetchFilesFromLims(cellNames)
+		WAVE/T single = results[%cell_specimen]
+		Duplicate/FREE/RMD=[][FindDimlabel(results, COLS, "Content")] single, cellspecimens
+		Redimension/N=(DimSize(cellspecimens, ROWS))/E=1 cellspecimens
+		WAVE/Z/T paths = PY_FetchFilesFromLims(cellspecimens)
 
 		if(WaveExists(paths))
 			Duplicate/FREE/T single, combined
 			combined[][%Content] = paths[p]
 			AB_AddEntriesFromParseResultImpl(win, combined)
 		else
-			printf "Could not gather filesystem paths for the cells: \"%s\"\r", TextWaveToList(cellNames, ", ")
+			printf "Could not gather filesystem paths for the cells: \"%s\"\r", TextWaveToList(cellspecimens, ", ")
 			ControlWindowToFront()
 		endif
 #else
@@ -4541,7 +4541,7 @@ static Function GetStateFromLine(string str)
 			return AB_PASTE_STATE_FILE
 		case "folder:":
 			return AB_PASTE_STATE_FOLDER
-		case "cellname:":
+		case "cell_specimen:":
 			return AB_PASTE_STATE_CELLNAME
 		default:
 			break
@@ -4558,7 +4558,7 @@ static Function/S GetLabelForState(variable state)
 		case AB_PASTE_STATE_FOLDER:
 			return "Folder"
 		case AB_PASTE_STATE_CELLNAME:
-			return "CellName"
+			return "cell_specimen"
 		default:
 			break
 	endswitch
@@ -4586,7 +4586,7 @@ End
 ///
 /// \endrst
 ///
-/// where label is one of file, folder, cellname, tag.
+/// where label is one of file, folder, cell_specimen, tag.
 /// Tags can also be set per line and need to be separated via tabs `\t` from content and other tags.
 ///
 /// Additional rules:

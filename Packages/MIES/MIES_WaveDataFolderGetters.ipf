@@ -9850,11 +9850,11 @@ End
 Function/WAVE GetAnalysisBrowserPasteResult()
 
 	Make/FREE/WAVE/N=3 wv
-	SetDimensionLabels(wv, "File;Folder;CellName", ROWS)
+	SetDimensionLabels(wv, "File;Folder;cell_specimen", ROWS)
 
-	wv[%File]     = GetAnalysisBrowserPasteResultSingle()
-	wv[%Folder]   = GetAnalysisBrowserPasteResultSingle()
-	wv[%CellName] = GetAnalysisBrowserPasteResultSingle()
+	wv[%File]          = GetAnalysisBrowserPasteResultSingle()
+	wv[%Folder]        = GetAnalysisBrowserPasteResultSingle()
+	wv[%cell_specimen] = GetAnalysisBrowserPasteResultSingle()
 
 	return wv
 End
