@@ -481,7 +481,7 @@ static Function TestPastePanel()
 
 	content += "folder:\r" + GetWindowsPath(path) + "\r"
 
-	content += "cellname:\r" + "fake"
+	content += "cell_specimen:\r" + "fake"
 	ReplaceNotebookText("AnalysisBrowser#PasteWindow#data", content)
 
 	historyRef = CaptureHistoryStart()
