@@ -62,3 +62,4 @@ CheckIfConfigurationRestoresMCCFilterGain.json
 Packages/tests/**/20*.pxp
 
 Packages/tests/Basic/test*
+Packages/tests/HistoricData/test*
