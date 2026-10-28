@@ -136,9 +136,9 @@ End
 /// @brief Fetch the disc locations for the given cell names from the
 ///        Allen Institute for Brain Science' Lab Information System (LIMS)
 ///
-/// @param cellnames list of cell specimens
+/// @param cell_specimens list of cell specimens
 /// @param fakeResults    [optional, defaults to false]
-Function/WAVE PY_FetchFilesFromLims(WAVE/T cellnames, [variable fakeResults])
+Function/WAVE PY_FetchFilesFromLims(WAVE/T cell_specimens, [variable fakeResults])
 
 	string list, loc, packageName
 	variable ret
@@ -166,7 +166,7 @@ Function/WAVE PY_FetchFilesFromLims(WAVE/T cellnames, [variable fakeResults])
 	endif
 
 	list += SelectString(fakeResults, " ", " --fake-results ")
-	list += TextWaveToList(cellnames, " ", trailSep = 0)
+	list += TextWaveToList(cell_specimens, " ", trailSep = 0)
 	Make/FREE/T/N=0 results
 	loc = PY_GetMIESPythonScriptsDiscLocation() + "limspath_from_cellname.py"
 	PythonFile/Z file=loc, array={"paths", results}, args=list

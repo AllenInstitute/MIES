@@ -6,11 +6,11 @@ from pg8000.native import literal
 
 # Return a list of network share paths which hold data for the given cell names
 def limspath_from_cellname(
-    user: str
+    user: str,
     password: str,
     host: str,
     database: str,
-    cellnames: list,
+    cell_specimens: list,
     fake_results: bool,
 ):
 
@@ -30,7 +30,7 @@ def limspath_from_cellname(
     ):
         paths = []
 
-        for cell in cellnames:
+        for cell in cell_specimens:
             cur.execute(
                 f"""SELECT err.storage_directory AS path
                 FROM specimens cell
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
     )
-    parser.add_argument("cellnames", nargs="+", help="Cell names")
+    parser.add_argument("cell_specimens", nargs="+", help="Cell names")
     args = parser.parse_args()
 
     paths = limspath_from_cellname(
