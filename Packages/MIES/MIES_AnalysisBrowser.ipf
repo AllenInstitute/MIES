@@ -3275,6 +3275,10 @@ Function AB_AddFilesAndFolders(string win, WAVE/T entries, WAVE/Z/T tags)
 			continue
 		endif
 
+		if(!IsUNCPath(entry))
+			entry = GetHFSPath(entry)
+		endif
+
 		FindValue/TEXT=entry/TXOP=(TXOP_WHOLE_ELEM) folderList
 		if(V_Value >= 0)
 			continue
