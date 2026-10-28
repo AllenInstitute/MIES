@@ -3264,18 +3264,26 @@ End
 Function AB_AddFilesAndFolders(string win, WAVE/T entries, WAVE/Z/T tags)
 
 	variable i, index, size
+	string entry
 
 	Duplicate/FREE/T entries, newEntries
 
 	WAVE/T folderList = GetAnalysisBrowserGUIFolderList()
 	size = DimSize(entries, ROWS)
 	for(i = 0; i < size; i += 1)
-		FindValue/TEXT=entries[i]/TXOP=(TXOP_WHOLE_ELEM) folderList
+		entry = entries[i]
+
+		if(IsEmpty(entry))
+			continue
+		endif
+
+		FindValue/TEXT=entry/TXOP=(TXOP_WHOLE_ELEM) folderList
 		if(V_Value >= 0)
 			continue
 		endif
-		AB_AddElementToSourceList(entries[i])
-		newEntries[index] = entries[i]
+
+		AB_AddElementToSourceList(entry)
+		newEntries[index] = entry
 		index            += 1
 	endfor
 	Redimension/N=(index) newEntries
