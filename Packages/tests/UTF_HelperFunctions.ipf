@@ -1248,10 +1248,8 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/Z/T files
 		if(absolutePaths)
 			WAVE/T filesWithPath = files
 		else
-			PathInfo home
-
 			Duplicate/FREE/T files, filesWithPath
-			filesWithPath[] = S_path + GetHFSPath(files[p])
+			filesWithPath[] = PrependExperimentFolder_IGNORE(GetHFSPath(files[p]))
 		endif
 
 		for(fullFilePath : filesWithPath)
