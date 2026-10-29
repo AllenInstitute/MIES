@@ -296,7 +296,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 		if(extendedOutput)
 
-			printf "%s", GetVerboseMIESState()
+			printf "%s", GetVerboseMIESState(stackTraceHeader = stackTraceHeader)
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 
 			ControlWindowToFront()
@@ -371,7 +371,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 
 		if(extendedOutput)
 
-			printf "%s", GetVerboseMIESState_TS()
+			printf "%s", GetVerboseMIESState_TS(stackTraceHeader = stackTraceHeader)
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 		endif
 
@@ -380,11 +380,15 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 End
 
 /// @brief Returns a string with MIES state information
-static Function/S GetVerboseMIESState()
+static Function/S GetVerboseMIESState([string stackTraceHeader])
 
 	string msg, device, miesVersionStr, lockedDevicesStr
 	variable i, numLockedDevices
-
+	
+	if(ParamIsDefault(stackTraceHeader))
+		stackTraceHeader = STACKTRACE_DEFAULT_HEADER
+	endif
+	
 	// hard coding the path here so that we don't depend on GetMiesVersion()
 	// in MIES_GlobalStringAndVariableAccess.ipf
 	SVAR/Z miesVersion = root:MIES:version
@@ -428,7 +432,7 @@ static Function/S GetVerboseMIESState()
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%s%s:\r", msg, GetStacktraceHeader()
+	sprintf msg, "%s%s:\r", msg, stackTraceHeader
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
@@ -448,14 +452,18 @@ static Function/S GetVerboseMIESState()
 End
 
 /// @brief Returns a string with MIES state information that can be gathered in a threadsafe call
-threadsafe static Function/S GetVerboseMIESState_TS()
+threadsafe static Function/S GetVerboseMIESState_TS([string stackTraceHeader])
 
 	string msg
+
+	if(ParamIsDefault(stackTraceHeader))
+		stackTraceHeader = STACKTRACE_DEFAULT_HEADER
+	endif
 
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%s%s:\r", msg, GetStacktraceHeader()
+	sprintf msg, "%s%s:\r", msg, stackTraceHeader
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
