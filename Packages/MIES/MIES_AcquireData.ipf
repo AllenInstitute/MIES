@@ -426,9 +426,11 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 	string ctrl
 	variable i, activeHS, sendToAllPrevious
 
+#ifndef TESTS_WITH_SUTTER_HARDWARE
 	if(s.amp)
 		ACD_EnsureMCCIsOpen()
 	endif
+#endif // !TESTS_WITH_SUTTER_HARDWARE
 
 	ACD_FetchCustomizationFunctions(s)
 
@@ -514,8 +516,14 @@ Function ACD_AcquireData(STRUCT ACD_DAQSettings &s, string device)
 #endif // TESTS_WITH_SUTTER_HARDWARE
 
 		if(s.amp && activeHS < 2)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+			// the Sutter amplifiers are fixed
+			INFO("HS %d has not the fixed Sutter amplifier", n0 = i)
+			CHECK_EQUAL_VAR(AI_GetAmplifierType(device, i), AMPLIFIER_TYPE_SUTTER)
+#else
 			// first entry is none
 			PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1 + activeHS)
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 			PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 		endif

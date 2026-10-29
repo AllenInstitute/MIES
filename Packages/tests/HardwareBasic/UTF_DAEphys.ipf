@@ -3,6 +3,12 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DAEphysPanel
 
+/// @name Regular expressions for the labnotebook entries of Sutter amplifiers
+///@{
+static StrConstant SUTTER_HARDWARE_TYPE_REGEXP = "^Sutter d?IPA$" ///< single and double IPA
+static StrConstant SUTTER_SERIAL_REGEXP        = "^IPA_"
+///@}
+
 static Function GlobalPreInit(string device)
 
 	PASS()
@@ -410,7 +416,7 @@ End
 static Function SyncMIESMccWorksOutoftheBox_preAcq(string device)
 
 	/// desync MCC and MIES
-	MIES_AI_MCC#AI_MCC_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
+	AI_SendToAmp(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, MCC_WRITE, value = 5)
 
 	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
 End
@@ -441,6 +447,22 @@ static Function SyncMIESMccWorksOutoftheBox([STRUCT IUTF_MDATA &md])
 	rowLabel = "HoldingPotential"
 	expected = ampStorageWave[%$rowLabel][0][headstage]
 	CHECK_EQUAL_VAR(expected, actual)
+End
+
+/// @brief Return the amplifier functions which have no Sutter counterpart
+static Function/WAVE GetUnsupportedSutterFuncs()
+
+	Make/FREE/D unsupported = {MCC_AUTOBRIDGEBALANCE_FUNC, MCC_RSCOMPBANDWIDTH_FUNC, MCC_OSCKILLERENABLE_FUNC, MCC_SLOWCOMPCAP_FUNC, MCC_SLOWCOMPTAU_FUNC, MCC_SLOWCOMPTAUX20ENAB_FUNC, MCC_AUTOSLOWCOMP_FUNC, MCC_SLOWCURRENTINJENABL_FUNC, MCC_SLOWCURRENTINJLEVEL_FUNC, MCC_SLOWCURRENTINJSETLT_FUNC, MCC_PRIMARYSIGNALGAIN_FUNC, MCC_SECONDARYSIGNALGAIN_FUNC, MCC_PRIMARYSIGNALHPF_FUNC, MCC_SECONDARYSIGNALLPF_FUNC}
+
+	return unsupported
+End
+
+/// @brief Return true if the amplifier function has no Sutter counterpart
+static Function IsUnsupportedSutterFunc(variable func)
+
+	WAVE unsupported = GetUnsupportedSutterFuncs()
+
+	return IsFinite(GetRowIndex(unsupported, val = func))
 End
 
 static Function CheckAmplifierReadAndWrite_preAcq(string device)
@@ -479,6 +501,12 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 	WAVE funcs = DataGenerators#GetAmplifierFuncs()
 
 	for(func : funcs)
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+		if(IsUnsupportedSutterFunc(func))
+			continue
+		endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
+
 		switch(func)
 			case MCC_OSCKILLERENABLE_FUNC:
 				// functions without controls
@@ -606,6 +634,16 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 				REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
 				break
 		endswitch
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+		// Sutter amplifiers have one pipette offset for both clamp modes
+		if(func == MCC_PIPETTEOFFSET_FUNC)
+			rowLabel = AI_MapFunctionConstantToName(func, (clampMode == V_CLAMP_MODE) ? I_CLAMP_MODE : V_CLAMP_MODE)
+			expected = ampStorageWave[%$rowLabel][0][headstage]
+			INFO("rowLabel %s, func %d", s0 = rowLabel, n0 = func)
+			CHECK_CLOSE_VAR(expected, actual, tol = 1e-3)
+		endif
+#endif // TESTS_WITH_SUTTER_HARDWARE
 	endfor
 
 	// handle funcs which don't interact with the MCC
@@ -624,6 +662,191 @@ Function CheckAmplifierReadAndWrite([STRUCT IUTF_MDATA &md])
 		REQUIRE_CLOSE_VAR(expected, actual, tol = 1e-3)
 	endfor
 End
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+
+static Function CheckSutterLBNEntry(WAVE numericalValues, variable sweepNo, string key, variable expected, [variable tol])
+
+	tol = ParamIsDefault(tol) ? 1e-3 : tol
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
+
+	INFO("key: %s", s0 = key)
+
+	if(IsNaN(expected))
+		CHECK_WAVE(settings, NULL_WAVE)
+		return NaN
+	endif
+
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_CLOSE_VAR(settings[0], expected, tol = tol)
+End
+
+static Function CheckSutterLBNTextEntry(WAVE/T textualValues, variable sweepNo, string key, string expected)
+
+	string actual
+
+	WAVE/Z/T settings = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+
+	INFO("key: %s", s0 = key)
+
+	CHECK_WAVE(settings, TEXT_WAVE)
+	actual = settings[0]
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+/// @brief Check the labnotebook entries common to both clamp modes
+static Function CheckSutterLBNCommon(string device, variable sweepNo, variable clampMode)
+
+	string serial, str
+
+	WAVE   numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues   = GetLBTextualValues(device)
+
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Operating Mode", clampMode)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Channel ID", 1)
+
+	WAVE/Z serialNumber = GetLastSetting(numericalValues, sweepNo, "Serial Number", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(serialNumber, NUMERIC_WAVE)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "LPF Cutoff", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_GT_VAR(settings[0], 0)
+
+	CheckSutterLBNTextEntry(textualValues, sweepNo, "OperatingModeString", SelectString(clampMode == V_CLAMP_MODE, "I-Clamp", "V-Clamp"))
+
+	WAVE/Z/T settingsText = GetLastSetting(textualValues, sweepNo, "HardwareTypeString", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settingsText, TEXT_WAVE)
+	str = settingsText[0]
+	CHECK_EQUAL_VAR(GrepString(str, SUTTER_HARDWARE_TYPE_REGEXP), 1)
+
+	WAVE/Z/T settingsText = GetLastSetting(textualValues, sweepNo, "Amplifier Serial Number", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settingsText, TEXT_WAVE)
+	serial = settingsText[0]
+	CHECK_EQUAL_VAR(GrepString(serial, SUTTER_SERIAL_REGEXP), 1)
+
+	// the numeric serial number contains all digits of the serial, including the device type
+	CHECK_EQUAL_VAR(serialNumber[0], str2num(StringFromList(ItemsInList(serial, "_") - 1, serial, "_")))
+
+	// MCC only
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Osc Killer Enable", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Slow compensation capacitance", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Slow current injection", NaN)
+End
+
+static Function CheckSutterLabnotebookVC_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_HOLDING_FUNC, 5, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPCAP_FUNC, 20, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPRESIST_FUNC, 8, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 1, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_RSCOMPCORRECTION_FUNC, 30, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_PIPETTEOFFSET_FUNC, 3, sendToAll = 0)
+End
+
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSutterLabnotebookVC([STRUCT IUTF_MDATA &md])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, md.s0)
+End
+
+static Function CheckSutterLabnotebookVC_REENTRY([STRUCT IUTF_MDATA &md])
+
+	string   device  = md.s0
+	variable sweepNo = 0
+
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	CheckSutterLBNEntry(numericalValues, sweepNo, "V-Clamp Holding Enable", 1)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "V-Clamp Holding Level", 5)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Whole Cell Comp Enable", 1)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Whole Cell Comp Cap", 20)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Whole Cell Comp Resist", 8)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Membrane Cap", 20)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Series Resistance", 8)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "RsComp Correction", 30)
+	// the offset DAC has a resolution of 15 uV
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Pipette Offset", 3, tol = 1e-2)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "V-Clamp Output Gain", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_GT_VAR(settings[0], 0)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "RsComp Lag", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_GT_VAR(settings[0], 0)
+
+	// IC only
+	CheckSutterLBNEntry(numericalValues, sweepNo, "I-Clamp Holding Level", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "I-Clamp Output Gain", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Dynamic Hold Enable", NaN)
+
+	CheckSutterLBNCommon(device, sweepNo, V_CLAMP_MODE)
+End
+
+static Function CheckSutterLabnotebookIC_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_HOLDING_FUNC, 50, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALRESIST_FUNC, 10, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 1, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_NEUTRALIZATIONCAP_FUNC, 2, sendToAll = 0)
+	AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_NEUTRALIZATIONENABL_FUNC, 1, sendToAll = 0)
+End
+
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSutterLabnotebookIC([STRUCT IUTF_MDATA &md])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, md.s0)
+End
+
+static Function CheckSutterLabnotebookIC_REENTRY([STRUCT IUTF_MDATA &md])
+
+	string   device  = md.s0
+	variable sweepNo = 0
+
+	CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), sweepNo)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	CheckSutterLBNEntry(numericalValues, sweepNo, "I-Clamp Holding Enable", 1)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "I-Clamp Holding Level", 50)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Bridge Bal Enable", 1)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Bridge Bal Value", 10)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Neut Cap Enabled", 1)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "Neut Cap Value", 2)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "I-Clamp Output Gain", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_GT_VAR(settings[0], 0)
+
+	// no MIES control, state of the IPA control package
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Dynamic Hold Enable", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Autobias", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	// VC only
+	CheckSutterLBNEntry(numericalValues, sweepNo, "V-Clamp Holding Level", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "V-Clamp Output Gain", NaN)
+	CheckSutterLBNEntry(numericalValues, sweepNo, "RsComp Lag", NaN)
+
+	CheckSutterLBNCommon(device, sweepNo, I_CLAMP_MODE)
+End
+
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 static Function CheckRsCompSettings(string device, variable headstage, variable correction, variable prediction)
 
@@ -747,11 +970,12 @@ static Function CheckZeroAmps([STRUCT IUTF_MDATA &md])
 	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:" \
 	                                                           + "__HS1_DA1_AD1_CM:VC:_ST:StimulusSetA_DA_0:")
 
+	ACD_AcquireData(s, md.s0)
+
+	// after ACD_AcquireData as it skips the test case with Sutter hardware
 	variable/G zeroAmpsAllHeadstages = md.v0
 
 	CtrlNamedBackGround ZeroAmps, start=(ticks + 180), period=30, proc=ZeroAmpsAndStopTP_IGNORE
-
-	ACD_AcquireData(s, md.s0)
 End
 
 static Function CheckZeroAmps_REENTRY([STRUCT IUTF_MDATA &md])
@@ -838,13 +1062,21 @@ static Function CheckAutoBridgeBalance_preAcq(string device)
 End
 
 /// The automatic bridge balance enables the bridge balance with the resistance of the amplifier
+///
+/// Sutter amplifiers have no automatic bridge balance, so the bridge balance stays disabled.
 // UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
 static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
 
-	variable ret, resistance
+	variable ret, resistance, expectedEnable
 	string device, rowLabel
 
 	device = md.s0
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+	expectedEnable = 0
+#else
+	expectedEnable = 1
+#endif // TESTS_WITH_SUTTER_HARDWARE
 
 	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0" + "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
 	ACD_AcquireData(s, device)
@@ -865,9 +1097,9 @@ static Function CheckAutoBridgeBalance([STRUCT IUTF_MDATA &md])
 	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALRESIST_FUNC, I_CLAMP_MODE)
 	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][0], resistance, tol = 1e-3)
 	rowLabel = AI_MapFunctionConstantToName(MCC_BRIDGEBALENABLE_FUNC, I_CLAMP_MODE)
-	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], 1)
+	CHECK_EQUAL_VAR(ampStorageWave[%$rowLabel][0][0], expectedEnable)
 
-	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), 1)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "check_DatAcq_BBEnable"), expectedEnable)
 
 	ret = AI_WriteToAmplifier(device, 0, I_CLAMP_MODE, MCC_BRIDGEBALENABLE_FUNC, 0)
 	CHECK_EQUAL_VAR(ret, 0)
@@ -914,3 +1146,160 @@ static Function CheckSendToAllAutoWholeCellComp([STRUCT IUTF_MDATA &md])
 	ret = AI_WriteToAmplifier(device, 0, V_CLAMP_MODE, MCC_WHOLECELLCOMPENABLE_FUNC, 0)
 	CHECK_EQUAL_VAR(ret, 0)
 End
+
+static Function CheckHoldingCommand_preAcq(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_SyncMiesToMCC", val = 1)
+End
+
+/// The holding command of the amplifier is returned in mV (VC) or pA (IC) and zero if disabled
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// UTF_TD_GENERATOR v0:DataGenerators#GetClampModesWithoutIZero
+static Function CheckHoldingCommand([STRUCT IUTF_MDATA &md])
+
+	variable ret, value, clampMode, headstage
+	string device, clampModeStr
+
+	device       = md.s0
+	clampMode    = md.v0
+	headstage    = 0
+	clampModeStr = ConvertAmplifierModeShortStr(clampMode)
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                                                        + \
+	                                                           "__HS" + num2str(headstage) + "_DA0_AD0_CM:" + clampModeStr + ":_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	value = (clampMode == V_CLAMP_MODE) ? -20 : 50
+
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDING_FUNC, value)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 1)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CHECK_CLOSE_VAR(AI_GetHoldingCommand(device, headstage), value, tol = 1e-2)
+
+	ret = AI_WriteToAmplifier(device, headstage, clampMode, MCC_HOLDINGENABLE_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	CHECK_SMALL_VAR(AI_GetHoldingCommand(device, headstage))
+End
+
+/// A different clamp mode of the amplifier is switched back to the one of MIES
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckEnsureCorrectMode([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage
+	string device
+
+	device    = md.s0
+	headstage = 0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                 \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	// only switch the amplifier
+	AI_SetClampMode(device, headstage, I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), I_CLAMP_MODE)
+	CHECK_EQUAL_VAR(DAG_GetHeadstageMode(device, headstage), V_CLAMP_MODE)
+
+	ret = AI_EnsureCorrectMode(device, headstage, selectAmp = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), V_CLAMP_MODE)
+End
+
+#ifdef TESTS_WITH_SUTTER_HARDWARE
+
+/// Behaviour specific to Sutter amplifiers
+// UTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+static Function CheckSutterAmplifierSpecialCases([STRUCT IUTF_MDATA &md])
+
+	variable ret, headstage, headstageWithoutAmp, prefixScale, unitScale, deviceHeadstage
+	variable DAGain, ADGain
+	string device, rowLabel, serial, setting, DAUnit, ADUnit
+
+	device    = md.s0
+	headstage = 0
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1_TP0_DAQ0"                 \
+	                                                           + "__HS0_DA0_AD0_CM:VC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, device)
+
+	// I=0 is not supported
+	try
+		AI_SetClampMode(device, headstage, I_EQUAL_ZERO_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+	CHECK_EQUAL_VAR(AI_GetMode(device, headstage), V_CLAMP_MODE)
+
+	// functions without Sutter counterpart
+	WAVE unsupported = GetUnsupportedSutterFuncs()
+	for(func : unsupported)
+		INFO("func: %d", n0 = func)
+		CHECK_EQUAL_VAR(AI_SendToAmp(device, headstage, V_CLAMP_MODE, func, MCC_READ), NaN)
+	endfor
+
+	// writing the current value again is skipped with checkBeforeWrite
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 10)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 10, checkBeforeWrite = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_CLOSE_VAR(AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC), 10, tol = 1e-3)
+
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC, 0, checkBeforeWrite = 1)
+	CHECK_EQUAL_VAR(ret, 0)
+	CHECK_SMALL_VAR(AI_ReadFromAmplifier(device, headstage, V_CLAMP_MODE, MCC_HOLDING_FUNC))
+
+	// the fast capacitance compensation is the capacitance neutralization in current clamp
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_FASTCOMPCAP_FUNC, 5e-12)
+	CHECK_EQUAL_VAR(ret, 0)
+	WAVE ampStorageWave = GetAmplifierParamStorageWave(device)
+	rowLabel = AI_MapFunctionConstantToName(MCC_NEUTRALIZATIONCAP_FUNC, I_CLAMP_MODE)
+	CHECK_CLOSE_VAR(ampStorageWave[%$rowLabel][0][headstage], 5, tol = 1e-3)
+	ret = AI_WriteToAmplifier(device, headstage, V_CLAMP_MODE, MCC_FASTCOMPCAP_FUNC, 0)
+	CHECK_EQUAL_VAR(ret, 0)
+
+	// headstage without amplifier
+	WAVE/T deviceInfo = GetSUDeviceInfo()
+	headstageWithoutAmp = str2num(deviceInfo[%SUMHEADSTAGES])
+	if(headstageWithoutAmp < NUM_HEADSTAGES)
+		CHECK_EQUAL_VAR(AI_SU_SelectMultiClamp(device, headstageWithoutAmp), AMPLIFIER_CONNECTION_INVAL_SER)
+		CHECK_EQUAL_VAR(AI_SU_GetMode(device, headstageWithoutAmp), NaN)
+		CHECK_EQUAL_VAR(AI_SU_GetHoldingCommand(device, headstageWithoutAmp), NaN)
+	endif
+
+	// invalid arguments
+	try
+		[serial, deviceHeadstage] = MIES_AI_SU#AI_SU_GetDeviceHeadstageFromProbe(NUM_HEADSTAGES)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		MIES_AI_SU#AI_SU_GetProbeFromDeviceHeadstage("UNKNOWN", 1)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		[setting, prefixScale, unitScale] = MIES_AI_SU#AI_SU_GetSetting(MCC_BEGIN_INVALID_FUNC, V_CLAMP_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		[DAGain, ADGain, DAUnit, ADUnit] = AI_SU_QueryGainsUnitsForClampMode(device, headstage, I_EQUAL_ZERO_MODE)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
+
+#endif // TESTS_WITH_SUTTER_HARDWARE

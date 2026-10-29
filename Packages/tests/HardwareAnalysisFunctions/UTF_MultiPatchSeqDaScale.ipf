@@ -95,7 +95,12 @@ End
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function MSQ_DS2([string str])
 
-	AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 5000})
+	if(GetHardwareType(str) == HARDWARE_SUTTER_DAC)
+		// the Sutter amplifier has a larger current clamp output range
+		AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 25000})
+	else
+		AFH_AddAnalysisParameter("MSQ_DAScale_DA_0", "DAScales", wv = {1000, 1500, 2000, 3000, 5000})
+	endif
 
 	[STRUCT ACD_DAQSettings s] = MSQ_GetDAQSettings(str)
 	ACD_AcquireData(s, str)

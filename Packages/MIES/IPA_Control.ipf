@@ -1636,3 +1636,292 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 
 	return TRUE
 End
+// ---------------- MIES specific functions ----------------
+//
+// The following functions were added for MIES, they are not part of the
+// original Sutter Instrument package.
+//
+// The probe index is one-based over all headstages of all connected IPA
+// devices, as in IPA_SetValue() and IPA_GetValue().
+
+/// @brief Return TRUE if the loaded SutterXOP is compatible with this package
+///
+/// Same check as CheckXOPVersion() but without showing a dialog.
+Function IPA_MIES_IsXOPCompatible()
+
+	variable majorVersion, minorVersion
+
+	PerformSubsystemEntry()
+
+#if exists("SutterXOP_GetXOPVersion")
+	SutterXOP_GetXOPVersion(majorVersion, minorVersion)
+
+	return majorVersion == SutterXOP_XOPVersion
+#else
+	return FALSE
+#endif
+End
+
+/// @brief Switch to live mode after IPA_Initialize()
+///
+/// IPA_Initialize() leaves the package in demo mode, where IPA_SetValue() only
+/// changes the stored control values without sending them to the amplifier.
+///
+/// @returns TRUE on success and FALSE if no amplifier was found by IPA_Initialize()
+Function IPA_MIES_Connect()
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	if(!cmpstr(SIPA.amp[0].serialNum, "demo"))
+		// no amplifier found by IPA_Initialize()
+		return FALSE
+	endif
+
+	NVAR SD_USB       = $(AmpPath + ":SD_USB")
+	NVAR demo_amptype = $(AmpPath + ":demo_amptype")
+
+	SD_USB       = SIPA.numAmps
+	demo_amptype = kLiveMode
+
+	return TRUE
+End
+
+/// @brief Return TRUE if the package is initialized, i.e. IPA_Initialize() was called
+///        and IPA_Shutdown() was not called afterwards
+Function IPA_MIES_IsInitialized()
+
+	PerformSubsystemEntry()
+
+	return DataFolderExists(AmpPath)
+End
+
+/// @brief Reset the stored control values of all probes to the package defaults and send them to the amplifiers
+///
+/// The package stores the control values in its preferences, so without the reset the settings of the
+/// previous session are sent to the amplifiers on the next mode switch. The probe assignment and the DAC
+/// offset trim are kept.
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_ResetToDefaults()
+
+	variable probeIndex, ret
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	if(!IPA_OkToSendCommand())
+		return FALSE
+	endif
+
+	GetStructure(SIPA)
+
+	// InitControls also resets the DAC offset trim, which is a property of the hardware
+	Make/FREE/D/N=(kMaxHeadstages) dacOffsets
+	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
+		dacOffsets[probeIndex] = SIPA.ipa.HS[probeIndex].DACOffset
+	endfor
+
+	InitControls(SIPA.ipa)
+
+	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
+		SIPA.ipa.HS[probeIndex].DACOffset = dacOffsets[probeIndex]
+	endfor
+
+	ret = TRUE
+	for(probeIndex = 0; probeIndex < SIPA.numHeadstages; probeIndex += 1)
+		// the amplifier keeps the dynamic hold across mode switches and SetDIPA_fromStructure does not send it
+		SutterDAQwrite(SIPA.ipa.HS[probeIndex].ampIndex, 19 + 6 * SIPA.ipa.HS[probeIndex].HSindex, 0, 0, 0)
+
+		// returns FALSE on error and nothing otherwise
+		if(SetDIPA_fromStructure(SIPA, probeIndex) == FALSE)
+			ret = FALSE
+		endif
+	endfor
+
+	SaveStructure(SIPA)
+
+	return ret
+End
+
+/// @brief Set the clamp mode of the given probe
+///
+/// In contrast to the "VCMode" and "CCMode" keywords of IPA_SetValue() this uses
+/// the probe index over all IPA devices, which is also correct for double IPAs
+/// and multiple IPA devices.
+///
+/// Sends all stored control values of the probe to the amplifier.
+///
+/// @param probeCount   one-based probe index
+/// @param currentClamp TRUE for current clamp, FALSE for voltage clamp
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_SetClampMode(variable probeCount, variable currentClamp)
+
+	variable probeIndex, ret
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
+	SIPA.ipa.HS[probeIndex].vc = currentClamp ? 2 : 0
+
+	// returns FALSE on error and nothing otherwise
+	ret = SetDIPA_fromStructure(SIPA, probeIndex)
+	SaveStructure(SIPA)
+
+	return (ret == FALSE) ? FALSE : TRUE
+End
+
+/// @brief Read the clamp mode of the given probe from the amplifier
+///
+/// @param probeCount one-based probe index
+///
+/// @returns TRUE for current clamp, FALSE for voltage clamp and NaN on error
+Function IPA_MIES_ReadClampModeFromHardware(variable probeCount)
+
+	variable probeIndex, ampIndex, hsIndex, value
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return NaN
+	endif
+
+	ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
+	hsIndex  = SIPA.ipa.HS[probeIndex].HSIndex
+	if(ampIndex == kNoDevice)
+		return NaN
+	endif
+
+	// item 0: gain and VC vs CC of HS#1, item 15: the same for HS#2 of a double IPA
+	value = SutterDAQRead(ampIndex, (hsIndex == 0) ? 0 : 15)
+	if(value < 0)
+		return NaN
+	endif
+
+	// VC adds 256
+	return (value & 256) ? FALSE : TRUE
+End
+
+/// @brief Set a value without changing its enable state
+///
+/// In contrast to IPA_SetValue() the keywords "VHold", "IHold", "Bridge",
+/// "CmComp", "RsComp", "RsCorr" and "RsPred" do not enable the
+/// corresponding setting. The value is stored and then sent to the
+/// amplifier with the unchanged enable state. All other keywords are
+/// passed to IPA_SetValue().
+///
+/// @param probeCount one-based probe index
+/// @param setting    keyword of IPA_SetValue()
+/// @param value      value in SI units, as for IPA_SetValue()
+///
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_SetValue(variable probeCount, string setting, variable value)
+
+	variable probeIndex
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return FALSE
+	endif
+
+	// same limits and units as in IPA_SetValue()
+	strswitch(setting)
+		case IPA_SET_V_HOLD:
+			value                        = limit(value, -1, 1)
+			SIPA.ipa.HS[probeIndex].hpot = round(value * 1000)
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_V_HOLD_ON, SIPA.ipa.HS[probeIndex].hpoton)
+		case IPA_SET_I_HOLD:
+			value                         = limit(value, -20e-9, 20e-9)
+			SIPA.ipa.HS[probeIndex].hcurr = round(value * 1e12)
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_I_HOLD_ON, SIPA.ipa.HS[probeIndex].hcurron)
+		case IPA_SET_BRIDGE:
+			value                          = limit(value, 0, 200e6)
+			SIPA.ipa.HS[probeIndex].bridge = value * 1e-6
+			SaveStructure(SIPA)
+			return IPA_SetValue(probeCount, IPA_SET_BRIDGE_ON, SIPA.ipa.HS[probeIndex].bridgeon)
+		case IPA_SET_CM_COMP:
+			value                          = limit(value, 0, 100e-12)
+			SIPA.ipa.HS[probeIndex].cmcomp = value * 1e12
+			break
+		case IPA_SET_RS_COMP:
+			value                          = limit(value, 0, 100e6)
+			SIPA.ipa.HS[probeIndex].rscomp = value * 1e-6
+			break
+		case IPA_SET_RS_CORR:
+			value                          = limit(value, 0, 1)
+			SIPA.ipa.HS[probeIndex].rscorr = value * 100
+			break
+		case IPA_SET_RS_PRED:
+			value                          = limit(value, 0, 1)
+			SIPA.ipa.HS[probeIndex].rspred = value * 100
+			break
+		default:
+			return IPA_SetValue(probeCount, setting, value)
+	endswitch
+
+	// whole cell compensation and Rs correction/prediction are sent together
+	SaveStructure(SIPA)
+
+	return IPA_SetValue(probeCount, IPA_SET_RS_CORR_ON, SIPA.ipa.HS[probeIndex].corron)
+End
+
+/// @brief Return a stored value
+///
+/// In contrast to IPA_GetValue() the keywords "VHold" and "IHold" return the
+/// stored holding value also when the holding is disabled. All other
+/// keywords are passed to IPA_GetValue().
+///
+/// @param probeCount one-based probe index
+/// @param setting    keyword of IPA_GetValue()
+///
+/// @returns value in SI units, as for IPA_GetValue(), or NaN on error
+Function IPA_MIES_GetValue(variable probeCount, string setting)
+
+	variable probeIndex
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	GetStructure(SIPA)
+
+	probeIndex = probeCount - 1
+	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+		return NaN
+	endif
+
+	strswitch(setting)
+		case IPA_SET_V_HOLD:
+			return SIPA.ipa.HS[probeIndex].hpot * 1e-3
+		case IPA_SET_I_HOLD:
+			return SIPA.ipa.HS[probeIndex].hcurr * 1e-12
+		default:
+			return IPA_GetValue(probeCount, setting)
+	endswitch
+End

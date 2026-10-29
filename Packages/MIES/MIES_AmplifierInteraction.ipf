@@ -25,7 +25,16 @@ static Constant MIN_PIPETTEOFFSET = -150
 /// @param clampMode clamp mode of `func`
 static Function AI_UpdateDependentSettings(string device, variable headStage, variable func, variable clampMode)
 
-	return AI_MCC_UpdateDependentSettings(device, headStage, func, clampMode)
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_UpdateDependentSettings(device, headStage, func, clampMode)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_UpdateDependentSettings(device, headStage, func, clampMode)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Update the AmpStorageWave entry and send the value to the amplifier
@@ -492,37 +501,294 @@ static Function AI_MIESAutoPipetteOffset(string device, variable headStage)
 	endif
 End
 
-/// @brief Query the MCC application for the gains and units of the given clamp mode
+/// @brief Query the amplifier for the gains and units of the given clamp mode
 ///
 /// Assumes that the correct amplifier is already selected!
 Function [variable DAGain, variable ADGain, string DAUnit, string ADUnit] AI_QueryGainsUnitsForClampMode(string device, variable headstage, variable clampMode)
 
 	PerformSubsystemEntry()
 
-	[DAGain, ADGain, DAUnit, ADUnit] = AI_MCC_QueryGainsUnitsForClampMode(device, headstage, clampMode)
+	DAGain = NaN
+	ADGain = NaN
+	DAUnit = ""
+	ADUnit = ""
+
+	switch(AI_GetAmplifierType(device, headstage))
+		case AMPLIFIER_TYPE_NONE:
+			return [DAGain, ADGain, DAUnit, ADUnit]
+		case AMPLIFIER_TYPE_MCC:
+			[DAGain, ADGain, DAUnit, ADUnit] = AI_MCC_QueryGainsUnitsForClampMode(device, headstage, clampMode)
+			return [DAGain, ADGain, DAUnit, ADUnit]
+		case AMPLIFIER_TYPE_SUTTER:
+			[DAGain, ADGain, DAUnit, ADUnit] = AI_SU_QueryGainsUnitsForClampMode(device, headstage, clampMode)
+			return [DAGain, ADGain, DAUnit, ADUnit]
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 
 	return [DAGain, ADGain, DAUnit, ADUnit]
 End
 
-/// @brief Return a nicely layouted list of amplifier channels
+/// @brief Return a nicely layouted list of the amplifiers available for the device
 ///
 /// Used as popup menu value function.
-Function/S AI_GetAmplifierList()
+///
+/// @param device [optional, defaults to none] device, for unlocked panels
+///               the device is not yet known
+Function/S AI_GetAmplifierList([string device])
 
-	return AI_MCC_GetAmplifierList()
+	if(ParamIsDefault(device))
+		device = ""
+	endif
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetAmplifierList()
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_GetAmplifierList()
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Return the amplifier list entry for the given amplifier serial and channel
-Function/S AI_GetAmplifierDef(variable ampSerial, variable ampChannel)
+/// @brief Return the amplifier list entry of the amplifier associated with the headstage
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns list entry as returned by AI_GetAmplifierList() or #NONE
+Function/S AI_GetAmplifierDef(string device, variable headstage)
 
-	return AI_MCC_GetAmplifierDef(ampSerial, ampChannel)
+	PerformSubsystemEntry()
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(device)
+
+	switch(AI_GetAmplifierType(device, headstage))
+		case AMPLIFIER_TYPE_NONE:
+			return NONE
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetAmplifierDef(ChanAmpAssign[%AmpSerialNo][headstage], ChanAmpAssign[%AmpChannelID][headstage])
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_GetAmplifierDef(ChanAmpAssign[%AmpChannelID][headstage])
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Parse the entries which AI_GetAmplifierDef() created
-Function [variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string amplifierDef)
+/// @brief Return the amplifier list entry of the amplifier fixed to the headstage
+///
+/// Only devices with integrated amplifiers have fixed amplifiers.
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns list entry as returned by AI_GetAmplifierList(), #NONE if the headstage has no fixed amplifier
+///          or an empty string if the device has no fixed amplifiers
+Function/S AI_GetFixedAmplifierDef(string device, variable headstage)
 
-	[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
-	return [ampSerial, ampChannelID]
+	string list
+
+	PerformSubsystemEntry()
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return ""
+		case AMPLIFIER_TYPE_SUTTER:
+			// first entry is NONE
+			list = AI_SU_GetAmplifierList()
+			if((headstage + 1) >= ItemsInList(list))
+				return NONE
+			endif
+
+			return StringFromList(headstage + 1, list)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
+/// @brief Parse the entries which AI_GetAmplifierList() created
+///
+/// @param[in]  device       device
+/// @param[in]  amplifierDef amplifier list entry
+/// @retval     ampType      amplifier type, one of @ref AmplifierTypes
+/// @retval     ampSerial    amplifier serial number
+/// @retval     ampChannelID amplifier channel
+Function [variable ampType, variable ampSerial, variable ampChannelID] AI_ParseAmplifierDef(string device, string amplifierDef)
+
+	PerformSubsystemEntry()
+
+	ampType      = AMPLIFIER_TYPE_NONE
+	ampSerial    = NaN
+	ampChannelID = NaN
+
+	if(!cmpstr(amplifierDef, NONE))
+		return [ampType, ampSerial, ampChannelID]
+	endif
+
+	ampType = AI_GetAmplifierTypeOfDevice(device)
+
+	switch(ampType)
+		case AMPLIFIER_TYPE_MCC:
+			[ampSerial, ampChannelID] = AI_MCC_ParseAmplifierDef(amplifierDef)
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			ampChannelID = AI_SU_ParseAmplifierDef(amplifierDef)
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+
+	return [ampType, ampSerial, ampChannelID]
+End
+
+/// @brief Return the amplifier type the device supports
+///
+/// Each device supports only amplifiers of one type, besides headstages
+/// without amplifier. Sutter devices have integrated amplifiers, all other
+/// devices use MCC amplifiers.
+///
+/// @param device device, can be empty if not yet known
+///
+/// @returns one of @ref AmplifierTypes, never #AMPLIFIER_TYPE_NONE
+threadsafe Function AI_GetAmplifierTypeOfDevice(string device)
+
+	PerformSubsystemEntry_TS()
+
+	if(IsDeviceNameFromSutter(device))
+		return AMPLIFIER_TYPE_SUTTER
+	endif
+
+	return AMPLIFIER_TYPE_MCC
+End
+
+/// @brief Initialize the amplifiers of the device
+///
+/// Called when locking the device.
+///
+/// @returns 0 on success, 1 on error
+Function AI_InitializeAmplifiers(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			// the MCC amplifiers are independent of the device
+			return 0
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_Initialize(device)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
+/// @brief Shutdown the amplifiers of the device
+///
+/// Called when unlocking the device.
+Function AI_ShutdownAmplifiers(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			// the MCC amplifiers are independent of the device
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			AI_SU_Shutdown(device)
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
+/// @brief Return true if the clamp mode is supported by the amplifiers of the device
+///
+/// I=0 is not supported for Sutter amplifiers.
+///
+/// @param device    device
+/// @param clampMode one of #V_CLAMP_MODE, #I_CLAMP_MODE or #I_EQUAL_ZERO_MODE
+Function AI_IsClampModeSupported(string device, variable clampMode)
+
+	PerformSubsystemEntry()
+
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return 1
+		case AMPLIFIER_TYPE_SUTTER:
+			return clampMode != I_EQUAL_ZERO_MODE
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+End
+
+/// @brief Return the amplifier types headstages with associated channels of the device can have
+///
+/// Sutter devices have fixed integrated amplifiers for all their headstages.
+/// Headstages without associated channels have no amplifier.
+///
+/// @param device device, can be empty if not yet known
+///
+/// @returns numeric wave with entries from @ref AmplifierTypes
+Function/WAVE AI_GetAllowedAmplifierTypes(string device)
+
+	PerformSubsystemEntry()
+
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			Make/FREE/D types = {AMPLIFIER_TYPE_MCC, AMPLIFIER_TYPE_NONE}
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			Make/FREE/D types = {AMPLIFIER_TYPE_SUTTER}
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
+
+	return types
+End
+
+/// @brief Return true if headstages of the device can have the given amplifier type
+///
+/// @param device  device, can be empty if not yet known
+/// @param ampType one of @ref AmplifierTypes
+Function AI_IsAllowedAmplifierType(string device, variable ampType)
+
+	PerformSubsystemEntry()
+
+	WAVE types = AI_GetAllowedAmplifierTypes(device)
+
+	return IsFinite(GetRowIndex(types, val = ampType))
+End
+
+/// @brief Return the amplifier type of the given headstage
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+///
+/// @returns one of @ref AmplifierTypes
+Function AI_GetAmplifierType(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	ASSERT(IsValidHeadstage(headstage), "Invalid headstage")
+
+	WAVE ChanAmpAssign = GetChanAmpAssign(device)
+
+	return ChanAmpAssign[%AmpType][headstage]
+End
+
+/// @brief Return true if the given headstage has an amplifier associated
+///
+/// @param device    device
+/// @param headstage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+Function AI_HasAmplifier(string device, variable headstage)
+
+	PerformSubsystemEntry()
+
+	return AI_GetAmplifierType(device, headstage) != AMPLIFIER_TYPE_NONE
 End
 
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
@@ -1203,7 +1469,16 @@ Function AI_GetHoldingCommand(string device, variable headstage)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_GetHoldingCommand(device, headstage)
+	switch(AI_GetAmplifierType(device, headstage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetHoldingCommand(device, headstage)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_GetHoldingCommand(device, headstage)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Return the clamp mode of the headstage as returned by the amplifier
@@ -1217,12 +1492,21 @@ Function AI_GetMode(string device, variable headstage)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_GetMode(device, headstage)
+	switch(AI_GetAmplifierType(device, headstage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_GetMode(device, headstage)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_GetMode(device, headstage)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Wrapper for MCC_SelectMultiClamp700B
+/// @brief Select the amplifier of the given headstage
 ///
-/// @param device device
+/// @param device    device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 ///
 /// @returns one of @ref AISelectMultiClampReturnValues
@@ -1230,10 +1514,26 @@ Function AI_SelectMultiClamp(string device, variable headStage)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_SelectMultiClamp(device, headStage)
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return AMPLIFIER_CONNECTION_INVAL_SER
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_SelectMultiClamp(device, headStage)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_SelectMultiClamp(device, headStage)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Set the clamp mode of user linked MCC based on the headstage number
+/// @brief Set the clamp mode of the amplifier based on the headstage number
+///
+/// @param device    device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
+/// @param mode      clamp mode to set
+/// @param zeroStep  [optional, defaults to false] switch via I=0 to the target clamp mode
+/// @param selectAmp [optional, defaults to true] Select the amplifier
+///                  before use, some callers might save time in doing that once themselves.
 Function AI_SetClampMode(string device, variable headStage, variable mode, [variable zeroStep, variable selectAmp])
 
 	PerformSubsystemEntry()
@@ -1250,13 +1550,24 @@ Function AI_SetClampMode(string device, variable headStage, variable mode, [vari
 		selectAmp = !!selectAmp
 	endif
 
-	return AI_MCC_SetClampMode(device, headStage, mode, zeroStep, selectAmp)
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC:
+			AI_MCC_SetClampMode(device, headStage, mode, zeroStep, selectAmp)
+			break
+		case AMPLIFIER_TYPE_SUTTER:
+			AI_SU_SetClampMode(device, headStage, mode)
+			break
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Set the clamp mode in the MCC app to the
+/// @brief Set the clamp mode in the amplifier to the
 ///        same clamp mode as MIES has stored.
 ///
-/// @param device device
+/// @param device     device
 /// @param headStage  headstage
 /// @param selectAmp  [optional, defaults to false] selects the amplifier
 ///                   before using, some callers might be able to skip it.
@@ -1272,22 +1583,38 @@ Function AI_EnsureCorrectMode(string device, variable headStage, [variable selec
 		selectAmp = !!selectAmp
 	endif
 
-	return AI_MCC_EnsureCorrectMode(device, headStage, selectAmp)
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return 1
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_EnsureCorrectMode(device, headStage, selectAmp)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_EnsureCorrectMode(device, headStage)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
-/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
+/// @brief Fill the amplifier settings wave by querying the amplifier and send the data to ED_AddEntriesToLabnotebook
 ///
-/// @param device 		 device
-/// @param sweepNo           data wave sweep number
+/// @param device  device
+/// @param sweepNo data wave sweep number
 Function AI_FillAndSendAmpliferSettings(string device, variable sweepNo)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_FillAndSendAmpliferSettings(device, sweepNo)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_FillAndSendAmpliferSettings(device, sweepNo)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_FillAndSendAmpliferSettings(device, sweepNo)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers
-/// by querying the MCC application
+/// by querying the amplifier
 ///
 /// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
 ///
@@ -1296,7 +1623,14 @@ Function AI_QueryGainsFromMCC(string device)
 
 	PerformSubsystemEntry()
 
-	return AI_MCC_QueryGainsFromMCC(device)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_QueryGainsFromMCC(device)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_QueryGains(device)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Return the number of connected amplifiers
@@ -1313,13 +1647,23 @@ Function AI_FindConnectedAmps(string device, [variable rescanHardware])
 		rescanHardware = !!rescanHardware
 	endif
 
-	return AI_MCC_FindConnectedAmps(rescanHardware)
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC:
+			return AI_MCC_FindConnectedAmps(rescanHardware)
+		case AMPLIFIER_TYPE_SUTTER:
+			// the integrated amplifiers can not be rescanned without resetting the device
+			return AI_SU_FindConnectedAmps()
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Generic interface to call amplifier functions
 ///
-/// @param device           locked panel name to work on
-/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+/// Dispatches to the implementation of the amplifier type of the headstage.
+///
+/// @param device           device
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
 /// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
 /// @param accessType       One of @ref MCCAccessType
@@ -1340,11 +1684,20 @@ Function AI_SendToAmp(string device, variable headStage, variable mode, variable
 	usePrefixes      = ParamIsDefault(usePrefixes) ? 1 : !!usePrefixes
 	selectAmp        = ParamIsDefault(selectAmp) ? 1 : !!selectAmp
 
-	if(ParamIsDefault(value))
-		return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp)
-	endif
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC:
+			if(ParamIsDefault(value))
+				return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp)
+			endif
 
-	return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
+			return AI_MCC_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite = checkBeforeWrite, usePrefixes = usePrefixes, selectAmp = selectAmp, value = value)
+		case AMPLIFIER_TYPE_SUTTER:
+			return AI_SU_SendToAmp(device, headStage, mode, func, accessType, checkBeforeWrite, usePrefixes, selectAmp, ParamIsDefault(value) ? NaN : value)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Write to the amplifier
@@ -1385,11 +1738,17 @@ Function AI_WriteToAmplifier(string device, variable headStage, variable mode, v
 		GUIWrite = !!GUIWrite
 	endif
 
-	if(ParamIsDefault(sendToAll))
-		return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
-	endif
+	switch(AI_GetAmplifierTypeOfDevice(device))
+		case AMPLIFIER_TYPE_MCC: // fallthrough
+		case AMPLIFIER_TYPE_SUTTER:
+			if(ParamIsDefault(sendToAll))
+				return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite)
+			endif
 
-	return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
+			return AI_UpdateAmpModel(device, headStage, clampMode = mode, func = func, value = value, checkBeforeWrite = checkBeforeWrite, selectAmp = selectAmp, GUIWrite = GUIWrite, sendToAll = !!sendToAll)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
 
 /// @brief Read from amplifier
@@ -1413,9 +1772,17 @@ Function AI_ReadFromAmplifier(string device, variable headStage, variable mode, 
 		selectAmp = !!selectAmp
 	endif
 
-	if(ParamIsDefault(usePrefixes))
-		return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
-	endif
+	switch(AI_GetAmplifierType(device, headStage))
+		case AMPLIFIER_TYPE_NONE:
+			return NaN
+		case AMPLIFIER_TYPE_MCC: // fallthrough
+		case AMPLIFIER_TYPE_SUTTER:
+			if(ParamIsDefault(usePrefixes))
+				return AI_SendToAmp(device, headStage, mode, func, MCC_READ, selectAmp = selectAmp)
+			endif
 
-	return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+			return AI_SendToAmp(device, headStage, mode, func, MCC_READ, usePrefixes = usePrefixes, selectAmp = selectAmp)
+		default:
+			FATAL_ERROR("Invalid amplifier type")
+	endswitch
 End
