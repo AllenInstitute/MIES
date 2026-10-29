@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = DAEphysTestsWithoutHardware
 
-/// @name Devices with the same device ID but different hardware types for IsDeviceActiveWithBGTask
+/// @name Devices with the same device ID but different hardware types
 ///@{
 static StrConstant DEVICE_ITC = "ITC18USB_Dev_0"
 static StrConstant DEVICE_NI  = "Dev1"
@@ -293,13 +293,7 @@ End
 // UTF_TD_GENERATOR DataGenerators#MultiDeviceBackgroundTasks
 static Function IsDeviceActiveWithBGTaskDistinguishesHardwareTypes([string str])
 
-	NVAR deviceIDITC = $GetDAQDeviceID(DEVICE_ITC)
-	NVAR deviceIDNI  = $GetDAQDeviceID(DEVICE_NI)
-	deviceIDITC = 0
-	deviceIDNI  = 0
-
-	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_ITC), HARDWARE_ITC_DAC)
-	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_NI), HARDWARE_NI_DAC)
+	SetSameDeviceIDForITCAndNI_IGNORE()
 
 	RegisterDeviceForBGTask_IGNORE(DEVICE_NI, str)
 
@@ -311,3 +305,54 @@ static Function IsDeviceActiveWithBGTaskDistinguishesHardwareTypes([string str])
 	CHECK_EQUAL_VAR(IsDeviceActiveWithBGTask(DEVICE_ITC, str), 0)
 End
 /// @}
+
+static Function SetSameDeviceIDForITCAndNI_IGNORE()
+
+	NVAR deviceIDITC = $GetDAQDeviceID(DEVICE_ITC)
+	NVAR deviceIDNI  = $GetDAQDeviceID(DEVICE_NI)
+	deviceIDITC = 0
+	deviceIDNI  = 0
+
+	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_ITC), HARDWARE_ITC_DAC)
+	CHECK_EQUAL_VAR(GetHardwareType(DEVICE_NI), HARDWARE_NI_DAC)
+End
+
+static Function DQMRemoveDeviceDistinguishesHardwareTypes()
+
+	SetSameDeviceIDForITCAndNI_IGNORE()
+
+	MIES_DAQ_MD#DQM_AddDevice(DEVICE_ITC)
+	MIES_DAQ_MD#DQM_AddDevice(DEVICE_NI)
+
+	CHECK_EQUAL_VAR(MIES_DAQ_MD#DQM_GetActiveDeviceRow(DEVICE_ITC), 0)
+	CHECK_EQUAL_VAR(MIES_DAQ_MD#DQM_GetActiveDeviceRow(DEVICE_NI), 1)
+
+	MIES_DAQ_MD#DQM_RemoveDevice(DEVICE_NI)
+
+	WAVE activeDeviceList = GetDQMActiveDeviceList()
+	CHECK_EQUAL_VAR(DimSize(activeDeviceList, ROWS), 1)
+	CHECK_EQUAL_VAR(activeDeviceList[0][%HardwareType], HARDWARE_ITC_DAC)
+
+	CHECK_EQUAL_VAR(MIES_DAQ_MD#DQM_GetActiveDeviceRow(DEVICE_ITC), 0)
+	CHECK_EQUAL_VAR(MIES_DAQ_MD#DQM_GetActiveDeviceRow(DEVICE_NI), NaN)
+End
+
+static Function DQMRemoveTimerDistinguishesHardwareTypes()
+
+	SetSameDeviceIDForITCAndNI_IGNORE()
+
+	MIES_DAQ_MD#DQM_MakeOrUpdateTimerParamWave(DEVICE_ITC, "FuncITC", 0, 1, 1, 1)
+	MIES_DAQ_MD#DQM_MakeOrUpdateTimerParamWave(DEVICE_NI, "FuncNI", 0, 2, 2, 1)
+
+	MIES_DAQ_MD#DQM_MakeOrUpdateTimerParamWave(DEVICE_NI, "", 0, 0, 0, -1)
+
+	WAVE/SDFR=GetActiveDAQDevicesTimerFolder()   ActiveDevTimeParam
+	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
+
+	CHECK_EQUAL_VAR(DimSize(ActiveDevTimeParam, ROWS), 1)
+	CHECK_EQUAL_VAR(ActiveDevTimeParam[0][2], 1)
+
+	CHECK_EQUAL_VAR(DimSize(TimerFunctionListWave, ROWS), 1)
+	CHECK_EQUAL_STR(TimerFunctionListWave[0][0], DEVICE_ITC)
+	CHECK_EQUAL_STR(TimerFunctionListWave[0][1], "FuncITC")
+End

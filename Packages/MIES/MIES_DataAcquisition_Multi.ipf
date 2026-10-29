@@ -157,7 +157,7 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 		SCOPE_UpdateGraph(device, DATA_ACQUISITION_MODE)
 
 		if(isFinished)
-			DQM_RemoveDevice(device, deviceID)
+			DQM_RemoveDevice(device)
 			DQM_StopDataAcq(device, deviceID)
 			i = 0
 			continue
@@ -203,7 +203,7 @@ Function DQM_TerminateOngoingDAQHelper(string device)
 	endtry
 
 	// remove device passed in from active device lists
-	DQM_RemoveDevice(device, deviceID)
+	DQM_RemoveDevice(device)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
@@ -383,31 +383,39 @@ End
 /// @brief Removes a device from the ActiveDeviceList
 ///
 /// @param device panel title
-/// @param deviceID   id of the device to be removed
-static Function DQM_RemoveDevice(string device, variable deviceID)
+static Function DQM_RemoveDevice(string device)
 
 	variable row
 
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
-	row = DQM_GetActiveDeviceRow(deviceID)
+	row = DQM_GetActiveDeviceRow(device)
 	DeleteWavePoint(ActiveDeviceList, ROWS, index = row)
 End
 
-/// @brief Return the row into `ActiveDeviceList` for the given deviceID
-Function DQM_GetActiveDeviceRow(variable deviceID)
+/// @brief Return the row of the device in `ActiveDeviceList`, or NaN if it is not registered
+///
+/// Device IDs are only unique per hardware type, so both have to match.
+static Function DQM_GetActiveDeviceRow(string device)
 
-	variable idCol
+	variable hardwareType, row
+
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
+	NVAR deviceID         = $GetDAQDeviceID(device)
 
-	idCol = FindDimLabel(ActiveDeviceList, COLS, "DeviceID")
-	FindValue/V=(deviceID)/RMD=[][idCol] ActiveDeviceList
-
-	if(V_Value == -1)
+	WAVE/Z indizes = FindIndizes(ActiveDeviceList, colLabel = "DeviceID", var = deviceID)
+	if(!WaveExists(indizes))
 		return NaN
 	endif
 
-	return V_Value
+	hardwareType = GetHardwareType(device)
+	for(row : indizes)
+		if(ActiveDeviceList[row][%HardwareType] == hardwareType)
+			return row
+		endif
+	endfor
+
+	return NaN
 End
 
 /// @brief Adds a device to the ActiveDeviceList
@@ -457,9 +465,13 @@ static Function DQM_MakeOrUpdateTimerParamWave(string device, string listOfFunct
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
 	elseif(addOrRemoveDevice == -1) // remove a DAQ device
-		FindValue/V=(deviceID)/RMD=[][0] ActiveDevTimeParam
-		rowToRemove = V_Value
-		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
+		// ActiveDevTimeParam has no hardware type, and device IDs are only
+		// unique per hardware type
+		WAVE/Z/T/SDFR=dfr deviceNameList = TimerFunctionListWave
+		ASSERT(WaveExists(deviceNameList), "Missing wave TimerFunctionListWave")
+		WAVE/Z indizes = FindIndizes(deviceNameList, col = 0, str = device)
+		ASSERT(WaveExists(indizes), "Trying to remove a non existing device")
+		rowToRemove = indizes[0]
 		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
 	else
 		FATAL_ERROR("Invalid addOrRemoveDevice value")
