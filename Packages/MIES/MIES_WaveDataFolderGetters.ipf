@@ -9823,3 +9823,38 @@ Function/S GetReplayStorageAsString()
 End
 
 #endif // REPLAY_DATA
+
+/// @brief Return a free wave to store the LIMS credentials
+Function/WAVE GetLIMSCredentialsAsFree()
+
+	Make/N=(4)/T/FREE wv
+	SetDimensionLabels(wv, "Db User;Db Password;Db Host;Db Name", ROWS)
+
+	return wv
+End
+
+//// @brief List of entities (files, folders, cellids)
+///
+/// This is the parsing result from the Notebook
+static Function/WAVE GetAnalysisBrowserPasteResultSingle()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE, 2)/T wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetDimensionLabels(wv, "Content;Tags;", COLS)
+
+	return wv
+End
+
+//// @brief Return a wave reference wave with waves to store the entities (files, folders, cellids)
+Function/WAVE GetAnalysisBrowserPasteResult()
+
+	Make/FREE/WAVE/N=3 wv
+	SetDimensionLabels(wv, "File;Folder;cell_specimen", ROWS)
+
+	wv[%File]          = GetAnalysisBrowserPasteResultSingle()
+	wv[%Folder]        = GetAnalysisBrowserPasteResultSingle()
+	wv[%cell_specimen] = GetAnalysisBrowserPasteResultSingle()
+
+	return wv
+End

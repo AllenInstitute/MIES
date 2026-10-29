@@ -1248,10 +1248,8 @@ Function [string abWin, string sweepBrowsers] OpenAnalysisBrowser(WAVE/Z/T files
 		if(absolutePaths)
 			WAVE/T filesWithPath = files
 		else
-			PathInfo home
-
 			Duplicate/FREE/T files, filesWithPath
-			filesWithPath[] = S_path + GetHFSPath(files[p])
+			filesWithPath[] = PrependExperimentFolder_IGNORE(GetHFSPath(files[p]))
 		endif
 
 		for(fullFilePath : filesWithPath)
@@ -1973,6 +1971,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_oodDAQ.ipf", list, ";", Inf)
 			list = AddListItem("UTF_PackageSettings.ipf", list, ";", Inf)
 			list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Python.ipf", list, ";", Inf)
 			list = AddListItem("UTF_StimsetAPI.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormula.ipf", list, ";", Inf)
 			list = AddListItem("UTF_SweepFormula_Operations.ipf", list, ";", Inf)
@@ -1994,6 +1993,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 			list = AddListItem("UTF_Utils_Mies_BackupWaves.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Config.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Logging.ipf", list, ";", Inf)
+			list = AddListItem("UTF_Utils_Mies_Settings.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_Sweep.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Mies_ZeroMQ.ipf", list, ";", Inf)
 			list = AddListItem("UTF_Utils_Numeric.ipf", list, ";", Inf)

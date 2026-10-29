@@ -51,6 +51,7 @@ bld/
 [Oo]bj/
 UserConfig*.txt
 JU_*.xml
+Cobertura_*.xml
 Packages/tests/**/*.nwb
 
 # intermediate test files
@@ -61,3 +62,4 @@ CheckIfConfigurationRestoresMCCFilterGain.json
 Packages/tests/**/20*.pxp
 
 Packages/tests/Basic/test*
+Packages/tests/HistoricData/test*
