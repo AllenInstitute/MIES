@@ -155,8 +155,6 @@ jobs:
         exclude:
           - version: 10
             name: PAPlot
-          - version: 10
-            name: HistoricData
     uses: ./.github/workflows/test-igor-workflow.yml
     with:
       job_name: 🧪 Test ${{ matrix.name }}
