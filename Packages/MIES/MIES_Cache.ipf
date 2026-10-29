@@ -823,7 +823,7 @@ Function CA_OutputCacheStatistics()
 	for(i = 0; i < numEntries; i += 1)
 		key  = allKeys[i]
 		idx  = CA_GetCacheIndex(keys, key)
-		size = stats[idx][%Size] / 1024 / 1024
+		size = stats[idx][%Size] * ONE_TO_MEBI
 		size = (size == 0) ? 0 : max(1, size)
 
 		modTime = GetISO8601TimeStamp(secondsSinceIgorEpoch = stats[idx][%ModificationTimestamp], numFracSecondsDigits = 3)

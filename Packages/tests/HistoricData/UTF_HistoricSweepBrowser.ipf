@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors = 1
 #pragma ModuleName       = SweepBrowserTests
 
+static StrConstant RESTORE_DATA_FILENAME = "input:AB_SweepsFromMultipleDevices.pxp"
+
 /// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
 static Function TestTTLDisplayWithNoEpochInfo([string str])
 
@@ -115,4 +117,62 @@ Function TestSweepFormulaPowerSpectrumAverage()
 	       "powerspectrum($dat, default, avg)"
 
 	ExecuteSweepFormulaCode(sweepBrowser, code)
+End
+
+static Function RestoreDataRestoresAllSweeps()
+
+	string abWin, sweepBrowsers, win
+	variable numSweeps
+
+	Make/FREE/T files = {RESTORE_DATA_FILENAME}
+	DownloadFilesIfRequired(files)
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser(files, loadSweeps = 1)
+
+	win = StringFromList(0, sweepBrowsers)
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	// more than one sweep per experiment/device, as sweep zero was the only one restored before
+	CHECK_GT_VAR(numSweeps, 2)
+	CHECK_GT_VAR(ModifySweepBrowserData(win, 1), numSweeps)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_Calculation_RestoreData")
+
+	WAVE/WAVE dataWaves = GetSweepBrowserDataWaves(win)
+	for(WAVE wv : dataWaves)
+		WAVE/Z backup = GetBackupWave(wv)
+		CHECK_WAVE(backup, NUMERIC_WAVE)
+		CHECK_EQUAL_WAVES(wv, backup, mode = WAVE_DATA)
+	endfor
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBrowserWithoutBackupWaves([string str])
+
+	CheckLoadingSweepsWithoutBackups("input:" + str)
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesForSweepBackups
+static Function SweepBackupsAreRemovedOnLowMemory([string str])
+
+	CheckRemovingSweepBackupsOnLowMemory("input:" + str)
+End
+
+/// UTF_TD_GENERATOR HistoricDataHelpers#GetHistoricDataFilesWithTTLData
+static Function AllSweepDataWavesHaveBackups([string str])
+
+	string abWin, sweepBrowsers, win
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({"input:" + str}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+
+	WAVE/WAVE dataWaves = GetSweepBrowserDataWaves(win)
+	CHECK_GT_VAR(DimSize(dataWaves, ROWS), 0)
+
+	for(WAVE wv : dataWaves)
+		WAVE/Z backup = GetBackupWave(wv)
+		CHECK_WAVE(backup, NUMERIC_WAVE)
+	endfor
 End

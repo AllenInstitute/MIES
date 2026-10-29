@@ -18,6 +18,12 @@
 /// @file UTF_HelperFunctions.ipf
 /// @brief This file holds helper functions for the tests
 
+/// All waves of a single sweep folder except the backup waves
+static StrConstant SINGLE_SWEEP_DATA_WAVES_REGEXP = "(?i)^(?!.*_bak$)"
+
+/// Backup waves, see GetBackupWave()
+static StrConstant BACKUP_WAVES_REGEXP = "(?i)_bak$"
+
 Function/S PrependExperimentFolder_IGNORE(string filename)
 
 	PathInfo home
@@ -1099,7 +1105,7 @@ Function DisableBugChecks()
 	TSDS_WriteVar(TSDS_BUGCOUNT, NaN)
 End
 
-/// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
+/// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GiB] is left
 ///
 /// Unwise use of this function can break Igor!
 Function ExhaustMemory(variable amountOfFreeMemoryLeft)
@@ -1117,7 +1123,7 @@ Function ExhaustMemory(variable amountOfFreeMemoryLeft)
 			expo -= 1
 		endif
 
-		printf "Free Memory: %gGB\r", GetFreeMemory()
+		printf "Free Memory: %g GiB\r", GetFreeMemory()
 
 		if(GetFreeMemory() < amountOfFreeMemoryLeft)
 			break
@@ -1323,6 +1329,184 @@ static Function TagExperimentsInAnalysisBrowser(WAVE/Z/T tagList)
 	for(i = 0; i < numTags; i += 1)
 		MIES_AB#AB_AddTagToRow(indizes[i], {tagList[i]})
 	endfor
+End
+
+/// @brief Return the data waves of all sweeps of the SweepBrowser `win`, without their backup waves
+Function/WAVE GetSweepBrowserDataWaves(string win)
+
+	variable i, numSweeps, idx
+	string name
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE) dataWaves
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, SINGLE_SWEEP_DATA_WAVES_REGEXP), ";")
+		for(name : names)
+			EnsureLargeEnoughWave(dataWaves, indexShouldExist = idx)
+			WAVE/SDFR=sweepDFR wv = $name
+			dataWaves[idx] = wv
+			idx           += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx) dataWaves
+
+	return dataWaves
+End
+
+/// @brief Apply `offset` to all sweep data waves (not the backups) of the SweepBrowser `win` and return the number of modified waves
+Function ModifySweepBrowserData(string win, variable offset)
+
+	WAVE/WAVE dataWaves = GetSweepBrowserDataWaves(win)
+	for(WAVE wv : dataWaves)
+		wv += offset
+	endfor
+
+	return DimSize(dataWaves, ROWS)
+End
+
+/// @brief Return the full paths of all backup waves of the sweeps of the SweepBrowser `win`, of the single sweep
+///        folders and of the sweep waves next to them
+Function/S GetSweepBrowserBackupWaves(string win)
+
+	variable i, numSweeps
+	string list = ""
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF sweepDFR  = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		DFREF parentDFR = SB_GetSweepDataFolder(sweepMap, i)
+		list += GetListOfObjects(sweepDFR, BACKUP_WAVES_REGEXP, fullPath = 1)
+		list += GetListOfObjects(parentDFR, BACKUP_WAVES_REGEXP, fullPath = 1)
+	endfor
+
+	return list
+End
+
+/// @brief Return the CRC of all sweep data waves (not the backups) of the SweepBrowser `win`, with dimension labels
+///        from their device and folder
+Function/WAVE GetSweepBrowserDataChecksums(string win)
+
+	variable i, numSweeps, idx
+	string name, path
+
+	DFREF  sbDFR    = SB_GetSweepBrowserFolder(win)
+	WAVE/T sweepMap = GetSweepBrowserMap(sbDFR)
+	numSweeps = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE) checksums
+	for(i = 0; i < numSweeps; i += 1)
+		DFREF  sweepDFR = SB_GetSweepDataPathFromIndex(sbDFR, i)
+		WAVE/T names    = ListToTextWave(GetListOfObjects(sweepDFR, SINGLE_SWEEP_DATA_WAVES_REGEXP), ";")
+		for(name : names)
+			WAVE/SDFR=sweepDFR wv = $name
+			path = sweepMap[i][%Device] + "/" + GetDataFolder(0, sweepDFR) + "/" + name
+
+			EnsureLargeEnoughWave(checksums, indexShouldExist = idx)
+			checksums[idx] = WaveCRC(0, wv)
+			SetDimLabel ROWS, idx, $path, checksums
+			idx += 1
+		endfor
+	endfor
+
+	Redimension/N=(idx) checksums
+
+	return checksums
+End
+
+/// @brief Load the sweeps of `file` into a SweepBrowser with and without backup waves, see AB_DisableSweepBackups(),
+///        and check that the loaded data is the same and that the functionality needing backups is disabled
+///
+/// @param file file path relative to the symbolic path `home`, see OpenAnalysisBrowser()
+Function CheckLoadingSweepsWithoutBackups(string file)
+
+	string abWin, sweepBrowsers, win, leftOver
+
+	CHECK_EQUAL_VAR(AB_UseSweepBackups(), 1)
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+	WAVE withBackups = GetSweepBrowserDataChecksums(win)
+	CHECK_GT_VAR(DimSize(withBackups, ROWS), 0)
+
+	KillWindow $win
+	KillWindow $abWin
+	KillOrMoveToTrash(dfr = GetAnalysisFolder())
+
+	AB_DisableSweepBackups()
+	CHECK_EQUAL_VAR(AB_UseSweepBackups(), 0)
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+	WAVE withoutBackups = GetSweepBrowserDataChecksums(win)
+
+	CHECK_EQUAL_WAVES(withoutBackups, withBackups, mode = WAVE_DATA | DIMENSION_LABELS)
+	leftOver = GetSweepBrowserBackupWaves(win)
+	CHECK_EMPTY_STR(leftOver)
+
+	CheckBackupDependentControlsDisabled(win)
+End
+
+/// @brief Check that the controls of the functionality needing the sweep backup waves are unchecked and disabled
+Function CheckBackupDependentControlsDisabled(string win)
+
+	string bsPanel, ctrl
+
+	bsPanel = BSP_GetPanel(win)
+	Make/FREE/T checkboxes = {"check_Calculation_ZeroTraces", "check_BrowserSettings_TA", "check_auto_remove"}
+	for(ctrl : checkboxes)
+		CHECK_EQUAL_VAR(GetCheckBoxState(bsPanel, ctrl), CHECKBOX_UNSELECTED)
+		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
+		CHECK_EQUAL_STR(GetUserData(bsPanel, ctrl, EXPCONFIG_UDATA_EXCLUDE_RESTORE), "1")
+	endfor
+
+	Make/FREE/T buttons = {"button_Calculation_RestoreData", "button_RemoveRanges", "button_TimeAlignment_Action"}
+	for(ctrl : buttons)
+		CHECK_EQUAL_VAR(IsControlDisabled(bsPanel, ctrl), 1)
+	endfor
+End
+
+/// @brief Load the sweeps of `file` into a SweepBrowser with backup waves, modify them, and check that falling below
+///        the free memory threshold restores the sweeps, removes all backup waves and disables the functionality
+///        needing them
+///
+/// @param file file path relative to the symbolic path `home`, see OpenAnalysisBrowser()
+Function CheckRemovingSweepBackupsOnLowMemory(string file)
+
+	string abWin, sweepBrowsers, win, leftOver, emptyWin
+
+	[abWin, sweepBrowsers] = OpenAnalysisBrowser({file}, loadSweeps = 1)
+	win                    = StringFromList(0, sweepBrowsers)
+
+	// a new SweepBrowser is still empty while its first sweeps are loaded
+	DFREF emptySBDFR = SB_OpenSweepBrowser()
+	SVAR/SDFR=emptySBDFR graph
+	emptyWin = graph
+
+	WAVE original = GetSweepBrowserDataChecksums(win)
+	CHECK_GT_VAR(DimSize(original, ROWS), 0)
+
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_Calculation_ZeroTraces", val = CHECKBOX_SELECTED)
+	CHECK_GT_VAR(ModifySweepBrowserData(win, 1), 0)
+
+	MIES_AB#AB_DisableSweepBackupsIfLowMemory(minFreeMemory = Inf)
+	CHECK_EQUAL_VAR(AB_UseSweepBackups(), 0)
+
+	WAVE restored = GetSweepBrowserDataChecksums(win)
+	CHECK_EQUAL_WAVES(restored, original, mode = WAVE_DATA | DIMENSION_LABELS)
+
+	leftOver = GetSweepBrowserBackupWaves(win)
+	CHECK_EMPTY_STR(leftOver)
+
+	CheckBackupDependentControlsDisabled(win)
+	CheckBackupDependentControlsDisabled(emptyWin)
 End
 
 Function/S LoadSweepsFromAllExperimentsFromAB(string abWin)

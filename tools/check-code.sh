@@ -117,6 +117,26 @@ then
   ret=1
 fi
 
+# 1: powers of 1024 used as factor or divisor, e.g. / 1024, * 1024, 1024 * or 1024^3
+# 2: not in constants
+# 3: not in test assertions
+# 4: ignored in comments
+# 5: respects NOLINT
+matches=$(git grep $opts                                                                                                              \
+                   -e '((\*|/)[[:space:]]*(=)?[[:space:]]*(1024|1048576|1073741824|1099511627776)\b|\b(1024|1048576|1073741824|1099511627776)[[:space:]]*(\*|\^))' \
+                   --and --not -e '^[[:space:]]*(Str)?Constant'                                                                       \
+                   --and --not -e '^[[:space:]]*(REQUIRE|CHECK|WARN)_([a-z]+)_([a-z]+)\('                                             \
+                   --and --not -e '^[[:space:]]*//'                                                                                   \
+                   --and --not -e '//[[:space:]]*NOLINT$'                                                                             \
+                  '*/MIES_*.ipf' '*/UTF_*.ipf' ':^*/MIES_Pictures.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "Literal binary multiplier check failed, use the constants like ONE_TO_MEBI (use \`// NOLINT\` to suppress if appropriate):"
+  echo "$matches"
+  ret=1
+fi
+
 matches=$(git grep $opts --files-without-match  '^#pragma (ModuleName|IndependentModule)' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Include.ipf')
 
 if [[ -n "$matches" ]]
