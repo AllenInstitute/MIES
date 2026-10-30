@@ -127,10 +127,10 @@ End
 /// Never ever write this string!
 Function/S GetMiesVersion()
 
-	string path = GetSVARAsString(GetMiesPath(), "version")
+	string path = GetSVARAsString(GetMiesPath(), "version", initialValue = UNKNOWN_MIES_VERSION)
 	SVAR   str  = $path
 
-	if(!CmpStr(str, "") || !CmpStr(str, UNKNOWN_MIES_VERSION))
+	if(!CmpStr(str, UNKNOWN_MIES_VERSION))
 		str = CreateMiesVersion()
 	endif
 
