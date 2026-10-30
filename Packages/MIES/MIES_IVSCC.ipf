@@ -232,7 +232,6 @@ End
 Function IVS_Load_StimSet(string stim_filename)
 
 	stim_filename = GetWindowsPath(stim_filename)
-	print "Stimulus loading...." + stim_filename
 
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
 End
