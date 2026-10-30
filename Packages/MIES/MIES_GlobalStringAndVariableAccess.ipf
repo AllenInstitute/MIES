@@ -191,7 +191,7 @@ End
 /// The mies version looks like
 ///
 /// @verbatim
-/// Release_1.4_20170929-16-g497e7aa8
+/// XXX_1.4_20170929-16-g497e7aa8
 /// Date and time of last commit: 2018-05-08T14:42:50+02:00
 /// Submodule status:
 /// 160000 6c47163858d99986b27c70f6226e8fca894ed5f7 0	Packages/IPNWB
@@ -199,6 +199,8 @@ End
 /// 160000 2bd259940cb332339ed3c82b74632f06c9b68a15 0	Packages/ZeroMQ
 /// 160000 657e9e8abdc92aa299301796d710a0a717da4ef8 0	Packages/unit-testing
 /// @endverbatim
+///
+/// where `XXX` is eiher `Release` or `Development` depending on wether this is from a release branch or main.
 ///
 /// or #UNKNOWN_MIES_VERSION on error
 ///
@@ -269,7 +271,8 @@ static Function/S CreateMiesVersionNoCache()
 
 	DEBUGPRINT("Version.txt contents:\r\r", str = version)
 
-	if(IsEmpty(version) || strsearch(version, "Release", 0) == -1)
+	if(IsEmpty(version) ||                                                                   \
+	   (strsearch(version, "Release", 0) == -1 && strsearch(version, "Development", 0) == -1))
 		return UNKNOWN_MIES_VERSION
 	endif
 
@@ -304,7 +307,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 #if defined(WINDOWS)
 	// explanation:
 	// cmd /C "<full path to git.exe> -C <mies repository root> describe <options> redirect everything into <mies respository>/version.txt"
-	sprintf cmd, "%s /C \"\"%s\" -C \"%s\" describe --always --dirty --broken --tags --match \"Release_*\" > \"%s\" 2>&1\"", shellPath, gitPathOrName, topDir, fullVersionPath
+	sprintf cmd, "%s /C \"\"%s\" -C \"%s\" describe --always --dirty --broken --tags --match \"Release_*\" --match \"Development_*\" > \"%s\" 2>&1\"", shellPath, gitPathOrName, topDir, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
@@ -351,7 +354,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 		abort
 	endif
 
-	sprintf cmd, "do shell script \"%s -C '%s' describe --always --tags --match 'Release_*' > '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
+	sprintf cmd, "do shell script \"%s -C '%s' describe --always --tags --match 'Release_*' --match 'Development_*' > '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/UNQ/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
