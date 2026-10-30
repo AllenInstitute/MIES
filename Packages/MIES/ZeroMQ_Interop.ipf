@@ -62,6 +62,15 @@ Constant ZMQ_SET_FLAGS_LOGGING = 0x10
 Constant ZMQ_SET_FLAGS_INTERCEPTOR = 0x20
 ///@}
 
+/// @name Socket types for zeromq_get_bound_endpoints()
+/// @anchor ZeroMQSocketTypes
+///@{
+Constant ZMQ_SOCKET_TYPE_CLIENT     = 1
+Constant ZMQ_SOCKET_TYPE_SERVER     = 2
+Constant ZMQ_SOCKET_TYPE_PUBLISHER  = 3
+Constant ZMQ_SOCKET_TYPE_SUBSCRIBER = 4
+///@}
+
 StrConstant ZMQ_HEARTBEAT = "heartbeat"
 
 /// @name Error codes
