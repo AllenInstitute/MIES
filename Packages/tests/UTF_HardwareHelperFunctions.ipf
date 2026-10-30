@@ -354,7 +354,7 @@ End
 Function LoadStimsets()
 
 	string filename = GetTestStimsetFullFilePath()
-	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
+	NWB_LoadAllStimsets(filename = filename, overwrite = 1, verbose = 0)
 End
 
 Function SaveStimsets()

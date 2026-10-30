@@ -1668,23 +1668,17 @@ static Function/S NWB_SuffixExtendedStimsetNamesToStimsetNames(string stimsets)
 	return GetUniqueTextEntriesFromList(stimsets, caseSensitive = 0)
 End
 
-Function/S NWB_ReadStimSetList(string fullPath)
+Function/S NWB_ReadStimSetList(variable fileID)
 
-	variable fileId
-	string   stimsets
+	string stimsets
 
 	PerformSubsystemEntry()
 
-	fileID = H5_OpenFile(fullPath)
-
 	if(!StimsetPathExists(fileID))
-		printf "no stimsets present in %s\r", fullPath
-		H5_CloseFile(fileID)
 		return ""
 	endif
 
 	stimsets = ReadStimsets(fileID)
-	H5_CloseFile(fileID)
 
 	return NWB_SuffixExtendedStimsetNamesToStimsetNames(stimsets)
 End
@@ -1694,8 +1688,9 @@ End
 /// @param fileName         [optional, shows a dialog on default] provide full file name/path for loading stimset
 /// @param overwrite        [optional, defaults to false] indicate if the stored stimset should be deleted before the load.
 /// @param loadOnlyBuiltins [optional, defaults to false] load only builtin stimsets
+/// @param verbose          [optional, defaults to true] verbosity
 /// @return 1 on error and 0 on success
-Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable loadOnlyBuiltins])
+Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable loadOnlyBuiltins, variable verbose])
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
@@ -1715,6 +1710,12 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 		loadOnlyBuiltins = !!loadOnlyBuiltins
 	endif
 
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
+	endif
+
 	if(ParamIsDefault(fileName))
 		Open/D/R/M="Load all stimulus sets"/F="NWB Files:*.nwb;All Files:.*;" refNum
 
@@ -1729,13 +1730,16 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	stimsets = NWB_ReadStimSetList(fullPath)
+	fileID = H5_OpenFile(fullPath)
+
+	stimsets = NWB_ReadStimSetList(fileID)
 	if(IsEmpty(stimsets))
-		return 0
+		H5_CloseFile(fileID)
+		return NaN
 	endif
 
-	fileID      = H5_OpenFile(fullPath)
-	groupID     = OpenStimset(fileID)
+	groupID = OpenStimset(fileID)
+
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		stimset = StringFromList(i, stimsets)
@@ -1744,7 +1748,7 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 			continue
 		endif
 
-		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = 1))
+		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = verbose))
 			printf "error loading stimset %s\r", stimset
 			error = 1
 			continue
@@ -1758,6 +1762,13 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 	H5_CloseFile(fileID)
 
 	WB_UpdateChangedStimsets()
+
+	if(verbose)
+		filename = GetWindowsPath(filename)
+		if(!error)
+			print "Stimsets from " + filename + " loaded successfully."
+		endif
+	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 

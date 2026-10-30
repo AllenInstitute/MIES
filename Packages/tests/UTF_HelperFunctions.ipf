@@ -1209,7 +1209,7 @@ Function LoadStimsetsIfRequired()
 	endif
 
 	if(needsLoading)
-		NWB_LoadAllStimsets(filename = filepath, overwrite = 1)
+		NWB_LoadAllStimsets(filename = filepath, overwrite = 1, verbose = 0)
 		DuplicateDataFolder/O=1 root:MIES:WaveBuilder, root:WaveBuilder; AbortOnRTE
 		variable/G root:WaveBuilder:modTime = V_modificationDate
 	endif
