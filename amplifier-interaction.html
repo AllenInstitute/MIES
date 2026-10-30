@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Amplifier interaction &#8212; MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=ace62dd4"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Thirty six hints for writing analysis functions" href="analysis-function-writing.html" />
+    <link rel="prev" title="DAQ details" href="daq-details.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="analysis-function-writing.html" title="Thirty six hints for writing analysis functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Amplifier interaction</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="amplifier-interaction">
+<span id="id1"></span><h1>Amplifier interaction<a class="headerlink" href="#amplifier-interaction" title="Link to this heading">¶</a></h1>
+<p>MIES supports two amplifier families: the Molecular Devices MultiClamp 700B (MCC), controlled via the MCC and
+Axon Telegraph XOPs and the MultiClamp Commander, and the amplifiers integrated in the Sutter Instrument IPA
+and double IPA devices, controlled via the Sutter XOP and the IPA control procedures from Sutter. See
+<a class="reference internal" href="sutter_amplifier.html#sutter-amplifier"><span class="std std-ref">Sutter IPA amplifiers</span></a> for the user documentation of the Sutter amplifiers.</p>
+<section id="code-structure">
+<h2>Code structure<a class="headerlink" href="#code-structure" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 10.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Prefix</p></th>
+<th class="head"><p>Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MIES_AmplifierInteraction.ipf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AI_</span></code></p></td>
+<td><p>Amplifier independent code and the public interface. The public functions dispatch to the
+implementation of the amplifier type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MIES_AmplifierInteraction_MolecularDevices.ipf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AI_MCC_</span></code></p></td>
+<td><p>MCC implementation. Hardware accessing functions are only compiled with the MCC XOPs present
+(<code class="docutils literal notranslate"><span class="pre">AMPLIFIER_XOPS_PRESENT</span></code>), otherwise placeholders are used.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MIES_AmplifierInteraction_Sutter.ipf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AI_SU_</span></code></p></td>
+<td><p>Sutter implementation. Functions using <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code> are only compiled with the Sutter XOP present
+(<code class="docutils literal notranslate"><span class="pre">SUTTER_AMPLIFIER_PRESENT</span></code>), otherwise placeholders are used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IPA_</span></code></p></td>
+<td><p>IPA control procedures from Sutter Instrument, only included with the Sutter XOP present, see
+<a class="reference internal" href="#ipa-control"><span class="std std-ref">IPA control procedures</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="amplifier-types">
+<h2>Amplifier types<a class="headerlink" href="#amplifier-types" title="Link to this heading">¶</a></h2>
+<p>Each headstage has an amplifier type, one of <code class="docutils literal notranslate"><span class="pre">AMPLIFIER_TYPE_NONE</span></code>, <code class="docutils literal notranslate"><span class="pre">AMPLIFIER_TYPE_MCC</span></code> or
+<code class="docutils literal notranslate"><span class="pre">AMPLIFIER_TYPE_SUTTER</span></code>. It is stored in the <code class="docutils literal notranslate"><span class="pre">AmpType</span></code> row of <a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#_CPPv416GetChanAmpAssign6string" title="GetChanAmpAssign"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetChanAmpAssign()</span></code></a>, together with
+the serial number and channel of MCC amplifiers or the probe index of Sutter amplifiers in <code class="docutils literal notranslate"><span class="pre">AmpChannelID</span></code>.
+Waves created before the amplifier type existed are upgraded to MCC for headstages with a valid serial number
+and channel and to no amplifier otherwise.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv419AI_GetAmplifierType6string8variable" title="AI_GetAmplifierType"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetAmplifierType()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv415AI_HasAmplifier6string8variable" title="AI_HasAmplifier"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_HasAmplifier()</span></code></a> are the only places to query the amplifier
+association of a headstage.</p></li>
+<li><p>Each device supports amplifiers of a single type, see <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv427AI_GetAmplifierTypeOfDevice6string" title="AI_GetAmplifierTypeOfDevice"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetAmplifierTypeOfDevice()</span></code></a>. Sutter
+devices have integrated amplifiers, all other devices use MCC amplifiers.</p></li>
+<li><p>The allowed amplifier types of the headstages of a device are defined in
+<a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv427AI_GetAllowedAmplifierTypes6string" title="AI_GetAllowedAmplifierTypes"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetAllowedAmplifierTypes()</span></code></a>: MCC or none for MCC devices, only Sutter for Sutter devices.
+Allowing headstages without amplifier for Sutter devices only requires to change this function.</p></li>
+</ul>
+<section id="dispatching">
+<h3>Dispatching<a class="headerlink" href="#dispatching" title="Link to this heading">¶</a></h3>
+<p>The public <code class="docutils literal notranslate"><span class="pre">AI_</span></code> functions dispatch to the <code class="docutils literal notranslate"><span class="pre">AI_MCC_</span></code>/<code class="docutils literal notranslate"><span class="pre">AI_SU_</span></code> implementations:</p>
+<ul class="simple">
+<li><p>Functions working on a single headstage dispatch by the amplifier type of that headstage. Headstages
+without amplifier return the same values as the MCC implementation did for them, e.g. <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for
+<a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv420AI_ReadFromAmplifier6string8variable8variable8variable8variable8variable" title="AI_ReadFromAmplifier"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_ReadFromAmplifier()</span></code></a>.</p></li>
+<li><p>Functions working on multiple headstages, or not related to a headstage, dispatch by the amplifier type
+of the device.</p></li>
+</ul>
+<p>Functions which use the amplifier only via <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv419AI_SelectMultiClamp6string8variable" title="AI_SelectMultiClamp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_SelectMultiClamp()</span></code></a>, <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv412AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable8variable" title="AI_SendToAmp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_SendToAmp()</span></code></a> and
+<code class="docutils literal notranslate"><span class="pre">AI_EnsureCorrectMode</span></code>, like <code class="docutils literal notranslate"><span class="pre">AI_UpdateAmpModel</span></code> or <code class="docutils literal notranslate"><span class="pre">AI_ZeroAmps</span></code>, are amplifier independent and live in
+<code class="docutils literal notranslate"><span class="pre">MIES_AmplifierInteraction.ipf</span></code>. Side effects of writing a setting which depend on the amplifier, e.g. the
+Sutter pipette offset being shared between the clamp modes, are handled by the <code class="docutils literal notranslate"><span class="pre">UpdateDependentSettings</span></code>
+functions of each implementation, which <code class="docutils literal notranslate"><span class="pre">AI_UpdateAmpModel</span></code> calls after writing.</p>
+</section>
+<section id="amplifier-list-entries">
+<h3>Amplifier list entries<a class="headerlink" href="#amplifier-list-entries" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv419AI_GetAmplifierList6string" title="AI_GetAmplifierList"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetAmplifierList()</span></code></a>, <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv418AI_GetAmplifierDef6string8variable" title="AI_GetAmplifierDef"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetAmplifierDef()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv420AI_ParseAmplifierDef6string6string" title="AI_ParseAmplifierDef"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_ParseAmplifierDef()</span></code></a> create
+and parse the entries of the amplifier popup in the Hardware tab. MCC entries contain serial number and
+channel, Sutter entries the IPA device serial and the headstage on that device, e.g. <code class="docutils literal notranslate"><span class="pre">IPA_E_100170</span> <span class="pre">HS</span> <span class="pre">1</span></code>.
+Devices with integrated amplifiers have a fixed amplifier per headstage, see
+<a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv423AI_GetFixedAmplifierDef6string8variable" title="AI_GetFixedAmplifierDef"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_GetFixedAmplifierDef()</span></code></a>, which DA_Ephys assigns when locking.</p>
+</section>
+<section id="initialization">
+<h3>Initialization<a class="headerlink" href="#initialization" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv423AI_InitializeAmplifiers6string" title="AI_InitializeAmplifiers"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_InitializeAmplifiers()</span></code></a> and <a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv421AI_ShutdownAmplifiers6string" title="AI_ShutdownAmplifiers"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_ShutdownAmplifiers()</span></code></a> are called when locking and unlocking a
+device. MCC amplifiers are independent of the device and need no initialization. For Sutter devices the IPA
+control procedures are initialized and switched to live mode. As the package stores its control values in
+its preferences on disk, they are then reset to the package defaults with <code class="docutils literal notranslate"><span class="pre">IPA_MIES_ResetToDefaults</span></code> and
+sent to the amplifiers, otherwise the settings of the previous session would be applied. Afterwards the
+clamp modes of MIES are sent and the amp storage wave and the DA_Ephys GUI are updated to the reset values,
+so that MIES and the amplifier have the same state.</p>
+<p>A failing initialization does not abort locking, as for MCC amplifiers without a running MultiClamp
+Commander. <code class="docutils literal notranslate"><span class="pre">AI_SU_SelectMultiClamp</span></code> then returns <code class="docutils literal notranslate"><span class="pre">AMPLIFIER_CONNECTION_MCC_FAILED</span></code>, so test pulse and data
+acquisition on these headstages are refused, and unlocking still works, as <code class="docutils literal notranslate"><span class="pre">AI_SU_Shutdown</span></code> only shuts down
+an initialized package.</p>
+</section>
+<section id="settings-and-labnotebook">
+<h3>Settings and labnotebook<a class="headerlink" href="#settings-and-labnotebook" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv412AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable8variable" title="AI_SendToAmp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_SendToAmp()</span></code></a> accepts the MCC function constants (<code class="docutils literal notranslate"><span class="pre">MCC_*_FUNC</span></code>) for all amplifier types. The
+Sutter implementation maps them to the keywords of the IPA control procedures, including the unit
+conversion, and returns <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for functions without Sutter counterpart. Values are set with
+<code class="docutils literal notranslate"><span class="pre">IPA_MIES_SetValue</span></code>, which does not change the enable state of a setting, and read from the stored
+values of the package, as the amplifier can not be read back except for the clamp mode and the gain.</p>
+<p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv430AI_FillAndSendAmpliferSettings6string8variable" title="AI_FillAndSendAmpliferSettings"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_FillAndSendAmpliferSettings()</span></code></a> documents the amplifier settings in the labnotebook. Sutter settings
+with an MCC counterpart use the existing keys, the others get their own keys in
+<a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#_CPPv433GetSutterAmplifierSettingsKeyWavev" title="GetSutterAmplifierSettingsKeyWave"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetSutterAmplifierSettingsKeyWave()</span></code></a> and <code class="docutils literal notranslate"><span class="pre">GetSutterAmplifierSettingsTextKeyWave</span></code> so that the
+labnotebooks of MCC amplifiers stay unchanged.</p>
+<p>The Sutter headstage outputs are in Ampere in current clamp, so <a class="reference internal" href="file/_m_i_e_s___d_a_c-_hardware_8ipf.html#_CPPv415HW_GetDataRange8variable8variable8variable8variable" title="HW_GetDataRange"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">HW_GetDataRange()</span></code></a> requires the
+clamp mode for associated DA channels of Sutter devices.</p>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h3>
+<p>The headstage association of a configuration stores the amplifier type. Configurations without amplifier
+type are read as MCC, as only MCC amplifiers existed for them. See <a class="reference internal" href="sutter_amplifier.html#sutter-amplifier"><span class="std std-ref">Sutter IPA amplifiers</span></a> for the restore
+behaviour of Sutter amplifiers.</p>
+</section>
+</section>
+<section id="ipa-control-procedures">
+<span id="ipa-control"></span><h2>IPA control procedures<a class="headerlink" href="#ipa-control-procedures" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code> is the amplifier control package provided by Sutter Instrument. It is kept as close as
+possible to the original:</p>
+<ul class="simple">
+<li><p>Changes to the original code follow its coding style and are kept minimal. Each fix of a bug in Sutter’s
+code is a separate commit which states that it is a fix in Sutter’s code.</p></li>
+<li><p>Functions needed by MIES are added in a separate section at the end of the file with the prefix
+<code class="docutils literal notranslate"><span class="pre">IPA_MIES_</span></code> and follow the MIES coding conventions, e.g. <code class="docutils literal notranslate"><span class="pre">IPA_MIES_SetClampMode</span></code>, which uses the probe
+index over all IPA devices, or <code class="docutils literal notranslate"><span class="pre">IPA_MIES_SetValue</span></code>/<code class="docutils literal notranslate"><span class="pre">IPA_MIES_GetValue</span></code>.</p></li>
+<li><p>The package addresses the headstages by the one based probe number over all IPA devices, MIES uses the
+zero based headstage number.</p></li>
+<li><p>The package stores its control values, including gain and filter, in its package preferences, which
+survive restarts of Igor Pro. MIES resets them when locking a device, see above. The values set while a
+device is locked, e.g. on the command line, are kept until the next lock.</p></li>
+<li><p>The file is only included with the Sutter XOP present, so all MIES code calling it must be guarded with
+<code class="docutils literal notranslate"><span class="pre">#if</span> <span class="pre">exists(&quot;SutterDAQScanWave&quot;)</span></code>. The CI has no Sutter XOP and no Sutter hardware.</p></li>
+<li><p>The file is excluded from the doxygen documentation.</p></li>
+</ul>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The hardware tests run with Sutter hardware via the experiments <code class="docutils literal notranslate"><span class="pre">HardwareBasic-SUTTER.pxp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">HardwareAnalysisFunctions-SUTTER.pxp</span></code>, which define <code class="docutils literal notranslate"><span class="pre">TESTS_WITH_SUTTER_HARDWARE</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UTF_IPAControl.ipf</span></code> tests the functions of <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code> which MIES does not use directly.</p></li>
+<li><p>As the CI has no Sutter hardware, changes to the Sutter support or to shared amplifier, configuration or
+analysis function code must be tested locally with an IPA.</p></li>
+<li><p>Each test case locks the device and therefore starts with the default amplifier settings. Settings
+changed outside of a test, e.g. on the command line, stay active until the next lock, with a large current
+clamp gain the input is clipped, e.g. to +/-20 mV with <code class="docutils literal notranslate"><span class="pre">VGain</span></code> 500.</p></li>
+</ul>
+</section>
+<section id="amplifier-feature-comparison">
+<h2>Amplifier feature comparison<a class="headerlink" href="#amplifier-feature-comparison" title="Link to this heading">¶</a></h2>
+<p>The following tables compare the amplifier settings of MCC and Sutter amplifiers and how MIES maps them.
+The MCC columns are taken from the MIES implementation, the MCC behaviour itself is taken from the MCC
+documentation. The Sutter columns are taken from <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code> and were checked with a single IPA and a
+model cell with the positions “Cell” (about 12 MΩ, 29 pF, 520 MΩ), “Seal” (above 1.7 GΩ, 9 pF) and “Bath”
+(10 MΩ).</p>
+<ul class="simple">
+<li><p>AmpStorage: row label in <a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#_CPPv428GetAmplifierParamStorageWave6string" title="GetAmplifierParamStorageWave"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetAmplifierParamStorageWave()</span></code></a></p></li>
+<li><p>Labnotebook key: entry of <a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#_CPPv427GetAmplifierSettingsKeyWavev" title="GetAmplifierSettingsKeyWave"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetAmplifierSettingsKeyWave()</span></code></a> or
+<a class="reference internal" href="file/_m_i_e_s___wave_data_folder_getters_8ipf.html#_CPPv431GetAmplifierSettingsTextKeyWavev" title="GetAmplifierSettingsTextKeyWave"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GetAmplifierSettingsTextKeyWave()</span></code></a></p></li>
+<li><p>Sutter storage: field of the stored control values of <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code>. Only the clamp mode and the
+gain can be read back from the hardware, all other values are the stored ones.</p></li>
+</ul>
+<section id="settings-available-for-mcc-and-sutter-amplifiers">
+<h3>Settings available for MCC and Sutter amplifiers<a class="headerlink" href="#settings-available-for-mcc-and-sutter-amplifiers" title="Link to this heading">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 5.0%" />
+<col style="width: 17.0%" />
+<col style="width: 10.0%" />
+<col style="width: 12.0%" />
+<col style="width: 14.0%" />
+<col style="width: 16.0%" />
+<col style="width: 16.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Mode</p></th>
+<th class="head"><p>MCC function / control</p></th>
+<th class="head"><p>AmpStorage</p></th>
+<th class="head"><p>Labnotebook key</p></th>
+<th class="head"><p>Sutter keyword / storage</p></th>
+<th class="head"><p>Differences MCC and Sutter</p></th>
+<th class="head"><p>Hardware check</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Clamp mode</p></td>
+<td><p>all</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv415AI_SetClampMode6string8variable8variable8variable8variable" title="AI_SetClampMode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_SetClampMode()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">Radio_ClampMode_*</span></code></p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Operating</span> <span class="pre">Mode</span></code>, <code class="docutils literal notranslate"><span class="pre">OperatingModeString</span></code>, generic <code class="docutils literal notranslate"><span class="pre">Clamp</span> <span class="pre">Mode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VCMode</span></code>/<code class="docutils literal notranslate"><span class="pre">CCMode</span></code>, <code class="docutils literal notranslate"><span class="pre">IPA_MIES_SetClampMode</span></code>; <code class="docutils literal notranslate"><span class="pre">vc</span></code> (0 VC, 2 CC), read back via
+<code class="docutils literal notranslate"><span class="pre">SutterDAQRead(unit,</span> <span class="pre">0)</span></code></p></td>
+<td><p>No I=0 for Sutter. A mode switch sends all stored settings of the probe.</p></td>
+<td><p>Works, read back matches.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Holding potential</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_HOLDING_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_Hold_VC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HoldingPotential</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">V-Clamp</span> <span class="pre">Holding</span> <span class="pre">Level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VHold</span></code>; <code class="docutils literal notranslate"><span class="pre">hpot</span></code> (mV)</p></td>
+<td><p>1 mV resolution. <code class="docutils literal notranslate"><span class="pre">VHold</span></code> also enables the holding. <code class="docutils literal notranslate"><span class="pre">IPA_GetValue</span></code> returns 0 when disabled.</p></td>
+<td><p>20 mV give 38.5 pA in “Cell”, 1 mV steps.</p></td>
+</tr>
+<tr class="row-even"><td><p>Holding potential enable</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_HOLDINGENABLE_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_HoldEnableVC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HoldingPotentialEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">V-Clamp</span> <span class="pre">Holding</span> <span class="pre">Enable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VHoldOn</span></code>; <code class="docutils literal notranslate"><span class="pre">hpoton</span></code></p></td>
+<td><p>–</p></td>
+<td><p>Works.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Holding current</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_HOLDING_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_Hold_IC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BiasCurrent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">I-Clamp</span> <span class="pre">Holding</span> <span class="pre">Level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IHold</span></code>; <code class="docutils literal notranslate"><span class="pre">hcurr</span></code> (pA), +/-20 nA</p></td>
+<td><p>1 pA resolution. <code class="docutils literal notranslate"><span class="pre">IHold</span></code> also enables the holding.</p></td>
+<td><p>100 pA give 51 mV in “Cell”.</p></td>
+</tr>
+<tr class="row-even"><td><p>Holding current enable</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_HOLDINGENABLE_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_HoldEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BiasCurrentEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">I-Clamp</span> <span class="pre">Holding</span> <span class="pre">Enable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IHoldOn</span></code>; <code class="docutils literal notranslate"><span class="pre">hcurron</span></code></p></td>
+<td><p>–</p></td>
+<td><p>Works.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pipette offset</p></td>
+<td><p>VC, IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_PIPETTEOFFSET_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_PipetteOffset_VC</span></code>/<code class="docutils literal notranslate"><span class="pre">_IC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PipetteOffsetVC</span></code>, <code class="docutils literal notranslate"><span class="pre">PipetteOffsetIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Pipette</span> <span class="pre">Offset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Offset</span></code>; <code class="docutils literal notranslate"><span class="pre">offset</span></code> (DAC value, 2^16/V), -250 to +249.98 mV</p></td>
+<td><p><strong>One value for both clamp modes</strong> for Sutter, MIES stores two. VC: added to the command, IC:
+subtracted from the measured voltage.</p></td>
+<td><p>Works.</p></td>
+</tr>
+<tr class="row-even"><td><p>Auto pipette offset</p></td>
+<td><p>VC, IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_AUTOPIPETTEOFFSET_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">button_DataAcq_AutoPipOffset_VC</span></code>/<code class="docutils literal notranslate"><span class="pre">_IC</span></code></p></td>
+<td><p>–</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AutoOffset</span></code>; writes <code class="docutils literal notranslate"><span class="pre">offset</span></code></p></td>
+<td><p>Adds the liquid junction potential, refused with <code class="docutils literal notranslate"><span class="pre">OffsetLock</span></code>. Meant for the bath.</p></td>
+<td><p>In “Bath” -0.2 to -0.5 mV within 1 to 2 s, in “Cell” unreliable.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bridge balance</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_BRIDGEBALRESIST_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_BB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BridgeBalance</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bridge</span> <span class="pre">Bal</span> <span class="pre">Value</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bridge</span></code>; <code class="docutils literal notranslate"><span class="pre">bridge</span></code> (MΩ), 0 to 200 MΩ</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bridge</span></code> also enables it. <code class="docutils literal notranslate"><span class="pre">AutoCellComp</span></code> sets it to the series resistance.</p></td>
+<td><p>50 MΩ at 100 pA: -5.05 mV.</p></td>
+</tr>
+<tr class="row-even"><td><p>Bridge balance enable</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_BRIDGEBALENABLE_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_BBEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BridgeBalanceEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bridge</span> <span class="pre">Bal</span> <span class="pre">Enable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BridgeOn</span></code>; <code class="docutils literal notranslate"><span class="pre">bridgeon</span></code></p></td>
+<td><p>–</p></td>
+<td><p>Works.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Capacitance neutralization</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_NEUTRALIZATIONCAP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_CN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CapNeut</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Neut</span> <span class="pre">Cap</span> <span class="pre">Value</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ECompMag</span></code>; <code class="docutils literal notranslate"><span class="pre">fastmag</span></code> (pF), 0 to 25 pF</p></td>
+<td><p><strong>Shared with the fast capacitance compensation</strong> for Sutter, MCC has separate values. In IC 0.4 pF
+are added when sending.</p></td>
+<td><p>“Cell” oscillates from 11 pF.</p></td>
+</tr>
+<tr class="row-even"><td><p>Capacitance neutralization enable</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_NEUTRALIZATIONENABL_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_CNEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CapNeutEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Neut</span> <span class="pre">Cap</span> <span class="pre">Enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ECompOn</span></code>; <code class="docutils literal notranslate"><span class="pre">capneuton</span></code></p></td>
+<td><p>Only effective in IC.</p></td>
+<td><p>Works.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Whole cell compensation</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_WHOLECELLCOMPCAP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_WHOLECELLCOMPRESIST_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_WHOLECELLCOMPENABLE_FUNC</span></code>;
+<code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_WCC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_WCR</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_WholeCellEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">WholeCellCap</span></code>, <code class="docutils literal notranslate"><span class="pre">WholeCellRes</span></code>, <code class="docutils literal notranslate"><span class="pre">WholeCellEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Whole</span> <span class="pre">Cell</span> <span class="pre">Comp</span> <span class="pre">Cap</span></code>, <code class="docutils literal notranslate"><span class="pre">Whole</span> <span class="pre">Cell</span> <span class="pre">Comp</span> <span class="pre">Resist</span></code>, <code class="docutils literal notranslate"><span class="pre">Whole</span> <span class="pre">Cell</span> <span class="pre">Comp</span> <span class="pre">Enable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CmComp</span></code>, <code class="docutils literal notranslate"><span class="pre">RsComp</span></code>, <code class="docutils literal notranslate"><span class="pre">RsCompOn</span></code>; <code class="docutils literal notranslate"><span class="pre">cmcomp</span></code> (pF, 0 to 100), <code class="docutils literal notranslate"><span class="pre">rscomp</span></code> (MΩ, 0 to 100), <code class="docutils literal notranslate"><span class="pre">compon</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsCompOn</span></code> is the whole cell compensation enable, not the Rs compensation enable. <code class="docutils literal notranslate"><span class="pre">CmComp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">RsComp</span></code> also enable it. Off in IC.</p></td>
+<td><p>Best cancellation at 29 pF and 10 to 12 MΩ in “Cell”.</p></td>
+</tr>
+<tr class="row-even"><td><p>Fast capacitance compensation</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_FASTCOMPCAP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_FASTCOMPTAU_FUNC</span></code> (no GUI)</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Fast</span> <span class="pre">compensation</span> <span class="pre">capacitance</span></code>, <code class="docutils literal notranslate"><span class="pre">Fast</span> <span class="pre">compensation</span> <span class="pre">time</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ECompMag</span></code>, <code class="docutils literal notranslate"><span class="pre">ECompTau</span></code>; <code class="docutils literal notranslate"><span class="pre">fastmag</span></code> (pF), <code class="docutils literal notranslate"><span class="pre">fastphase</span></code> (µs, 0.1 to 4.5)</p></td>
+<td><p>Shared with the capacitance neutralization.</p></td>
+<td><p>“Seal”: 8.96 pF and 1.14 µs reduce the 3.4 nA spike to 35 pA.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Auto fast compensation</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_AUTOFASTCOMP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">button_DataAcq_FastComp_VC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FastCapacitanceComp</span></code></p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AutoEComp</span></code>; result read back from the hardware</p></td>
+<td><p>The amplifier applies the result immediately. Must be done in the cell attached configuration.</p></td>
+<td><p>Works in “Seal”, wrong in “Cell”.</p></td>
+</tr>
+<tr class="row-even"><td><p>Auto whole cell compensation</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_AUTOWHOLECELLCOMP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">button_DataAcq_WCAuto</span></code></p></td>
+<td><p>–</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AutoCellComp</span></code>; result read back from the hardware</p></td>
+<td><p>The amplifier applies the result immediately. Requires the fast compensation first. Also sets the
+bridge balance to the series resistance.</p></td>
+<td><p>After <code class="docutils literal notranslate"><span class="pre">AutoEComp</span></code>: 27.2 pF and 10.3 MΩ in “Cell”, without it wrong.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rs compensation enable</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_RSCOMPENABLE_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">check_DatAcq_RsCompEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsCompEnable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Enable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsCorrOn</span></code>; <code class="docutils literal notranslate"><span class="pre">corron</span></code></p></td>
+<td><p>Enables prediction and correction together.</p></td>
+<td><p>Effect visible, not quantified.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rs correction</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_RSCOMPCORRECTION_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_RsCorr</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Correction</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Correction</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsCorr</span></code>; <code class="docutils literal notranslate"><span class="pre">rscorr</span></code></p></td>
+<td><p>Sutter takes a fraction, MIES uses %. <code class="docutils literal notranslate"><span class="pre">RsCorr</span></code> also enables <code class="docutils literal notranslate"><span class="pre">corron</span></code>. Uses <code class="docutils literal notranslate"><span class="pre">rscomp</span></code> of the whole
+cell compensation.</p></td>
+<td><p>Effect visible, not quantified.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rs prediction</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_RSCOMPPREDICTION_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_RsPred</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Prediction</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Prediction</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsPred</span></code>; <code class="docutils literal notranslate"><span class="pre">rspred</span></code></p></td>
+<td><p>Fraction vs. %. <code class="docutils literal notranslate"><span class="pre">RsPred</span></code> also enables <code class="docutils literal notranslate"><span class="pre">corron</span></code> and <code class="docutils literal notranslate"><span class="pre">compon</span></code>.</p></td>
+<td><p>Not checked separately.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rs compensation bandwidth / lag</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_RSCOMPBANDWIDTH_FUNC</span></code> (no GUI)</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Bandwidth</span></code>; Sutter: <code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Lag</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RsLag</span></code>; <code class="docutils literal notranslate"><span class="pre">lag</span></code> (µs, 20 to 200)</p></td>
+<td><p>Bandwidth (Hz) vs. lag time (s), related but not identical.</p></td>
+<td><p>No difference between the lag values 1023 and 1024.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Primary output gain</p></td>
+<td><p>VC, IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_PRIMARYSIGNALGAIN_FUNC</span></code> (no GUI), telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">Scale</span> <span class="pre">Factor</span></code>, <code class="docutils literal notranslate"><span class="pre">Scale</span> <span class="pre">Factor</span> <span class="pre">Units</span></code>, <code class="docutils literal notranslate"><span class="pre">ScaleFactorUnitsString</span></code>; Sutter:
+<code class="docutils literal notranslate"><span class="pre">V-Clamp</span> <span class="pre">Output</span> <span class="pre">Gain</span></code>, <code class="docutils literal notranslate"><span class="pre">I-Clamp</span> <span class="pre">Output</span> <span class="pre">Gain</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IGain</span></code> (VC, 0.5 to 25 mV/pA), <code class="docutils literal notranslate"><span class="pre">VGain</span></code> (IC, 10 to 500 mV/mV); <code class="docutils literal notranslate"><span class="pre">gainvc</span></code>, <code class="docutils literal notranslate"><span class="pre">gaincc</span></code>, read back
+via <code class="docutils literal notranslate"><span class="pre">SutterDAQRead(unit,</span> <span class="pre">0)</span></code></p></td>
+<td><p>The Sutter data is always in SI units, the MIES gains are fixed. The gain only selects the input range
+(10 V / gain) and the resolution.</p></td>
+<td><p>Works, read back matches the set gain.</p></td>
+</tr>
+<tr class="row-even"><td><p>Primary output low pass filter</p></td>
+<td><p>VC, IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_PRIMARYSIGNALLPF_FUNC</span></code> (no GUI), telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LPF</span> <span class="pre">Cutoff</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Filter</span></code>; <code class="docutils literal notranslate"><span class="pre">filter</span></code> (500 Hz to 20 kHz)</p></td>
+<td><p>One filter for both clamp modes for Sutter, no bypass.</p></td>
+<td><p>Rise times of 500 Hz and 1 kHz as expected.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Serial number</p></td>
+<td><p>–</p></td>
+<td><p>telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Serial</span> <span class="pre">Number</span></code>; Sutter: <code class="docutils literal notranslate"><span class="pre">Amplifier</span> <span class="pre">Serial</span> <span class="pre">Number</span></code> (text)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AmpSN</span></code></p></td>
+<td><p>The Sutter serial is a string, e.g. <code class="docutils literal notranslate"><span class="pre">IPA_E_100170</span></code>. <code class="docutils literal notranslate"><span class="pre">AmpSN</span></code> omits the device type digit and returns
+170, MIES stores 100170 in <code class="docutils literal notranslate"><span class="pre">Serial</span> <span class="pre">Number</span></code> and the string in <code class="docutils literal notranslate"><span class="pre">Amplifier</span> <span class="pre">Serial</span> <span class="pre">Number</span></code>.</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p>Channel</p></td>
+<td><p>–</p></td>
+<td><p>telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Channel</span> <span class="pre">ID</span></code></p></td>
+<td><p>–; <code class="docutils literal notranslate"><span class="pre">HSindex</span></code> (0/1 on dIPA)</p></td>
+<td><p>–</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hardware type</p></td>
+<td><p>–</p></td>
+<td><p>telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Hardware</span> <span class="pre">Type</span></code>, <code class="docutils literal notranslate"><span class="pre">HardwareTypeString</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AmpType</span></code></p></td>
+<td><p>IPA or dIPA.</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p>Membrane capacitance, series resistance (telegraph)</p></td>
+<td><p>VC</p></td>
+<td><p>telegraph</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Membrane</span> <span class="pre">Cap</span></code>, <code class="docutils literal notranslate"><span class="pre">Series</span> <span class="pre">Resistance</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CmComp</span></code>, <code class="docutils literal notranslate"><span class="pre">RsComp</span></code></p></td>
+<td><p>The MCC telegraph reports the whole cell compensation values.</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p>Slow holding / dynamic hold</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_SLOWCURRENTINJENABL_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_SLOWCURRENTINJLEVEL_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_SLOWCURRENTINJSETLT_FUNC</span></code>
+(no GUI)</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Slow</span> <span class="pre">current</span> <span class="pre">injection</span></code>, <code class="docutils literal notranslate"><span class="pre">Slow</span> <span class="pre">current</span> <span class="pre">injection</span> <span class="pre">level</span></code>, <code class="docutils literal notranslate"><span class="pre">Slow</span> <span class="pre">current</span> <span class="pre">injection</span> <span class="pre">settling</span> <span class="pre">time</span></code>;
+Sutter: <code class="docutils literal notranslate"><span class="pre">Dynamic</span> <span class="pre">Hold</span> <span class="pre">Enable</span></code>, <code class="docutils literal notranslate"><span class="pre">Dynamic</span> <span class="pre">Hold</span> <span class="pre">Level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DynHoldOn</span></code>, <code class="docutils literal notranslate"><span class="pre">DynHold</span></code>; <code class="docutils literal notranslate"><span class="pre">trackon</span></code>, <code class="docutils literal notranslate"><span class="pre">track</span></code> (mV)</p></td>
+<td><p>Both keep the membrane potential at a level by a slow current injection. Sutter has no settling time.
+The hardware keeps the dynamic hold across mode switches.</p></td>
+<td><p>-50 mV reached within about 1 s.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mcc-only">
+<h3>MCC only<a class="headerlink" href="#mcc-only" title="Link to this heading">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 10.0%" />
+<col style="width: 35.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Mode</p></th>
+<th class="head"><p>MCC function / control</p></th>
+<th class="head"><p>Labnotebook key</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Slow capacitance compensation, tau x20, auto</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_SLOWCOMPCAP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_SLOWCOMPTAU_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_SLOWCOMPTAUX20ENAB_FUNC</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MCC_AUTOSLOWCOMP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">button_DataAcq_SlowComp_VC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Slow</span> <span class="pre">compensation</span> <span class="pre">capacitance</span></code>, <code class="docutils literal notranslate"><span class="pre">Slow</span> <span class="pre">compensation</span> <span class="pre">time</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Auto bridge balance</p></td>
+<td><p>IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_AUTOBRIDGEBALANCE_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">button_DataAcq_AutoBridgeBal_IC</span></code></p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p>Oscillation killer</p></td>
+<td><p>VC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_OSCKILLERENABLE_FUNC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Osc</span> <span class="pre">Killer</span> <span class="pre">Enable</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Secondary output gain and low pass filter, primary output high pass filter</p></td>
+<td><p>all</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_SECONDARYSIGNALGAIN_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_SECONDARYSIGNALLPF_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_PRIMARYSIGNALHPF_FUNC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Secondary</span> <span class="pre">Alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">Secondary</span> <span class="pre">LPF</span> <span class="pre">Cutoff</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Separate fast compensation and capacitance neutralization values</p></td>
+<td><p>VC, IC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCC_FASTCOMPCAP_FUNC</span></code>, <code class="docutils literal notranslate"><span class="pre">MCC_NEUTRALIZATIONCAP_FUNC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Fast</span> <span class="pre">compensation</span> <span class="pre">capacitance</span></code>, <code class="docutils literal notranslate"><span class="pre">Neut</span> <span class="pre">Cap</span> <span class="pre">Value</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Telegraph metadata</p></td>
+<td><p>–</p></td>
+<td><p>telegraph</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ComPort</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">AxoBus</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">Scaled</span> <span class="pre">Out</span> <span class="pre">Signal</span></code>, <code class="docutils literal notranslate"><span class="pre">Ext</span> <span class="pre">Cmd</span> <span class="pre">Sens</span></code>, <code class="docutils literal notranslate"><span class="pre">Raw</span> <span class="pre">Out</span> <span class="pre">Signal</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Raw</span> <span class="pre">Scale</span> <span class="pre">Factor</span></code>, <code class="docutils literal notranslate"><span class="pre">Raw</span> <span class="pre">Scale</span> <span class="pre">Factor</span> <span class="pre">Units</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>I=0</p></td>
+<td><p>I=0</p></td>
+<td><p><a class="reference internal" href="file/_m_i_e_s___amplifier_interaction_8ipf.html#_CPPv415AI_SetClampMode6string8variable8variable8variable8variable" title="AI_SetClampMode"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">AI_SetClampMode()</span></code></a></p></td>
+<td><p>–</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sutter-only">
+<h3>Sutter only<a class="headerlink" href="#sutter-only" title="Link to this heading">¶</a></h3>
+<p>These settings are not used by MIES.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 15.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Sutter keyword</p></th>
+<th class="head"><p>Sutter storage</p></th>
+<th class="head"><p>Remarks</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Liquid junction potential</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LJP</span></code></p></td>
+<td><p>Added by <code class="docutils literal notranslate"><span class="pre">AutoOffset</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Offset lock</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OffsetLock</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">offsetlock</span></code></p></td>
+<td><p>Blocks <code class="docutils literal notranslate"><span class="pre">AutoOffset</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Seal test</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SealTest</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seal</span></code></p></td>
+<td><p>Amplifier internal, 100 ms, not on the second headstage of a dIPA. Works in VC.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Buzz</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Buzz</span></code></p></td>
+<td><p>–</p></td>
+<td><p>IC only, +/-1 V for about 2 ms.</p></td>
+</tr>
+<tr class="row-even"><td><p>Digital outputs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DigOutWord</span></code>, <code class="docutils literal notranslate"><span class="pre">DigOut1</span></code> to <code class="docutils literal notranslate"><span class="pre">DigOut8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dout</span></code></p></td>
+<td><p>Per device, not per headstage.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aux outputs and inputs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AuxOut1</span></code>, <code class="docutils literal notranslate"><span class="pre">AuxOut2</span></code>, <code class="docutils literal notranslate"><span class="pre">AuxIn1</span></code> to <code class="docutils literal notranslate"><span class="pre">AuxIn4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">analogOut</span></code>, <code class="docutils literal notranslate"><span class="pre">analogIn</span></code></p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p>DAC offset trim</p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DACOffset</span></code></p></td>
+<td><p>Only used at reset.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reset, reconnect</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Reset</span></code>, <code class="docutils literal notranslate"><span class="pre">Reconnect</span></code></p></td>
+<td><p>–</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Reset</span></code> only resets the stored values.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mies-only">
+<h3>MIES only<a class="headerlink" href="#mies-only" title="Link to this heading">¶</a></h3>
+<p>These features have no amplifier function and work for both amplifier types.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Control</p></th>
+<th class="head"><p>AmpStorage</p></th>
+<th class="head"><p>Labnotebook key</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Rs correction/prediction chaining</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_DataAcq_Amp_Chain</span></code> (<code class="docutils literal notranslate"><span class="pre">MCC_NO_AMPCHAIN_FUNC</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RSCompChaining</span></code></p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p>Autobias</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_DataAcq_AutoBias</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_AutoBiasV</span></code>, <code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_AutoBiasVrange</span></code>,
+<code class="docutils literal notranslate"><span class="pre">setvar_DataAcq_IbiasMax</span></code> (<code class="docutils literal notranslate"><span class="pre">MCC_NO_AUTOBIAS_*</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AutoBias*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Autobias</span></code>, <code class="docutils literal notranslate"><span class="pre">Autobias</span> <span class="pre">Vcom</span></code>, <code class="docutils literal notranslate"><span class="pre">Autobias</span> <span class="pre">Vcom</span> <span class="pre">variance</span></code>, <code class="docutils literal notranslate"><span class="pre">Autobias</span> <span class="pre">Ibias</span> <span class="pre">max</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Pipette offset zeroing from the test pulse baseline</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AI_ZeroAmps</span></code></p></td>
+<td><p>–</p></td>
+<td><p>–</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="consequences-for-the-implementation">
+<h3>Consequences for the implementation<a class="headerlink" href="#consequences-for-the-implementation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Only the clamp mode and the gain of Sutter amplifiers can be read back from the hardware. The labnotebook
+therefore documents the stored values of <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code>.</p></li>
+<li><p>The pipette offset and the fast compensation/capacitance neutralization are one value per probe for
+Sutter amplifiers, MIES has separate controls for them. Writing one of them updates the other one.</p></li>
+<li><p>Setting several Sutter values also enables them (<code class="docutils literal notranslate"><span class="pre">VHold</span></code>, <code class="docutils literal notranslate"><span class="pre">IHold</span></code>, <code class="docutils literal notranslate"><span class="pre">Bridge</span></code>, <code class="docutils literal notranslate"><span class="pre">CmComp</span></code>, <code class="docutils literal notranslate"><span class="pre">RsComp</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RsCorr</span></code>, <code class="docutils literal notranslate"><span class="pre">RsPred</span></code>), while MIES sends value and enable state separately. <code class="docutils literal notranslate"><span class="pre">IPA_MIES_SetValue</span></code> sets the
+value without changing the enable state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AutoEComp</span></code> needs the cell attached configuration and <code class="docutils literal notranslate"><span class="pre">AutoCellComp</span></code> needs the fast compensation first.
+<code class="docutils literal notranslate"><span class="pre">AutoCellComp</span></code> also overwrites the bridge balance.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Amplifier interaction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure">Code structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#amplifier-types">Amplifier types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dispatching">Dispatching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amplifier-list-entries">Amplifier list entries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#settings-and-labnotebook">Settings and labnotebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ipa-control-procedures">IPA control procedures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#amplifier-feature-comparison">Amplifier feature comparison</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#settings-available-for-mcc-and-sutter-amplifiers">Settings available for MCC and Sutter amplifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcc-only">MCC only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sutter-only">Sutter only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mies-only">MIES only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consequences-for-the-implementation">Consequences for the implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="daq-details.html"
+                          title="previous chapter">DAQ details</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="analysis-function-writing.html"
+                          title="next chapter">Thirty six hints for writing analysis functions</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="analysis-function-writing.html" title="Thirty six hints for writing analysis functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="daq-details.html" title="DAQ details"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Amplifier interaction</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

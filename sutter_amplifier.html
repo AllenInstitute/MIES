@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sutter IPA amplifiers &#8212; MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=6d6ea0d4" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=a781dc68" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cbca8d48" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/css/lightbox.min.css?v=6e7d0de0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/pointer.css?v=c97663ff" />
+    
+    <script src="_static/documentation_options.js?v=ace62dd4"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js?v=f0ca4bb6"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js?v=12818e64"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="TPStorage" href="testpulse.html" />
+    <link rel="prev" title="DA_Ephys" href="daephys.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="testpulse.html" title="TPStorage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="daephys.html" title="DA_Ephys"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sutter IPA amplifiers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="sutter-ipa-amplifiers">
+<span id="sutter-amplifier"></span><h1>Sutter IPA amplifiers<a class="headerlink" href="#sutter-ipa-amplifiers" title="Link to this heading">¶</a></h1>
+<p>The Sutter Instrument IPA and double IPA (dIPA) devices combine the data acquisition hardware and the
+amplifiers in one device. MIES controls these amplifiers from the <a class="reference internal" href="daephys.html#daephys"><span class="std std-ref">DA_Ephys</span></a> panel in the same way as
+MultiClamp 700B amplifiers, with the differences described below.</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The Sutter XOP (<code class="docutils literal notranslate"><span class="pre">SutterXOP</span></code>, version 2.60) must be installed. Without it MIES can not use Sutter devices
+and the amplifier control procedures <code class="docutils literal notranslate"><span class="pre">IPA_Control.ipf</span></code> from Sutter Instrument are not loaded.</p></li>
+<li><p>There is no separate amplifier control software like the MultiClamp Commander. The amplifiers are
+initialized when the device is locked in the DA_Ephys panel and released when it is unlocked. Locking
+resets the amplifier settings, see <a class="reference internal" href="#sutter-settings-reset"><span class="std std-ref">Settings when locking</span></a>.</p></li>
+<li><p>If the amplifiers can not be initialized, e.g. due to an incompatible Sutter XOP or a missing connection,
+a message is printed and the device is still locked, as for MCC amplifiers without a running MultiClamp
+Commander. The amplifiers can then not be used, test pulse and data acquisition on their headstages are
+refused. Unlock and lock the device again to retry the initialization.</p></li>
+</ul>
+</section>
+<section id="headstages-and-amplifier-assignment">
+<h2>Headstages and amplifier assignment<a class="headerlink" href="#headstages-and-amplifier-assignment" title="Link to this heading">¶</a></h2>
+<p>Each probe of the connected IPA devices is one MIES headstage, in the order of the devices and, for a double
+IPA, its first and second headstage. The DA channel, AD channel and amplifier of each headstage are fixed and
+assigned automatically when locking the device. Therefore the following controls of the Hardware tab are
+disabled for Sutter devices: the DA/AD channel popups, <code class="docutils literal notranslate"><span class="pre">Amplfier</span> <span class="pre">(700B)</span></code>, <code class="docutils literal notranslate"><span class="pre">Clear</span> <span class="pre">Associations</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Query</span> <span class="pre">connected</span> <span class="pre">Amp(s)</span></code>.</p>
+<section id="gains-and-units">
+<h3>Gains and units<a class="headerlink" href="#gains-and-units" title="Link to this heading">¶</a></h3>
+<p>The Sutter XOP outputs and acquires the headstage signals in SI units, so the gains and units of the
+headstages are fixed:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Clamp mode</p></th>
+<th class="head"><p>DA gain and unit</p></th>
+<th class="head"><p>AD gain and unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>V-Clamp</p></td>
+<td><p>1000 mV/V, command in mV</p></td>
+<td><p>1e-12 A/pA, current in pA</p></td>
+</tr>
+<tr class="row-odd"><td><p>I-Clamp</p></td>
+<td><p>1e12 pA/A, command in pA</p></td>
+<td><p>1e-3 V/mV, voltage in mV</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">Auto</span> <span class="pre">Fill</span></code> in the Hardware tab fills in these fixed values. The gain setting of the amplifier does not
+change them, it only selects the input range and resolution, see <a class="reference internal" href="#sutter-settings-without-gui"><span class="std std-ref">Settings without GUI controls</span></a>.</p>
+</section>
+</section>
+<section id="clamp-modes">
+<h2>Clamp modes<a class="headerlink" href="#clamp-modes" title="Link to this heading">¶</a></h2>
+<p>V-Clamp and I-Clamp are supported. I=0 is not supported by the Sutter amplifiers, its controls and
+<code class="docutils literal notranslate"><span class="pre">Mode</span> <span class="pre">switch</span> <span class="pre">via</span> <span class="pre">I=0</span></code> are disabled for Sutter devices.</p>
+<p>In I-Clamp the command output range of the headstages is +/-20 nA. The DAScale of a stimulus set is limited
+accordingly, analysis functions report a future DAScale value out of that range, as the output range of the
+Sutter amplifiers can not be changed.</p>
+</section>
+<section id="amplifier-controls">
+<h2>Amplifier controls<a class="headerlink" href="#amplifier-controls" title="Link to this heading">¶</a></h2>
+<p>The amplifier controls of the Data Acquisition tab work for Sutter amplifiers, with these differences:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Control</p></th>
+<th class="head"><p>Behaviour with Sutter amplifiers</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Holding potential (V-Clamp)</p></td>
+<td><p>1 mV resolution.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Holding current (I-Clamp)</p></td>
+<td><p>1 pA resolution, limited to +/-20 nA.</p></td>
+</tr>
+<tr class="row-even"><td><p>Pipette offset</p></td>
+<td><p>The amplifier has <strong>one</strong> pipette offset for both clamp modes, changing it in one clamp mode also
+changes it in the other one. The range is -250 mV to +249.98 mV. The automatic pipette offset
+(<code class="docutils literal notranslate"><span class="pre">Auto</span></code>) is meant to be used with the pipette in the bath.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bridge balance</p></td>
+<td><p>0 to 200 MΩ. There is no automatic bridge balance, its <code class="docutils literal notranslate"><span class="pre">Auto</span></code> button is disabled.</p></td>
+</tr>
+<tr class="row-even"><td><p>Capacitance neutralization (I-Clamp)</p></td>
+<td><p>0 to 25 pF. The amplifier uses <strong>the same value</strong> as the fast capacitance compensation in V-Clamp,
+changing one of them also changes the other one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cp</span> <span class="pre">Fast</span></code></p></td>
+<td><p>Automatic fast (electrode) capacitance compensation, to be used in the cell attached configuration.
+The amplifier applies the result immediately.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cp</span> <span class="pre">Slow</span></code></p></td>
+<td><p>Not available, the button is disabled.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Whole cell compensation</p></td>
+<td><p>Capacitance 0 to 100 pF, resistance 0 to 100 MΩ, only active in V-Clamp. The automatic whole cell
+compensation (<code class="docutils literal notranslate"><span class="pre">Auto</span></code>) requires the fast capacitance compensation (<code class="docutils literal notranslate"><span class="pre">Cp</span> <span class="pre">Fast</span></code>) first. It also sets
+the bridge balance to the resulting series resistance.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rs compensation</p></td>
+<td><p>The enable checkbox enables correction and prediction together. <code class="docutils literal notranslate"><span class="pre">Chain</span></code> works as for MCC
+amplifiers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Auto</span> <span class="pre">Bias</span></code></p></td>
+<td><p>Works as for MCC amplifiers.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Settings which the amplifier changes as a side effect, like the pipette offset of the other clamp mode, are
+updated in the DA_Ephys panel after writing a setting.</p>
+<section id="settings-without-gui-controls">
+<span id="sutter-settings-without-gui"></span><h3>Settings without GUI controls<a class="headerlink" href="#settings-without-gui-controls" title="Link to this heading">¶</a></h3>
+<p>The following amplifier settings have no control in the DA_Ephys panel yet. They can be set with
+<code class="docutils literal notranslate"><span class="pre">IPA_SetValue(probe,</span> <span class="pre">setting,</span> <span class="pre">value)</span></code> of the IPA control procedures on the Igor Pro command line, where
+<code class="docutils literal notranslate"><span class="pre">probe</span></code> is the headstage number plus one. They are documented in the labnotebook with every sweep.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">IPA_SetValue</span></code> keyword</p></th>
+<th class="head"><p>Remarks</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Primary output low pass filter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Filter</span></code></p></td>
+<td><p>500 Hz, 1 kHz, 2 kHz, 5 kHz, 10 kHz or 20 kHz, one filter for both clamp modes. Other values are
+rounded to the next one, there is no bypass.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Primary output gain</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IGain</span></code> (V-Clamp), <code class="docutils literal notranslate"><span class="pre">VGain</span></code> (I-Clamp)</p></td>
+<td><p>0.5 to 25 mV/pA in V-Clamp and 10 to 500 mV/mV in I-Clamp. As the data is acquired in SI units, the
+gain only selects the input range of +/-10 V divided by the gain and the resolution. Large gains
+therefore clip the signal, e.g. with <code class="docutils literal notranslate"><span class="pre">VGain</span></code> 500 the I-Clamp input is limited to +/-20 mV.</p></td>
+</tr>
+<tr class="row-even"><td><p>Dynamic hold</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DynHoldOn</span></code>, <code class="docutils literal notranslate"><span class="pre">DynHold</span></code></p></td>
+<td><p>I-Clamp only, keeps the membrane potential at the given level by a slow current injection.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="settings-when-locking">
+<span id="sutter-settings-reset"></span><h3>Settings when locking<a class="headerlink" href="#settings-when-locking" title="Link to this heading">¶</a></h3>
+<p>The IPA control procedures store the amplifier settings in their package preferences on disk. To start
+with a defined state, MIES resets all amplifier settings to their defaults when locking a Sutter device,
+instead of applying the settings of the previous session:</p>
+<ul class="simple">
+<li><p>holding potential and holding current, pipette offset, bridge balance, capacitance neutralization, whole
+cell compensation and Rs compensation are zero and disabled, the fast capacitance compensation is 0.1 pF</p></li>
+<li><p>dynamic hold is off</p></li>
+<li><p>the primary output filter is 5 kHz, the gain is 5 mV/pA in V-Clamp and 100 mV/mV in I-Clamp</p></li>
+</ul>
+<p>The amplifier controls of the DA_Ephys panel are updated to this state, so that the panel shows the
+settings of the amplifier. Settings changed with <code class="docutils literal notranslate"><span class="pre">IPA_SetValue</span></code> during a session therefore have to be set
+again after locking the device.</p>
+</section>
+</section>
+<section id="labnotebook">
+<h2>Labnotebook<a class="headerlink" href="#labnotebook" title="Link to this heading">¶</a></h2>
+<p>Settings of Sutter amplifiers with an MCC counterpart use the existing amplifier labnotebook entries, see
+<a class="reference internal" href="labnotebook-descriptions.html"><span class="doc">Labnotebook descriptions</span></a>. The following entries are only written for Sutter amplifiers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">V-Clamp</span> <span class="pre">Output</span> <span class="pre">Gain</span></code>, <code class="docutils literal notranslate"><span class="pre">I-Clamp</span> <span class="pre">Output</span> <span class="pre">Gain</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RsComp</span> <span class="pre">Lag</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dynamic</span> <span class="pre">Hold</span> <span class="pre">Enable</span></code>, <code class="docutils literal notranslate"><span class="pre">Dynamic</span> <span class="pre">Hold</span> <span class="pre">Level</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Amplifier</span> <span class="pre">Serial</span> <span class="pre">Number</span></code> (text)</p></li>
+</ul>
+<p>The entries only available for MCC amplifiers, like the slow capacitance compensation, are not written.
+Except for the clamp mode, which is read back from the amplifier, the values are the settings sent to the
+amplifier, as the Sutter amplifiers can not report their settings.</p>
+</section>
+<section id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Link to this heading">¶</a></h2>
+<p>The headstage association of a DA_Ephys configuration stores the amplifier type of each headstage. For
+Sutter amplifiers only the amplifier type and the probe are stored, as the amplifier settings can not be
+restored yet. When restoring a configuration:</p>
+<ul class="simple">
+<li><p>The Sutter amplifiers keep their fixed assignment. A configuration with MCC amplifiers can therefore be
+restored on a Sutter device, the headstages then keep their Sutter amplifier and a message is printed.</p></li>
+<li><p>The restore aborts if the Sutter probe stored for a headstage does not match the connected IPA devices.</p></li>
+</ul>
+</section>
+<section id="analysis-functions">
+<h2>Analysis functions<a class="headerlink" href="#analysis-functions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The analysis function parameter <code class="docutils literal notranslate"><span class="pre">AmpBesselFilter</span></code> of <a class="reference internal" href="file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html#_CPPv49PSQ_Chirp6stringP19AnalysisFunction_V3" title="PSQ_Chirp"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PSQ_Chirp()</span></code></a> only accepts the low pass
+filter values of the Sutter amplifiers listed above and no <code class="docutils literal notranslate"><span class="pre">Bypass</span></code>.</p></li>
+<li><p>Sutter devices have four asynchronous channels.</p></li>
+<li><p>Requesting the automatic bridge balance via the foreign function interface aborts for Sutter amplifiers.</p></li>
+</ul>
+</section>
+<section id="known-limitations">
+<h2>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The double IPA is supported by the headstage assignment, but has not been tested with hardware yet.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysisbrowser.html">AnalysisBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="databrowser.html">DataBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavebuilder.html">WaveBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daephys.html">DA_Ephys</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Sutter IPA amplifiers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#headstages-and-amplifier-assignment">Headstages and amplifier assignment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gains-and-units">Gains and units</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clamp-modes">Clamp modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amplifier-controls">Amplifier controls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#settings-without-gui-controls">Settings without GUI controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#settings-when-locking">Settings when locking</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#labnotebook">Labnotebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis-functions">Analysis functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testpulse.html">TPStorage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_testpulse_tuning.html">Automatic test pulse tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="labnotebook-descriptions.html">Labnotebook descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis-function-parameters.html">Analysis function parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepFormula_PSX.html">SweepFormula PSC/PSP classification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/Readme.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amplifier-interaction.html">Amplifier interaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis-function-writing.html">Thirty six hints for writing analysis functions</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="daephys.html"
+                          title="previous chapter">DA_Ephys</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="testpulse.html"
+                          title="next chapter">TPStorage</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="testpulse.html" title="TPStorage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="daephys.html" title="DA_Ephys"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_3.0_20260715-361-g72823f6e5 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" >User documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Sutter IPA amplifiers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
