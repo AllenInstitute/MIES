@@ -1668,23 +1668,17 @@ static Function/S NWB_SuffixExtendedStimsetNamesToStimsetNames(string stimsets)
 	return GetUniqueTextEntriesFromList(stimsets, caseSensitive = 0)
 End
 
-Function/S NWB_ReadStimSetList(string fullPath)
+Function/S NWB_ReadStimSetList(variable fileID)
 
-	variable fileId
-	string   stimsets
+	string stimsets
 
 	PerformSubsystemEntry()
 
-	fileID = H5_OpenFile(fullPath)
-
 	if(!StimsetPathExists(fileID))
-		printf "no stimsets present in %s\r", fullPath
-		H5_CloseFile(fileID)
 		return ""
 	endif
 
 	stimsets = ReadStimsets(fileID)
-	H5_CloseFile(fileID)
 
 	return NWB_SuffixExtendedStimsetNamesToStimsetNames(stimsets)
 End
@@ -1729,13 +1723,16 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	stimsets = NWB_ReadStimSetList(fullPath)
+	fileID = H5_OpenFile(fullPath)
+
+	stimsets = NWB_ReadStimSetList(fileID)
 	if(IsEmpty(stimsets))
-		return 0
+		H5_CloseFile(fileID)
+		return NaN
 	endif
 
-	fileID      = H5_OpenFile(fullPath)
-	groupID     = OpenStimset(fileID)
+	groupID = OpenStimset(fileID)
+
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		stimset = StringFromList(i, stimsets)
