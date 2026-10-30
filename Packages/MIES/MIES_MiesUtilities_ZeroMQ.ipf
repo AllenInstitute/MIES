@@ -25,33 +25,63 @@ Function StopZeroMQSockets()
 #endif
 End
 
-/// @brief Bind the server and publisher endpoints of MIES
+/// @brief Bind the endpoint unless this Igor Pro instance has it bound already
 ///
-/// @returns number of successful binds
-static Function BindZeroMQEndpoints()
+/// Other packages, like the Igor Pro Bridge, use the ZeroMQ XOP as well, so
+/// a failed bind does not tell whether this instance or another process
+/// holds the endpoint.
+///
+/// @param socketType One of @ref ZeroMQSocketTypes, server or publisher
+/// @param port       TCP port
+///
+/// @retval newBind 1 if the endpoint was bound now, 0 if it was bound already
+/// @retval success 1 if the endpoint is bound, 0 if binding it failed
+static Function [variable newBind, variable success] BindZeroMQEndpoint(variable socketType, variable port)
 
-	variable err, port
-	variable numBinds = 0
+	variable err
+	string   endpoint
 
-	AssertOnAndClearRTError()
-	port = ZEROMQ_BIND_REP_PORT
-	zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+	endpoint = ZEROMQ_PROT_AND_NETWORK + num2str(port)
 
-	if(!err)
-		DEBUGPRINT("Successfully listening with server on port:", var = port)
-		numBinds += 1
+	WAVE/T boundEndpoints = zeromq_get_bound_endpoints(socketType)
+	if(IsFinite(GetRowIndex(boundEndpoints, str = endpoint)))
+		return [0, 1]
 	endif
 
-	port = ZEROMQ_BIND_PUB_PORT
 	AssertOnAndClearRTError()
-	zeromq_pub_bind(ZEROMQ_PROT_AND_NETWORK + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+	switch(socketType)
+		case ZMQ_SOCKET_TYPE_SERVER:
+			zeromq_server_bind(endpoint); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+			break
+		case ZMQ_SOCKET_TYPE_PUBLISHER:
+			zeromq_pub_bind(endpoint); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+			break
+		default:
+			FATAL_ERROR("Unsupported socket type")
+	endswitch
 
-	if(!err)
-		DEBUGPRINT("Successfully listening with publisher on port:", var = port)
-		numBinds += 1
+	if(err)
+		printf "Could not bind the ZeroMQ endpoint %s, another program, e.g. a second Igor Pro instance, might use it.\r", endpoint
+		return [0, 0]
 	endif
 
-	return numBinds
+	DEBUGPRINT("Successfully listening on endpoint:", str = endpoint)
+
+	return [1, 1]
+End
+
+/// @brief Bind the server and publisher endpoints of MIES which are not bound yet
+///
+/// @retval numNewBinds number of endpoints bound now
+/// @retval success     1 if all endpoints are bound, 0 otherwise
+static Function [variable numNewBinds, variable success] BindZeroMQEndpoints()
+
+	variable newServerBind, serverSuccess, newPubBind, pubSuccess
+
+	[newServerBind, serverSuccess] = BindZeroMQEndpoint(ZMQ_SOCKET_TYPE_SERVER, ZEROMQ_BIND_REP_PORT)
+	[newPubBind, pubSuccess]       = BindZeroMQEndpoint(ZMQ_SOCKET_TYPE_PUBLISHER, ZEROMQ_BIND_PUB_PORT)
+
+	return [newServerBind + newPubBind, serverSuccess && pubSuccess]
 End
 
 /// @brief Start the ZeroMQ sockets and the message handler
@@ -63,8 +93,7 @@ End
 /// @return 0 on success, 1 if already running and 2 on error
 Function StartZeroMQSockets([variable forceRestart])
 
-	variable err, numBinds, flags
-	variable expectedBinds = 2
+	variable err, numNewBinds, success, flags
 
 	if(ParamIsDefault(forceRestart))
 		forceRestart = 0
@@ -76,7 +105,15 @@ Function StartZeroMQSockets([variable forceRestart])
 		AssertOnAndClearRTError()
 		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
-			if(!BindZeroMQEndpoints())
+			[numNewBinds, success] = BindZeroMQEndpoints()
+
+			if(!success)
+				// keep the endpoints of the other packages using the XOP
+				ControlWindowToFront()
+				return 2
+			endif
+
+			if(!numNewBinds)
 				DEBUGPRINT("Already running, nothing to do.")
 				return 1
 			endif
@@ -97,9 +134,9 @@ Function StartZeroMQSockets([variable forceRestart])
 	endif
 #endif
 
-	numBinds = BindZeroMQEndpoints()
+	[numNewBinds, success] = BindZeroMQEndpoints()
 
-	if(numBinds == expectedBinds)
+	if(success)
 		AssertOnAndClearRTError()
 		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 		err = ConvertXOPErrorCode(err)
@@ -109,7 +146,7 @@ Function StartZeroMQSockets([variable forceRestart])
 		endif
 		printf "Error %d starting ZeroMQ handler\r", err
 	else
-		printf "Could only establish %d ZeroMQ bind connections and not %d. Shutting down ZeroMQ subsystem.\r", numBinds, expectedBinds
+		printf "Shutting down the ZeroMQ subsystem.\r"
 	endif
 
 	ControlWindowToFront()
