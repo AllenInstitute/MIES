@@ -49,11 +49,18 @@ static Function StopZeroMQSocketsIsSafeWhenNotRunning()
 	CHECK_EQUAL_VAR(StartZeroMQSockets(forceRestart = 1), 0)
 End
 
+static Function CheckBoundEndpoints(variable socketType, WAVE/T expected)
+
+	WAVE/T endpoints = zeromq_get_bound_endpoints(socketType)
+
+	Sort endpoints, endpoints
+	Sort expected, expected
+	CHECK_EQUAL_TEXTWAVES(endpoints, expected)
+End
+
 /// @brief StartZeroMQSockets() must bind the MIES endpoints when another package
 /// already started the message handler, and keep the endpoints of that package
 static Function StartZeroMQSocketsBindsWithForeignHandler()
-
-	variable err
 
 	zeromq_stop()
 
@@ -63,10 +70,53 @@ static Function StartZeroMQSocketsBindsWithForeignHandler()
 	CHECK_EQUAL_VAR(StartZeroMQSockets(), 0)
 	CHECK_EQUAL_VAR(StartZeroMQSockets(), 1)
 
-	// still bound
-	AssertOnAndClearRTError()
-	zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(FOREIGN_PORT)); err = GetRTError(1)
-	CHECK_EQUAL_VAR(ConvertXOPErrorCode(err), ZeroMQ_INVALID_ARG)
+	Make/FREE/T expected = {ZEROMQ_PROT_AND_NETWORK + num2str(FOREIGN_PORT), ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_REP_PORT)}
+	CheckBoundEndpoints(ZMQ_SOCKET_TYPE_SERVER, expected)
+
+	Make/FREE/T expected = {ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_PUB_PORT)}
+	CheckBoundEndpoints(ZMQ_SOCKET_TYPE_PUBLISHER, expected)
+
+	// restore MIES ZeroMQ sockets
+	CHECK_EQUAL_VAR(StartZeroMQSockets(forceRestart = 1), 0)
+End
+
+/// @brief StartZeroMQSockets() must only bind the MIES endpoints which are not
+/// bound yet
+static Function StartZeroMQSocketsBindsOnlyMissingEndpoints()
+
+	zeromq_stop()
+
+	zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_REP_PORT))
+	zeromq_handler_start()
+
+	CHECK_EQUAL_VAR(StartZeroMQSockets(), 0)
+
+	Make/FREE/T expected = {ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_REP_PORT)}
+	CheckBoundEndpoints(ZMQ_SOCKET_TYPE_SERVER, expected)
+
+	Make/FREE/T expected = {ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_PUB_PORT)}
+	CheckBoundEndpoints(ZMQ_SOCKET_TYPE_PUBLISHER, expected)
+
+	// restore MIES ZeroMQ sockets
+	CHECK_EQUAL_VAR(StartZeroMQSockets(forceRestart = 1), 0)
+End
+
+/// @brief StartZeroMQSockets() must report an endpoint which it can't bind,
+/// e.g. as another process uses it, and keep the endpoints of the other
+/// packages
+static Function StartZeroMQSocketsComplainsAboutUsedEndpoint()
+
+	zeromq_stop()
+
+	zeromq_server_bind(ZEROMQ_PROT_AND_NETWORK + num2str(FOREIGN_PORT))
+	// the server port is used by a socket of another type
+	zeromq_pub_bind(ZEROMQ_PROT_AND_NETWORK + num2str(ZEROMQ_BIND_REP_PORT))
+	zeromq_handler_start()
+
+	CHECK_EQUAL_VAR(StartZeroMQSockets(), 2)
+
+	Make/FREE/T expected = {ZEROMQ_PROT_AND_NETWORK + num2str(FOREIGN_PORT)}
+	CheckBoundEndpoints(ZMQ_SOCKET_TYPE_SERVER, expected)
 
 	// restore MIES ZeroMQ sockets
 	CHECK_EQUAL_VAR(StartZeroMQSockets(forceRestart = 1), 0)
