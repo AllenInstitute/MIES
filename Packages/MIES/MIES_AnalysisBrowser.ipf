@@ -3958,13 +3958,19 @@ End
 /// @returns list of stimsets
 static Function/S AB_GetStimsetList(string fileType, string discLocation, string dataFolder, string device, variable sweep)
 
+	string   stimsets
+	variable fileID
+
 	if(IsEmpty(device))
 		strswitch(fileType)
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				return AB_GetStimsetListFromIgorFile(discLocation)
 			case ANALYSISBROWSER_FILE_TYPE_NWBv1: // fallthrough
 			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
-				return NWB_ReadStimSetList(discLocation)
+				fileID   = H5_OpenFile(discLocation)
+				stimsets = NWB_ReadStimSetList(fileID)
+				H5_CloseFile(fileID)
+				return stimsets
 			default:
 				FATAL_ERROR("fileType not handled")
 		endswitch
