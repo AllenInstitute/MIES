@@ -1792,7 +1792,7 @@ static Function ExportStimsetsAndRoundtripThem([variable var])
 
 	KillOrMoveToTrash(dfr = GetMiesPath())
 
-	NWB_LoadAllStimsets(filename = discLocation)
+	NWB_LoadAllStimsets(filename = discLocation, verbose = 0)
 
 	DFREF dfr = GetWaveBuilderPath()
 	KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())

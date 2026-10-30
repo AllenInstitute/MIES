@@ -296,7 +296,7 @@ Function ExportAndLoadOfCustomWaves([variable var])
 	KillOrMoveToTrash(dfr = GetWaveBuilderPath())
 
 	// now read the file again and compare it's contents
-	NWB_LoadAllStimsets(filename = path)
+	NWB_LoadAllStimsets(filename = path, verbose = 0)
 
 	DFREF           dfr        = GetSetFolder(var)
 	WAVE/Z/SDFR=dfr customWave = myCustomWave

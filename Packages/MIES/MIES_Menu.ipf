@@ -35,7 +35,7 @@ Menu "Mies Panels"
 		"Export all data into NWBv1 (legacy)", /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
 		"-"
 		"Export all stimsets into NWB", /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
-		"Load Stimsets from NWB", /Q, NWB_LoadAllStimsets()
+		"Load Stimsets from NWB", /Q, NWB_LoadAllStimsets(verbose = 0)
 		"Download Stimsets", /Q, MEN_DownloadStimsets()
 	End
 	SubMenu "View Files"
@@ -290,7 +290,7 @@ Function MEN_DownloadStimsets()
 
 	path = DND_FetchAssetFromSet(DND_STIMSET_DANDI_SET)
 
-	NWB_LoadAllStimsets(filename = path, overwrite = 0)
+	NWB_LoadAllStimsets(filename = path, overwrite = 0, verbose = 0)
 End
 
 Function/S MEN_GetReplayDataString()

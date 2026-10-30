@@ -1688,8 +1688,9 @@ End
 /// @param fileName         [optional, shows a dialog on default] provide full file name/path for loading stimset
 /// @param overwrite        [optional, defaults to false] indicate if the stored stimset should be deleted before the load.
 /// @param loadOnlyBuiltins [optional, defaults to false] load only builtin stimsets
+/// @param verbose          [optional, defaults to true] verbosity
 /// @return 1 on error and 0 on success
-Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable loadOnlyBuiltins])
+Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable loadOnlyBuiltins, variable verbose])
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
@@ -1707,6 +1708,12 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 		loadOnlyBuiltins = 0
 	else
 		loadOnlyBuiltins = !!loadOnlyBuiltins
+	endif
+
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
 	endif
 
 	if(ParamIsDefault(fileName))
@@ -1741,7 +1748,7 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 			continue
 		endif
 
-		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = 1))
+		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = verbose))
 			printf "error loading stimset %s\r", stimset
 			error = 1
 			continue
@@ -1755,6 +1762,13 @@ Function NWB_LoadAllStimsets([variable overwrite, string fileName, variable load
 	H5_CloseFile(fileID)
 
 	WB_UpdateChangedStimsets()
+
+	if(verbose)
+		filename = GetWindowsPath(filename)
+		if(!error)
+			print "Stimsets from " + filename + " loaded successfully."
+		endif
+	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
