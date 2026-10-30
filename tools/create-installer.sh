@@ -31,7 +31,7 @@ esac
 
 cd $top_level
 ./tools/create-release.sh
-zipfile=$(ls Release_*.zip)
+zipfile=$(ls Release_*.zip Development_*.zip)
 
 cd tools
 rm -f installer/*.inc installer/MIES-Release*.exe

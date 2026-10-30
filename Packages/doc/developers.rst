@@ -101,6 +101,12 @@ Cutting a new release
 
 -  Create a new release on github and check that the Github Actions job
    correctly uploads the artifacts
+- Start a new development iteration with ``Z == Y+1``
+
+   - ``git checkout main``
+   - ``git commit --allow-empty -m "New development iteration towards X.Z"``
+   - ``git tag Development_X.Z``
+   - ``git push origin $tag``
 
 Creating a release package manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
