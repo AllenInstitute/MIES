@@ -84,7 +84,7 @@ Cutting a new release
 -  Checkout a new branch ``git checkout -b feature/XXXX-release-notes main``
 -  Paste the contents of ``Packages\doc\releasenotes_template.rst`` to
    the top of ``Packages\doc\releasenotes.rst``
--  Call ``tools\create-changelog.sh`` which generate a raw changelog and
+-  Call ``tools\create-changelog.sh`` which generates a raw changelog and
    fill ``releasenotes.rst`` with a cleaned up version of it.
    Work from bottom to top.
 -  Propose a pull request and get it merged
