@@ -3,6 +3,7 @@
 set -e
 # set -x
 
+# only released versions are considered
 old_tag=$(git describe --tags --abbrev=0 --match "Release_*")
 
 top_level=$(git rev-parse --show-toplevel)

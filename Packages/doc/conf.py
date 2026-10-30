@@ -19,7 +19,9 @@ def get_version():
     )
     revString = (
         Popen(
-            'git describe --always --tags --match "Release_*"', stdout=PIPE, shell=True
+            'git describe --always --tags --match "Release_*" --match "Development_*"',
+            stdout=PIPE,
+            shell=True,
         )
         .stdout.read()
         .rstrip()

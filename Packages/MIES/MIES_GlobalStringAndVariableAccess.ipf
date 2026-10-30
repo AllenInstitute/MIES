@@ -127,10 +127,10 @@ End
 /// Never ever write this string!
 Function/S GetMiesVersion()
 
-	string path = GetSVARAsString(GetMiesPath(), "version")
+	string path = GetSVARAsString(GetMiesPath(), "version", initialValue = UNKNOWN_MIES_VERSION)
 	SVAR   str  = $path
 
-	if(!CmpStr(str, "") || !CmpStr(str, UNKNOWN_MIES_VERSION))
+	if(!CmpStr(str, UNKNOWN_MIES_VERSION))
 		str = CreateMiesVersion()
 	endif
 
@@ -269,7 +269,8 @@ static Function/S CreateMiesVersionNoCache()
 
 	DEBUGPRINT("Version.txt contents:\r\r", str = version)
 
-	if(IsEmpty(version) || strsearch(version, "Release", 0) == -1)
+	if(IsEmpty(version) ||                                                                   \
+	   (strsearch(version, "Release", 0) == -1 && strsearch(version, "Development", 0) == -1))
 		return UNKNOWN_MIES_VERSION
 	endif
 
@@ -304,7 +305,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 #if defined(WINDOWS)
 	// explanation:
 	// cmd /C "<full path to git.exe> -C <mies repository root> describe <options> redirect everything into <mies respository>/version.txt"
-	sprintf cmd, "%s /C \"\"%s\" -C \"%s\" describe --always --dirty --broken --tags --match \"Release_*\" > \"%s\" 2>&1\"", shellPath, gitPathOrName, topDir, fullVersionPath
+	sprintf cmd, "%s /C \"\"%s\" -C \"%s\" describe --always --dirty --broken --tags --match \"Release_*\" --match \"Development_*\" > \"%s\" 2>&1\"", shellPath, gitPathOrName, topDir, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
@@ -351,7 +352,7 @@ static Function ExecuteGitForMIESVersion(string gitPathOrName, string topDir, st
 		abort
 	endif
 
-	sprintf cmd, "do shell script \"%s -C '%s' describe --always --tags --match 'Release_*' > '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
+	sprintf cmd, "do shell script \"%s -C '%s' describe --always --tags --match 'Release_*' --match 'Development_*' > '%s' 2>&1\"", gitPathOrName, topDir, fullVersionPath
 	DEBUGPRINT("Cmd to execute: ", str = cmd)
 	ExecuteScriptText/UNQ/Z cmd
 	ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")

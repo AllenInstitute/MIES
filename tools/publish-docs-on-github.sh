@@ -33,7 +33,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 
 case "$branch" in
   main)
-    project_version=$(git describe --tags --always --match "Release_*")
+    project_version=$(git describe --tags --always --match "Development_*")
     ;;
   release/*)
     version="$(echo "$branch" | grep -Po "(?<=release/).*")"
