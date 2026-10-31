@@ -153,15 +153,13 @@ static Function PerformMiesTasks(string outputFileTemplate)
 
 	string folder
 
-	printf "Free Memory: %g GB\r", GetFreeMemory()
-
 	folder = GetFolder(outputFileTemplate)
 
 	if(!FolderExists(folder))
 		CreateFolderOnDisk(folder)
 	endif
 
-	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate)
+	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate, verbose = 0)
 	HDF5CloseFile/A/Z 0
 End
 
