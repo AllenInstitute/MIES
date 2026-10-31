@@ -28,6 +28,35 @@
 ///
 /// In the output folder there will be a `conversion.json` file with results of
 /// the conversion process. Search for the `error` key for failed conversions.
+///
+/// File format of `conversion.json:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "errors": 17,
+///      "index": 407,
+///      "inputFiles": [
+///        "fileA",
+///        "..."
+///      ],
+///      "inputFolder": "folderA",
+///      "log": [
+///        {
+///          "from": "fileA",
+///          "output": "...",
+///          "to": "basePathA"
+///        },
+///        {}
+///      ],
+///      "outputFolder": "folderB",
+///      "processed": 275,
+///      "skipped": 132,
+///      "total": 407
+///    }
+///
+/// \endrst
 
 // #define MEP_DEBUGGING
 
