@@ -304,7 +304,7 @@ End
 Function StartMultiExperimentProcessWrapper()
 
 	string message, settingsFile, inputFolder, outputFolder
-	variable jsonID
+	variable jsonID, numFiles
 
 	STRUCT MultiExperimentProcessPrefs prefs
 	LoadPackagePrefs(prefs)
@@ -347,6 +347,8 @@ Function StartMultiExperimentProcessWrapper()
 		Make/FREE/T/N=0 files
 	endif
 
+	numFiles = DimSize(files, ROWS)
+
 	jsonID = JSON_New()
 	JSON_AddWave(jsonID, "/inputFiles", files)
 	JSON_AddString(jsonID, "/inputFolder", inputFolder)
@@ -355,10 +357,10 @@ Function StartMultiExperimentProcessWrapper()
 	JSON_AddVariable(jsonID, "/processed", 0)
 	JSON_AddVariable(jsonID, "/errors", 0)
 	JSON_AddVariable(jsonID, "/skipped", 0)
-	JSON_AddVariable(jsonID, "/total", DimSize(files, ROWS))
+	JSON_AddVariable(jsonID, "/total", numFiles)
 
 	JSON_AddTreeArray(jsonID, "/log")
-	JSON_AddObjects(jsonID, "/log", objCount = DimSize(files, ROWS))
+	JSON_AddObjects(jsonID, "/log", objCount = numFiles)
 
 	prefs.settingsFile = outputFolder + "conversion.json"
 	StoreJSON(prefs, jsonID)
