@@ -53,7 +53,10 @@
 ///      "outputFolder": "folderB",
 ///      "processed": 275,
 ///      "skipped": 132,
-///      "total": 407
+///      "total": 407,
+///      "startTime": "2026-10-31T16:38:08-07:00",
+///      "elapsedSec": 123123,
+///      "endTimeEst": "2026-10-31T16:38:08-07:00"
 ///    }
 ///
 /// \endrst
@@ -172,6 +175,8 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 	else
 		JSON_SetVariable(jsonID, "/skipped", JSON_GetVariable(jsonID, "/skipped") + 1)
 	endif
+
+	UpdateFinishedTimeEstimate(jsonID)
 
 	JSON_SetVariable(jsonID, "/index", JSON_GetVariable(jsonID, "/index") + 1)
 
@@ -364,6 +369,8 @@ Function StartMultiExperimentProcessWrapper()
 	JSON_AddVariable(jsonID, "/skipped", 0)
 	JSON_AddVariable(jsonID, "/total", numFiles)
 
+	UpdateFinishedTimeEstimate(jsonID)
+
 	JSON_AddTreeArray(jsonID, "/log")
 	JSON_AddObjects(jsonID, "/log", objCount = numFiles)
 
@@ -379,6 +386,43 @@ Function StartMultiExperimentProcessWrapper()
 	SavePackagePrefs(prefs)
 
 	return 0
+End
+
+static Function UpdateFinishedTimeEstimate(variable jsonID)
+
+	variable endTimeEst, startTime, numFiles, numProcessed
+	variable numSkipped, numLeft, numDone, elapsedSec, now
+	string timestamp
+
+	if(!JSON_Exists(jsonID, "/startTime"))
+		startTime = DateTimeHighPrec()
+		timestamp = GetISO8601TimeStamp(secondsSinceIgorEpoch = startTime, localTimeZone = 1)
+		JSON_AddString(jsonID, "/startTime", timestamp)
+	else
+		timestamp = JSON_GetString(jsonID, "/startTime")
+		startTime = UTCTimeToLocal(ParseISO8601TimeStamp(timestamp))
+	endif
+
+	numFiles     = JSON_GetVariable(jsonID, "/total")
+	numProcessed = JSON_GetVariable(jsonID, "/processed")
+	numSkipped   = JSON_GetVariable(jsonID, "/skipped")
+	numDone      = numProcessed + numSkipped
+	numLeft      = numFiles - numDone
+
+	if(numLeft == numFiles)
+		// initial estimate is 10s per file
+		elapsedSec = 0
+		endTimeEst = startTime + 10 * numFiles
+	else
+		now        = DateTimeHighPrec()
+		elapsedSec = trunc(now - startTime)
+		endTimeEst = now + (elapsedSec / numDone * numLeft)
+	endif
+
+	JSON_SetVariable(jsonID, "/elapsedSec", elapsedSec)
+
+	timestamp = GetISO8601TimeStamp(secondsSinceIgorEpoch = endTimeEst, localTimeZone = 1)
+	JSON_SetString(jsonID, "/endTimeEst", timestamp)
 End
 
 Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
