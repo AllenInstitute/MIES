@@ -328,7 +328,12 @@ Function StartMultiExperimentProcessWrapper()
 	if(!cmpstr(OUTPUT_FOLDER, ""))
 		NewPath/O/Q/M=message MultiExperimentOutputFolder
 	else
-		NewPath/O/Q/M=message MultiExperimentOutputFolder, OUTPUT_FOLDER
+
+#ifdef MEP_DEBUGGING
+		DeleteFolder/Z OUTPUT_FOLDER
+#endif // MEP_DEBUGGING
+
+		NewPath/O/Q/M=message/C MultiExperimentOutputFolder, OUTPUT_FOLDER
 	endif
 
 	if(V_flag != 0)
