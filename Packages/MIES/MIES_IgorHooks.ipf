@@ -227,7 +227,6 @@ static Function IgorQuitHook(string igorApplicationNameStr)
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	ShowQuitMessage()
-	zeromq_stop()
 	ArchiveLogFilesOnceAndKeepMonth()
 	IH_Cleanup()
 
