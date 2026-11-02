@@ -59,7 +59,8 @@ Video tutorial of the postsynaptic potential/postsynaptic current data (PSX) ana
 ### For Data Acquisition
 
 - Windows 11 64-bit
-- [NIDAQ MX XOP](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
+- [NIDAQ MX XOP](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm) for National Instruments hardware
+- Sutter XOP for Sutter Instrument hardware, see [Sutter IPA amplifiers](https://alleninstitute.github.io/MIES/sutter_amplifier.html)
 
 ## Supported Hardware
 
@@ -86,7 +87,12 @@ Video tutorial of the postsynaptic potential/postsynaptic current data (PSX) ana
 
      ITC devices are at the End-Of-Service-Life (EOSL). National Instruments DACs are recommended for MIES users looking for new hardware.
 
-- Amplifier: Molecular Devices [700B](https://www.moleculardevices.com/products/axon-patch-clamp-system/amplifiers/axon-instruments-patch-clamp-amplifiers)
+  - Sutter Instrument [IPA and Double IPA](https://www.sutter.com/amplifiers/ipa) with integrated amplifiers.
+    The Double IPA has not been tested with hardware yet.
+
+- Amplifier:
+  - Molecular Devices [700B](https://www.moleculardevices.com/products/axon-patch-clamp-system/amplifiers/axon-instruments-patch-clamp-amplifiers)
+  - Sutter Instrument IPA and Double IPA, the amplifiers integrated in these devices
 - Pressure control (optional):
   - [QPV High Resolution Pressure Regulator](https://proportionair.com/product/qpv/) from Proportion-Air, Inc.; Part name: QPV regulator (custom, see part No), -10 psi to +10 psi; Part no.: QPV1TBNEEN10P10PSGAXLDD
   - controlled through ITC 18/1600 or National Instruments [USB 6001](https://www.ni.com/en-us/support/model.usb-6001.html)
