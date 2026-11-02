@@ -1,2 +1,4 @@
 pynwb==4.2.0
 dandi==0.81.0
+# workaround too old CPU on the linux runner, see https://github.com/ptitSeb/box64/issues/3369#issuecomment-3762684137
+numpy<2.4.0
