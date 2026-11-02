@@ -1621,11 +1621,9 @@ End
 /// @param overwrite   indicate whether the stored custom wave should be deleted if it exists
 ///
 /// @return 1 on error and 0 on success
-Function NWB_LoadCustomWave(variable locationID, string fullPath, variable overwrite)
+static Function NWB_LoadCustomWave(variable locationID, string fullPath, variable overwrite)
 
 	string pathInNWB
-
-	PerformSubsystemEntry()
 
 	WAVE/Z wv = $fullPath
 	if(WaveExists(wv))
