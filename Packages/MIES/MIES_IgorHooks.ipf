@@ -186,11 +186,11 @@ static Function IH_Cleanup()
 		if(ASYNC_IsWorkloadClassDone(WORKLOADCLASS_URL) == 0)
 			IH_ShowQuitAction("Uploading diagnostic data")
 			printf "Waiting for the upload of the diagnostic data to finish, this can take a while.\r"
-		endif
 
-		// wait without timeout as the diagnostic data should not get lost,
-		// each upload ends at the latest with the timeout of its URLRequest
-		ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_URL, Inf); AbortOnRTE
+			// wait without timeout as the diagnostic data should not get lost,
+			// each upload ends at the latest with the timeout of its URLRequest
+			ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_URL, Inf); AbortOnRTE
+		endif
 	catch
 		ClearRTError()
 		BUG("Caught runtime error or assertion: " + num2istr(err))
