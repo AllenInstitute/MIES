@@ -345,6 +345,8 @@ Function StartMultiExperimentProcessWrapper()
 		return -1 // User canceled from New Path dialog
 	endif
 
+	DisableDebugger()
+
 	PathInfo MultiExperimentOutputFolder
 	outputFolder = S_Path
 	ASSERT(V_flag, "Invalid path")
