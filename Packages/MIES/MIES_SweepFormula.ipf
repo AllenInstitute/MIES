@@ -3020,11 +3020,19 @@ static Function SF_MarkErrorLocationInNotebook(string win)
 		return NaN
 	endif
 
-	[code, preProcCode]           = SF_GetCode(win)
+	[code, preProcCode] = SF_GetCode(win)
+
+	// an unknown variable has no assignment to mark
 	[WAVE/T varAssignments, code] = SF_GetVariableAssignments(preProcCode)
-	col                           = FindDimLabel(varAssignments, COLS, "VARNAME")
+	if(!WaveExists(varAssignments))
+		return NaN
+	endif
+
+	col = FindDimLabel(varAssignments, COLS, "VARNAME")
 	FindValue/TEXT=(varName)/TXOP=(TXOP_WHOLE_ELEM)/RMD=[][col] varAssignments
-	ASSERT(V_row >= 0, "Variable not found")
+	if(V_row < 0)
+		return NaN
+	endif
 
 	paragraph = str2num(varAssignments[V_row][%LINE])
 	offset    = str2num(varAssignments[V_row][%OFFSET])

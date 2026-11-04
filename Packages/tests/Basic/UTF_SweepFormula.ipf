@@ -3014,6 +3014,34 @@ static Function TestSourceLocationTrackingPosition()
 	CHECK_EQUAL_VAR(charPosition, 12)
 End
 
+static Function TestSourceLocationUnknownVariable()
+
+	variable sweepNo, paragraph, charPosition
+	string win, device
+
+	[win, device] = CreateEmptyUnlockedDataBrowserWindow()
+
+	sweepNo = 0
+	win     = CreateFakeSweepData(win, device, sweepNo = sweepNo)
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+
+	// a misspelled variable has no assignment
+	SF_SetFormula(win, "a = 1\r1 + $b")
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_display")
+	[paragraph, charPosition] = MIES_SF#SF_CalculateErrorLocationInNotebook(win)
+	CHECK_EQUAL_VAR(paragraph, 1)
+	CHECK_EQUAL_VAR(charPosition, 4)
+	CHECK_EQUAL_STR(ROStr(GetSweepFormulaOutputMessage()), "Unknown variable b\r1 + $b\r----^")
+
+	// without any variable assignments
+	SF_SetFormula(win, "1 + $b")
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_display")
+	[paragraph, charPosition] = MIES_SF#SF_CalculateErrorLocationInNotebook(win)
+	CHECK_EQUAL_VAR(paragraph, 0)
+	CHECK_EQUAL_VAR(charPosition, 4)
+	CHECK_EQUAL_STR(ROStr(GetSweepFormulaOutputMessage()), "Unknown variable b\r1 + $b\r----^")
+End
+
 // UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsVarious
 static Function TestSourceLocationTrackingPosition2([WAVE/WAVE wv])
 
