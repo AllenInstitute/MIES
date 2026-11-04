@@ -1901,14 +1901,12 @@ static Function/WAVE EP_AddRecreatedUserEpochs_DetermineDurations(WAVE numerical
 
 	totalOnsetDelayMS = s.onsetDelay * s.samplingIntervalDA * MICRO_TO_MILLI
 
-	try
-		WAVE/Z durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelayMS)
-	catch
-		// This is related to issue https://github.com/AllenInstitute/MIES/issues/1737
-		// in the case that baseline QC failed, so the ana function aborts early and by chance the pulse was not complete when stopping
-		// Then the finder can not find the respective edges and asserts out
+	WAVE durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelayMS)
+	if(durations[headstage] == PSQ_PULSE_DURATION_NOT_FOUND)
+		// the acquisition was stopped during the pulse, e.g. as baseline QC failed
 		DEBUGPRINT("Could not reconstruct durations")
-	endtry
+		return $""
+	endif
 
 	return durations
 End

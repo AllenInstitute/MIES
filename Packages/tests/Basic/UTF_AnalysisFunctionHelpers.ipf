@@ -839,3 +839,36 @@ End
 
 /// END AFH_GetHeadstageFromActiveADC
 /// @}
+
+/// BEGIN PSQ_DeterminePulseDurationFinder
+/// @{
+
+// UTF_TD_GENERATOR DataGenerators#PulseDurationCases
+static Function PulseDurationFinder([WAVE wv])
+
+	variable type, expected, headstage
+
+	type      = GetNumberFromWaveNote(wv, "type")
+	expected  = GetNumberFromWaveNote(wv, "expected")
+	headstage = 1
+
+	Make/FREE/D/N=(NUM_HEADSTAGES) statusHS
+	statusHS[headstage] = 1
+	Make/FREE/WAVE/N=(NUM_HEADSTAGES) allSingleDA
+	allSingleDA[headstage] = wv
+
+	WAVE durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, 20)
+
+	if(expected == PSQ_PULSE_DURATION_NOT_FOUND)
+		CHECK_EQUAL_VAR(durations[headstage], PSQ_PULSE_DURATION_NOT_FOUND)
+	else
+		CHECK_CLOSE_VAR(durations[headstage], expected, tol = 0.1)
+	endif
+
+	// inactive headstages
+	durations[headstage] = NaN
+	CHECK_EQUAL_VAR(HasOneValidEntry(durations), 0)
+End
+
+/// END PSQ_DeterminePulseDurationFinder
+/// @}
