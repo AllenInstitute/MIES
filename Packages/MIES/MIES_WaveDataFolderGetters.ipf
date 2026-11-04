@@ -7283,7 +7283,8 @@ End
 /// The search range and the position up to which the AD data was searched are kept, so that
 /// the next search during the same sweep only covers the newly acquired data. The search range
 /// is determined from the DA data, which does not change during a search, PSQ_Ramp() suppresses
-/// the DA output only after the search found its spikes.
+/// the DA output only after the search found its spikes. PSQ_Ramp() resets the state at the start
+/// of each sweep, as SaveExperimentSpecial() can reset the sweep counter.
 ///
 /// Rows:
 /// - NUM_HEADSTAGES

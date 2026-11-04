@@ -1397,6 +1397,13 @@ static Function/WAVE PSQ_GetChannelOfScaledData(string device, WAVE/WAVE scaledD
 	return scaledData[col]
 End
 
+/// @brief Reset the spike search state of the headstage
+static Function PSQ_ResetSpikeSearchState(WAVE state, WAVE positions, variable headstage)
+
+	state[headstage][]     = NaN
+	positions[][headstage] = NaN
+End
+
 /// @brief Reset the spike search state of the headstage if it belongs to another search
 static Function PSQ_PrepareSpikeSearchState(WAVE state, WAVE positions, variable headstage, variable sweepNo, variable type, variable offset, variable level, variable numberOfSpikesReq)
 
@@ -1405,15 +1412,14 @@ static Function PSQ_PrepareSpikeSearchState(WAVE state, WAVE positions, variable
 		return NaN
 	endif
 
-	state[headstage][]                     = NaN
+	PSQ_ResetSpikeSearchState(state, positions, headstage)
+
 	state[headstage][%SweepNo]             = sweepNo
 	state[headstage][%Type]                = type
 	state[headstage][%Offset]              = offset
 	state[headstage][%Level]               = level
 	state[headstage][%NumberOfSpikesReq]   = numberOfSpikesReq
 	state[headstage][%NumberOfSpikesFound] = 0
-
-	positions[][headstage] = NaN
 End
 
 /// @brief Search the AD data for spikes, continuing the search of the previous call
@@ -6184,6 +6190,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			if(ret)
 				return 1
 			endif
+
+			PSQ_ResetSpikeSearchState(GetAnalysisFuncSpikeSearchState(device), GetAnalysisFuncSpikeSearchPositions(device), s.headstage)
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -6265,8 +6273,9 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 		// and we are after the pulse onset
 
 		Make/FREE/D spikePos
-		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                \
-		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
+		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                  \
+		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes, \
+		                                          sweepNo = s.sweepNo, acquiredEnd = s.lastKnownRowIndexAD * s.sampleIntervalAD)
 
 		if(spikeDetection[s.headstage]                                                                    \
 		   && ((TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !TestOverrideActive()))

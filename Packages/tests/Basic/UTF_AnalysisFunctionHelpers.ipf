@@ -860,6 +860,36 @@ static Function SpikeSearchIncrementally([variable var])
 	CHECK_EQUAL_WAVES(positionsIncremental, positionsRef, mode = WAVE_DATA)
 End
 
+static Function SpikeSearchStateReset()
+
+	variable numFound, last
+	variable sweepNo   = 0
+	variable headstage = 1
+	variable first     = 20
+
+	Make/FREE/D/N=10000 ad = -60
+	SetScale/P x, 0, 0.02, "ms", ad
+	last = IndexToScale(ad, DimSize(ad, ROWS) - 1, ROWS)
+
+	ad[ScaleToIndex(ad, 50, ROWS), ScaleToIndex(ad, 51, ROWS)] = 20
+
+	WAVE state     = GetAnalysisFuncSpikeSearchState(device)
+	WAVE positions = GetAnalysisFuncSpikeSearchPositions(device)
+
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, 1)
+	numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(ad, state, positions, headstage, first, last, Inf, PSQ_SPIKE_LEVEL, 1)
+	CHECK_EQUAL_VAR(numFound, 1)
+
+	// a sweep without spikes and with the same sweep number, as after resetting the sweep counter
+	ad = -60
+
+	MIES_PSQ#PSQ_ResetSpikeSearchState(state, positions, headstage)
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, 1)
+	numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(ad, state, positions, headstage, first, last, Inf, PSQ_SPIKE_LEVEL, 1)
+	CHECK_EQUAL_VAR(numFound, 0)
+	CHECK_EQUAL_VAR(positions[0][headstage], NaN)
+End
+
 /// END PSQ_SearchForSpikesIncrementally
 /// @}
 
