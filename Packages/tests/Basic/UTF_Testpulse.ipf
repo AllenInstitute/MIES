@@ -85,3 +85,16 @@ static Function FetchingTestpulsesWorks()
 	WAVE/Z/WAVE result = TP_GetConsecutiveTPsUptoMarker(device, 0xC, 2)
 	CHECK_WAVE(result, NULL_WAVE)
 End
+
+// Without multithreading, as with threading disabled, the fit runs in the current data folder
+static Function FitResistanceLeavesNoWaves()
+
+	Make/FREE/D/N=(3, 1, 2) TPStorage
+	SetDimLabel LAYERS, 0, SteadyStateResistance, TPStorage
+	SetDimLabel LAYERS, 1, TimeStamp, TPStorage
+	TPStorage[][0][%SteadyStateResistance] = 10 + 2 * p
+	TPStorage[][0][%TimeStamp]             = p
+
+	CHECK_CLOSE_VAR(MIES_TP#TP_FitResistance(TPStorage, 0, 2, 0), 2)
+	CHECK_EQUAL_VAR(CountObjectsDFR(GetDataFolderDFR(), COUNTOBJECTS_WAVES), 0)
+End

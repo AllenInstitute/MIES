@@ -1370,6 +1370,7 @@ threadsafe static Function TP_FitResistance(WAVE TPStorage, variable startRow, v
 		V_FitError  = 0
 		V_AbortCode = 0
 		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow, endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow, endRow][headstage][%TimeStamp]/AD=0/AR=0; AbortOnRTE
+		MakeWaveFree($"W_sigma")
 		return coefWave[1]
 	catch
 		ClearRTError()
