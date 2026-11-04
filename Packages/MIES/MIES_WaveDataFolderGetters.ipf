@@ -7278,6 +7278,76 @@ Function/WAVE GetAnalysisFuncIndexingHelper(string device)
 	return wv
 End
 
+/// @brief Return the state of the spike search during a sweep, used by PSQ_SearchForSpikes()
+///
+/// The search range and the position up to which the AD data was searched are kept, so that
+/// the next search during the same sweep only covers the newly acquired data. The search range
+/// is determined from the DA data, which does not change during a search, PSQ_Ramp() suppresses
+/// the DA output only after the search found its spikes.
+///
+/// Rows:
+/// - NUM_HEADSTAGES
+///
+/// Columns:
+/// - SweepNo, Type, Offset, Level, NumberOfSpikesReq: Arguments of the search the state belongs to
+/// - First, Last: Search range in ms from the DA data
+/// - SearchedUntil: Position in ms up to which the AD data was searched
+/// - NumberOfSpikesFound: Number of spikes found, see GetAnalysisFuncSpikeSearchPositions() for their positions
+Function/WAVE GetAnalysisFuncSpikeSearchState(string device)
+
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/Z/D/SDFR=dfr wv               = analysisFuncSpikeSearchState
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES, 9) dfr:analysisFuncSpikeSearchState/WAVE=wv
+	endif
+
+	wv = NaN
+
+	SetDimensionLabels(wv, "SweepNo;Type;Offset;Level;NumberOfSpikesReq;First;Last;SearchedUntil;NumberOfSpikesFound", COLS)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the positions in ms of the spikes found by the spike search during a sweep
+///
+/// Rows:
+/// - Spikes, see GetAnalysisFuncSpikeSearchState() for the number of spikes found
+///
+/// Columns:
+/// - NUM_HEADSTAGES
+Function/WAVE GetAnalysisFuncSpikeSearchPositions(string device)
+
+	variable          versionOfNewWave = 1
+	DFREF             dfr              = GetDevicePath(device)
+	WAVE/Z/D/SDFR=dfr wv               = analysisFuncSpikeSearchPositions
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:analysisFuncSpikeSearchPositions/WAVE=wv
+	endif
+
+	wv = NaN
+
+	SetScale d, 0, 0, "ms", wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @brief Return a wave reference which holds the "Delta V" values
 /// of all sweeps from one repeated acquisition cycle
 ///

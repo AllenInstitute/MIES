@@ -2520,6 +2520,15 @@ static Function/WAVE IVSCCAPFrequencyOffsets()
 	return wv
 End
 
+static Function/WAVE SpikeSearchNumbersOfSpikes()
+
+	Make/FREE/D wv = {1, 3, Inf}
+
+	SetDimensionLabels(wv, "OneSpike;ThreeSpikes;AllSpikes", ROWS)
+
+	return wv
+End
+
 static Function/WAVE MultiDeviceBackgroundTasks()
 
 	Make/FREE/T wv = {TASKNAME_TPMD, TASKNAME_TIMERMD, TASKNAME_FIFOMONMD}
