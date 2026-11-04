@@ -14,6 +14,7 @@ static StrConstant SFH_WORKING_DF                     = "FormulaData"
 static StrConstant SFH_ARGSETUP_OPERATION_KEY         = "Operation"
 static StrConstant SFH_ARGSETUP_EMPTY_OPERATION_VALUE = "NOOP"
 static StrConstant SFH_DEFAULT_SELECT_FORMULA         = "select()"
+static StrConstant SFH_REGEXP_LEADING_WHITESPACE      = "^([ \t\\r]*)"
 
 threadsafe Function SFH_StringChecker_Prototype(string str)
 
@@ -491,7 +492,7 @@ End
 static Function/S SFH_GetAssertLocationMessageForFrame(WAVE/T assertData)
 
 	variable parserBufferOffset, srcLocId, srcLoc, sfStep
-	string attemptedFormula, currentExePath
+	string attemptedFormula, currentExePath, leadingWhitespace
 
 	if(!IsEmpty(assertData[%LOCMSG]))
 		return assertData[%LOCMSG]
@@ -513,13 +514,15 @@ static Function/S SFH_GetAssertLocationMessageForFrame(WAVE/T assertData)
 		currentExePath = ROStr(GetSweepFormulaJSONPathTracker())
 		srcLocId       = str2numSafe(assertData[%SRCLOCID])
 		if(JSON_IsValid(srcLocId))
+			attemptedFormula = JSON_GetString(srcLocId, "/")
 			if(IsEmpty(currentExePath))
-				srcLoc = 0
+				// the root value of the formula starts after the whitespace the parser skips
+				SplitString/E=SFH_REGEXP_LEADING_WHITESPACE attemptedFormula, leadingWhitespace
+				srcLoc = strlen(leadingWhitespace)
 			else
 				srcLoc = JSON_GetVariable(srcLocId, SF_EscapeJsonPath(currentExePath), ignoreErr = 1)
 			endif
 			if(!IsNaN(srcLoc))
-				attemptedFormula             = JSON_GetString(srcLocId, "/")
 				assertData[%INFORMULAOFFSET] = num2istr(srcLoc)
 				return SFH_FormatSourceLocationError(attemptedFormula, srcLoc)
 			endif

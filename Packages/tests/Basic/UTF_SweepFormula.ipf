@@ -2963,7 +2963,7 @@ static Function TestSourceLocationTrackingVariables()
 		CHECK_EQUAL_STR(assertData[%FORMULA], " [[[[[10]]]]]")
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%LINE]), 0)
 		CHECK_EQUAL_VAR(str2numSafe(assertData[%OFFSET]), 3)
-		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 0)
+		CHECK_EQUAL_VAR(str2numSafe(assertData[%INFORMULAOFFSET]), 1)
 	endtry
 
 	str = "a = selchannels(AB)\r"
@@ -3040,6 +3040,14 @@ static Function TestSourceLocationUnknownVariable()
 	CHECK_EQUAL_VAR(paragraph, 0)
 	CHECK_EQUAL_VAR(charPosition, 4)
 	CHECK_EQUAL_STR(ROStr(GetSweepFormulaOutputMessage()), "Unknown variable b\r1 + $b\r----^")
+
+	// the formula of the assignment is only the variable, with the whitespace after the equal sign
+	SF_SetFormula(win, "b = $c\r$b")
+	PGC_SetAndActivateControl(BSP_GetPanel(win), "button_sweepFormula_display")
+	[paragraph, charPosition] = MIES_SF#SF_CalculateErrorLocationInNotebook(win)
+	CHECK_EQUAL_VAR(paragraph, 0)
+	CHECK_EQUAL_VAR(charPosition, 4)
+	CHECK_EQUAL_STR(ROStr(GetSweepFormulaOutputMessage()), "Unknown variable c\r $c\r-^")
 End
 
 // UTF_TD_GENERATOR DataGenerators#DG_SourceLocationsVarious
