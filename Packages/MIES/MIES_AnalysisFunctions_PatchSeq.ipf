@@ -1409,7 +1409,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 	if(ParamIsDefault(numberOfSpikesReq))
 		numberOfSpikesReq = 1
 	else
-		ASSERT(numberOfSpikesReq > 0, "Invalid numberOfSpikesFound")
+		ASSERT(numberOfSpikesReq >= 1, "Invalid numberOfSpikesReq")
 		numberOfSpikesReq = trunc(numberOfSpikesReq)
 	endif
 
@@ -5879,7 +5879,7 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0))
+			if(!((IsInteger(val) && val >= 1) || val == Inf))
 				return "Invalid value " + num2str(val)
 			endif
 			break
