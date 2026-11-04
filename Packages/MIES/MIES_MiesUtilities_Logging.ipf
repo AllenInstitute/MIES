@@ -146,6 +146,11 @@ Function ArchiveLogFilesOnceAndKeepMonth()
 			printf "Just a moment, archiving log file %s.\rThis is only done once.\r", file
 		endif
 
+		// the XOP must not write into its log file while it is archived
+		if(!CmpStr(file, GetZeroMQXOPLogfile()))
+			zeromq_stop()
+		endif
+
 		WAVE/Z/T logData = LoadTextFileToWave(file, LOG_FILE_LINE_END)
 		if(WaveExists(logData))
 			[WAVE/T partData, lastIndex] = FilterByDate(logData, firstDate, lastDate)
