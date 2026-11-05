@@ -935,6 +935,113 @@ static Function FI_NumSearchMultiThreaded([variable var])
 	WaveTransform/O zapNaNs, refLayers
 	CHECK_EQUAL_WAVES(indizesLayers, refLayers, mode = WAVE_DATA)
 End
+
+static Function FI_RowIndizesRestrictsSearch()
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+	Make/FREE/D rowIndizes = {0, 1, 3, 4}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {0, 3}, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesWithTextColumnAndLayers()
+
+	Make/FREE/T/N=(4, 2, 2) text = "a"
+	text[1][1][1] = "b"
+	text[2][1][0] = "b"
+	text[3][1][1] = "b"
+
+	Make/FREE/D rowIndizes = {0, 1, 3}
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", startLayer = 0, endLayer = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {1, 3}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesWithRowRange()
+
+	Make/FREE/D numeric = {1, 1, 1, 1, 1}
+
+	Make/FREE/D rowIndizes = {0, 2, 3, 4}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 3, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {2, 3}, mode = WAVE_DATA)
+
+	Make/FREE/D rowIndizes = {0, 2}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesInvalidWaveRefFindsNothing()
+
+	Make/FREE/D numeric = {1, 2}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = $"")
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesChainsSearches()
+
+	Make/FREE/T/N=(6, 2) text
+	text[][0] = num2str(mod(p, 2))
+	text[][1] = num2str(mod(p, 3))
+
+	WAVE/Z indizes = FindIndizes(text, col = 0, var = 0)
+	CHECK_EQUAL_WAVES(indizes, {0, 2, 4}, mode = WAVE_DATA)
+
+	WAVE/Z indizesBoth = FindIndizes(text, col = 1, str = "1", rowIndizes = indizes)
+	CHECK_EQUAL_WAVES(indizesBoth, {4}, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesIgnoresRowsOutsideAndRounds()
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	Make/FREE/D rowIndizes = {-1, 5, NaN, Inf, -Inf, 0.4, 2.6}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {0, 3}, mode = WAVE_DATA)
+
+	Make/FREE/D rowIndizes = {-1, 5, NaN}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+// covers the MatrixOP code path on IP10
+static Function FI_RowIndizesWithManyRows()
+
+	Make/FREE/D/N=1000 numeric = mod(p, 2)
+
+	// 600 row indizes from -99.7 to 1098.3
+	Make/FREE/D/N=600 rowIndizes = 2 * p - 99.7
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, rowIndizes = rowIndizes)
+	Make/FREE/D/N=500 expected = 2 * p
+	CHECK_EQUAL_WAVES(indizes, expected, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 10, endRow = 20, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {10, 12, 14, 16, 18, 20}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 4, endRow = 4, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {4}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+// UTF_TD_GENERATOR DataGenerators#InvalidRowIndizes
+static Function FI_AbortsWithInvalidRowIndizes([WAVE wv])
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	try
+		FindIndizes(numeric, var = 1, rowIndizes = wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
 /// @}
 
 /// GetNumberOfUsefulThreads

@@ -13,6 +13,7 @@ static Constant DEFAULT_POINTS_PER_THREAD             = 4096
 static Constant FINDINDIZES_NUMERIC_POINTS_PER_THREAD = 1024
 static Constant FINDINDIZES_STRING_COPIES_MIN_THREADS = 5
 static Constant FINDINDIZES_IP9_NUM2STR_MAX_THREADS   = 4
+static Constant FINDINDIZES_MATRIXOP_MIN_ROWS         = 256
 
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
@@ -427,6 +428,29 @@ threadsafe Function GetNumberOfUsefulThreads(WAVE dims, [variable pointsPerThrea
 	return numThreads
 End
 
+/// @brief Return the rounded row indizes within `startRow` and `endRow`, an invalid wave reference if there are none
+///
+/// MatrixOP is faster for many row indizes, but slower for a few due to its fixed overhead.
+threadsafe static Function/WAVE GetRowIndizesInRange(WAVE rowIndizes, variable startRow, variable endRow)
+
+#if IgorVersion() >= 10
+	if(DimSize(rowIndizes, ROWS) >= FINDINDIZES_MATRIXOP_MIN_ROWS)
+		// within() requires low < high
+		MatrixOP/FREE selected = zapNaNs(round(rowIndizes) * within(round(rowIndizes), startRow - 0.5, endRow + 0.5, NaN))
+
+		if(DimSize(selected, ROWS) == 0)
+			return $""
+		endif
+
+		return selected
+	endif
+#endif // IgorVersion() >= 10
+
+	Make/FREE/D/N=(DimSize(rowIndizes, ROWS)) rowsInRange = (round(rowIndizes[p]) >= startRow && round(rowIndizes[p]) <= endRow) ? round(rowIndizes[p]) : NaN
+
+	return ZapNaNs(rowsInRange, dontDuplicate = 1)
+End
+
 /// @brief Extended version of `FindValue`
 ///
 /// Allows to search only the specified column for a value
@@ -444,6 +468,10 @@ End
 ///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
+/// `rowIndizes` allows to search for the rows matching multiple conditions by passing the result of the
+/// previous call. This is faster than intersecting the results of separate calls, especially if the
+/// first condition is the most selective one.
+///
 /// @param numericOrTextWave   wave to search in
 /// @param col [optional, default=0] column to search in only
 /// @param colLabel [optional] column label to search in only
@@ -454,12 +482,18 @@ End
 /// @param endRow [optional]   ending row to restrict the search to
 /// @param startLayer [optional, defaults to zero] starting layer to restrict search to
 /// @param endLayer [optional, defaults to zero] ending layer to restrict search to
+/// @param rowIndizes [optional] 1D double precision wave with the row indizes to restrict the search to, in
+///                            addition to `startRow`/`endRow`. An invalid wave reference finds nothing, so
+///                            that the result of a previous call can be passed without checking it.
+///                            Fractional row indizes are rounded, the ones outside of the row range are
+///                            ignored.
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
+threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer, WAVE rowIndizes])
 
 	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch, pointsPerThread, numCopies
+	variable numRowsInRange
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
 	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
@@ -563,6 +597,40 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	ASSERT_TS(startLayer <= endLayer, "endLayer must be larger than startLayer")
 	numLayersEffective = (endLayer - startLayer) + 1
+
+	if(!ParamIsDefault(rowIndizes))
+		if(!WaveExists(rowIndizes))
+			return $""
+		endif
+
+		ASSERT_TS(DimSize(rowIndizes, ROWS) > 0, "rowIndizes must not be empty")
+		ASSERT_TS(IsDoubleFloatingPointWave(rowIndizes) && GetWaveDimensionality(rowIndizes) == ROWS, "rowIndizes must be a 1D double precision wave")
+
+		WAVE/Z rowsInRange = GetRowIndizesInRange(rowIndizes, startRow, endRow)
+		if(!WaveExists(rowsInRange))
+			return $""
+		endif
+
+		numRowsInRange = DimSize(rowsInRange, ROWS)
+
+		// search a copy of only these rows of the column and layers, see the end for mapping back to the rows
+		if(WaveExists(wvText))
+			Make/FREE/T/N=(numRowsInRange, 1, numLayersEffective) subText = wvText[rowsInRange[p]][col][startLayer + r]
+			WAVE/T wvText = subText
+		else
+			Make/FREE/Y=(WaveType(wv))/N=(numRowsInRange, 1, numLayersEffective) sub = wv[rowsInRange[p]][col][startLayer + r]
+			WAVE wv = sub
+		endif
+
+		col              = 0
+		numRows          = numRowsInRange
+		numLayers        = numLayersEffective
+		startRow         = 0
+		endRow           = numRowsInRange - 1
+		numRowsEffective = numRowsInRange
+		startLayer       = 0
+		endLayer         = numLayersEffective - 1
+	endif
 
 	// Algorithm:
 	// * The matches wave holds a match as the row index and no match as `noMatch`
@@ -697,6 +765,10 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	if(DimSize(result, ROWS) == 0)
 		return $""
+	endif
+
+	if(!ParamIsDefault(rowIndizes))
+		result[] = rowsInRange[result[p]]
 	endif
 
 	return result
