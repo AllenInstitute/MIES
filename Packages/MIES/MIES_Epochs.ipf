@@ -1505,13 +1505,7 @@ static Function/WAVE EP_GetEpochsNoCache(WAVE numericalValues, WAVE textualValue
 	if(IsNaN(treelevel))
 		WAVE indizes = indizesName
 	else
-		WAVE/Z indizesLevel = FindIndizes(epochInfoChannel, col = EPOCH_COL_TREELEVEL, var = treelevel)
-
-		if(!WaveExists(indizesLevel))
-			return $""
-		endif
-
-		WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
+		WAVE/Z indizes = FindIndizes(epochInfoChannel, col = EPOCH_COL_TREELEVEL, var = treelevel, rowIndizes = indizesName)
 		if(!WaveExists(indizes))
 			return $""
 		endif
