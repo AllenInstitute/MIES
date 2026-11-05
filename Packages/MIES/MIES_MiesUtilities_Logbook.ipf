@@ -1327,12 +1327,21 @@ threadsafe static Function FindRange(WAVE wv, variable col, variable val, variab
 	if(IsFinite(entrySourceType))
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
-			WAVE/Z indizesSourceType = FindIndizes(wv, col = sourceTypeCol, var = entrySourceType, startRow = firstRow, endRow = lastRow)
+			WAVE/Z indizesSourceType = FindIndizes(wv, col = sourceTypeCol, var = entrySourceType, rowIndizes = indizesSetting)
 
-			// we don't have an entry source type in the labnotebook set
-			// throw away entries which are obviously from a different (guessed) entry source type
 			if(!WaveExists(indizesSourceType))
+				[firstRow, lastRow] = WaveMinAndMax(indizesSetting)
+
+				// None of the matching entries has the entry source type. Either they have a different one, then
+				// it occurs between them and there is no match, or this part of the labnotebook was written
+				// before entry source types existed, then it is guessed below.
+				WAVE/Z indizesSourceTypeInRange = FindIndizes(wv, col = sourceTypeCol, var = entrySourceType, startRow = firstRow, endRow = lastRow)
+				if(WaveExists(indizesSourceTypeInRange))
+					return NaN
+				endif
+
+				// we don't have an entry source type in the labnotebook set
+				// throw away entries which are obviously from a different (guessed) entry source type
 				if(entrySourceType == DATA_ACQUISITION_MODE)
 
 					// "TP Peak Resistance" introduced in 666d761a (TP documenting is implemented using David Reid's documenting functions, 2014-07-28)
@@ -1358,7 +1367,7 @@ threadsafe static Function FindRange(WAVE wv, variable col, variable val, variab
 	endif
 
 	if(WaveExists(indizesSourceType)) // entrySourceType could be found
-		WAVE/Z indizes = GetSetIntersection(indizesSetting, indizesSourceType)
+		WAVE/Z indizes = indizesSourceType
 	else
 		WAVE/Z indizes = indizesSetting
 	endif
