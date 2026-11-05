@@ -1351,36 +1351,37 @@ static Function/WAVE SFOS_GetSweepMapIndices(WAVE/T sweepMap, variable sweepNo, 
 	string   tagList
 
 	mapSize = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
-	WAVE/Z sweepIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Sweep", var = sweepNo)
-	if(!WaveExists(sweepIndices))
+	WAVE/Z indices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Sweep", var = sweepNo)
+	if(!WaveExists(indices))
 		return $""
 	endif
 	if(!IsEmpty(expName))
-		WAVE/Z/D expIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "FileName", str = expName)
+		WAVE/Z expIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "FileName", str = expName, rowIndizes = indices)
 		if(!WaveExists(expIndices))
 			return $""
 		endif
+		WAVE indices = expIndices
 	endif
 	if(!IsEmpty(device))
-		WAVE/Z/D devIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Device", str = device)
+		WAVE/Z devIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Device", str = device, rowIndizes = indices)
 		if(!WaveExists(devIndices))
 			return $""
 		endif
+		WAVE indices = devIndices
 	endif
 	if(WaveExists(tags))
 		tagList = TextWaveToList(tags, AB_TAG_SEPARATOR)
 		if(!CmpStr(tagList, AB_TAG_SEPARATOR))
 			tagList = ""
 		endif
-		WAVE/Z/D tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList)
+		WAVE/Z tagIndices = FindIndizes(sweepMap, endRow = mapSize - 1, colLabel = "Tags", str = tagList, rowIndizes = indices)
 		if(!WaveExists(tagIndices))
 			return $""
 		endif
+		WAVE indices = tagIndices
 	endif
 
-	Make/FREE/WAVE partIndices = {sweepIndices, expIndices, devIndices, tagIndices}
-
-	return GetSetIntersectionWaves(partIndices)
+	return indices
 End
 
 static Function SFOS_MapClampModeToSelectCM(variable clampMode)
