@@ -9,7 +9,8 @@
 /// @file MIES_MiesUtilities_Algorithm.ipf
 /// @brief This file holds MIES utility functions implementing various algorithms
 
-static Constant DEFAULT_POINTS_PER_THREAD = 4096
+static Constant DEFAULT_POINTS_PER_THREAD             = 4096
+static Constant FINDINDIZES_NUMERIC_POINTS_PER_THREAD = 1024
 
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
@@ -456,7 +457,7 @@ End
 /// value could not be found.
 threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
 
-	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch
+	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch, pointsPerThread
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
 	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
@@ -581,10 +582,17 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		noMatch = -1
 	endif
 
-	if((numRowsEffective * numLayersEffective) <= DEFAULT_POINTS_PER_THREAD)
+	// comparing numbers is cheap enough for more threads, string functions don't gain from them
+	if(WaveExists(wv) && !(prop & (PROP_GREP | PROP_WILDCARD)))
+		pointsPerThread = FINDINDIZES_NUMERIC_POINTS_PER_THREAD
+	else
+		pointsPerThread = DEFAULT_POINTS_PER_THREAD
+	endif
+
+	if((numRowsEffective * numLayersEffective) <= pointsPerThread)
 		numThreads = 1
 	else
-		numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
+		numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective}, pointsPerThread = pointsPerThread)
 	endif
 
 	if(WaveExists(wv))
