@@ -874,6 +874,8 @@ Function GNOT_Works()
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads(empty), 1)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({0}), 1)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({4096}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({4097}), 2)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 8}), 2)
 
 	// limited to ThreadProcessorCount

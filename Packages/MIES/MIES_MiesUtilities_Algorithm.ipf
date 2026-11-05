@@ -393,16 +393,20 @@ threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
 
 	pointsPerThread = 4096
 
+	numPoints = 1
+	for(i = 0; i < numRows; i += 1)
+		numPoints *= max(1, dims[i])
+	endfor
+
+	if(numPoints <= pointsPerThread)
+		return 1
+	endif
+
 	if(MU_RunningInMainThread())
 		numCores = TSDS_ReadVar(TSDS_PROCCOUNT, defValue = NUM_DEFAULT_CORES, create = 1)
 	else
 		numCores = TSDS_ReadVar(TSDS_PROCCOUNT)
 	endif
-
-	numPoints = 1
-	for(i = 0; i < numRows; i += 1)
-		numPoints *= max(1, dims[i])
-	endfor
 
 	numThreads = min(ceil(numPoints / pointsPerThread), numCores)
 
