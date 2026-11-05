@@ -520,9 +520,13 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	if(!maskedProp)
 		if(!ParamIsDefault(var))
-			str = num2str(var)
+			if(WaveExists(wvText))
+				str = num2str(var)
+			endif
 		elseif(!ParamIsDefault(str))
-			var = str2numSafe(str)
+			if(WaveExists(wv))
+				var = str2numSafe(str)
+			endif
 		endif
 	endif
 
@@ -577,7 +581,11 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		noMatch = -1
 	endif
 
-	numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
+	if((numRowsEffective * numLayersEffective) <= DEFAULT_POINTS_PER_THREAD)
+		numThreads = 1
+	else
+		numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
+	endif
 
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
