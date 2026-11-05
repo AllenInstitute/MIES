@@ -861,6 +861,77 @@ Function FI_AbortsWithInvalidRegExp()
 		PASS()
 	endtry
 End
+
+static Function FI_RowIndizesRestrictsSearch()
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = {0, 1, 3, 4})
+	CHECK_EQUAL_WAVES(indizes, {0, 3}, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesWithTextColumnAndLayers()
+
+	Make/FREE/T/N=(4, 2, 2) text = "a"
+	text[1][1][1] = "b"
+	text[2][1][0] = "b"
+	text[3][1][1] = "b"
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", startLayer = 0, endLayer = 1, rowIndizes = {0, 1, 3})
+	CHECK_EQUAL_WAVES(indizes, {1, 3}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", rowIndizes = {0, 1, 3})
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesWithRowRange()
+
+	Make/FREE/D numeric = {1, 1, 1, 1, 1}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 3, rowIndizes = {0, 2, 3, 4})
+	CHECK_EQUAL_WAVES(indizes, {2, 3}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 1, rowIndizes = {0, 2})
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesWithoutRowsFindsNothing()
+
+	Make/FREE/D numeric = {1, 2}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = $"")
+	CHECK_WAVE(indizes, NULL_WAVE)
+
+	Make/FREE/D/N=0 empty
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = empty)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesChainsSearches()
+
+	Make/FREE/T/N=(6, 2) text
+	text[][0] = num2str(mod(p, 2))
+	text[][1] = num2str(mod(p, 3))
+
+	WAVE/Z indizes = FindIndizes(text, col = 0, var = 0)
+	CHECK_EQUAL_WAVES(indizes, {0, 2, 4}, mode = WAVE_DATA)
+
+	WAVE/Z indizesBoth = FindIndizes(text, col = 1, str = "1", rowIndizes = indizes)
+	CHECK_EQUAL_WAVES(indizesBoth, {4}, mode = WAVE_DATA)
+End
+
+// UTF_TD_GENERATOR DataGenerators#InvalidRowIndizes
+static Function FI_AbortsWithInvalidRowIndizes([WAVE wv])
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	try
+		FindIndizes(numeric, var = 1, rowIndizes = wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+End
 /// @}
 
 /// GetNumberOfUsefulThreads
