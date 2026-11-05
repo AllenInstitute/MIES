@@ -194,16 +194,10 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 
 	SBE_AddMissingADTraceInfo(traceData)
 
-	WAVE/Z indizesType   = FindIndizes(traceData, colLabel = "channelType", str = "AD")
-	WAVE/Z indizesNumber = FindIndizes(traceData, colLabel = "channelNumber", var = ADC)
+	WAVE/Z indizesType = FindIndizes(traceData, colLabel = "channelType", str = "AD")
+	WAVE/Z indizes     = FindIndizes(traceData, colLabel = "channelNumber", var = ADC, rowIndizes = indizesType)
 
-	if(!WaveExists(indizesType) || !WaveExists(indizesNumber))
-		return $""
-	endif
-
-	WAVE indizes = GetSetIntersection(indizesType, indizesNumber)
-
-	if(!WaveExists(indizes) && DimSize(indizes, ROWS) != 1)
+	if(!WaveExists(indizes))
 		return $""
 	endif
 
