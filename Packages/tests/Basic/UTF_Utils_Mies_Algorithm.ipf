@@ -568,6 +568,15 @@ Function FI_NumSearchWithStrAndNot()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
+Function FI_TextSearchBitMaskIgnoresNonNumbers()
+
+	Make/FREE/T text = {"1", "abc", "3", ""}
+
+	WAVE/Z indizes = FindIndizes(text, var = 1, prop = PROP_MATCHES_VAR_BIT_MASK)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_WAVES(indizes, {0, 2}, mode = WAVE_DATA)
+End
+
 Function FI_TextSearchIgnoresCase()
 
 	DFREF dfr = root:FindIndizes

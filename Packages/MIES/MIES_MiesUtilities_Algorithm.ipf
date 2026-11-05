@@ -604,9 +604,9 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(str2num(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(str2numSafe(wvText[p][col][q]) & var) ? p : -1
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (str2numSafe(wvText[p][col][q]) & var) ? p : -1
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
