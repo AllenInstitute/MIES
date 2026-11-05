@@ -504,10 +504,14 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 				ASSERT_TS(IsValidRegexp(str), "Invalid regular expression")
 			endif
 		endif
-	elseif(!ParamIsDefault(var))
-		str = num2str(var)
-	elseif(!ParamIsDefault(str))
-		var = str2numSafe(str)
+	endif
+
+	if(!maskedProp)
+		if(!ParamIsDefault(var))
+			str = num2str(var)
+		elseif(!ParamIsDefault(str))
+			var = str2numSafe(str)
+		endif
 	endif
 
 	if(ParamIsDefault(startRow))

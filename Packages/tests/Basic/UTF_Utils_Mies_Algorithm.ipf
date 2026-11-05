@@ -551,6 +551,23 @@ Function FI_TextSearchWithColAndVar()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
+Function FI_TextSearchWithVarAndNot()
+
+	Make/FREE/T text = {"1", "2", "1"}
+
+	WAVE/Z indizes = FindIndizes(text, var = 1, prop = PROP_NOT)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_WAVES(indizes, {1}, mode = WAVE_DATA)
+End
+
+Function FI_NumSearchWithStrAndNot()
+
+	Make/FREE/D numeric = {1, 2, 0}
+
+	WAVE/Z indizes = FindIndizes(numeric, str = "1", prop = PROP_NOT)
+	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
+End
+
 Function FI_TextSearchIgnoresCase()
 
 	DFREF dfr = root:FindIndizes
