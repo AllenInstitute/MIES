@@ -73,14 +73,24 @@ static Function AB_RemoveEmptyWorkingDF()
 	endfor
 End
 
-/// @brief Reset all waves of the main experiment browser
-static Function AB_InitializeAnalysisBrowserWaves()
+static Function AB_ClearFolderListbox()
 
-	WAVE folderColors = GetAnalysisBrowserGUIFolderColors()
+	string entry
 
 	WAVE/T folderList      = GetAnalysisBrowserGUIFolderList()
 	WAVE   folderSelection = GetAnalysisBrowserGUIFolderSelection()
-	Redimension/N=(0, -1, -1) folderList, folderSelection
+
+	for(entry : folderList)
+		AB_RemoveExperimentEntry(ANALYSIS_BROWSER_NAME, entry)
+	endfor
+
+	Redimension/N=(0, -1, -1, -1) folderList, folderSelection
+End
+
+/// @brief Reset all waves of the main experiment browser
+static Function AB_InitializeAnalysisBrowserWaves()
+
+	AB_ClearFolderListbox()
 
 	WAVE/T map = GetAnalysisBrowserMap()
 	map = ""
