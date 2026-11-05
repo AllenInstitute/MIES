@@ -128,7 +128,7 @@ static Function/S PY_GetLimsCredentials()
 	ASSERT(IsNaN(GetRowIndex(credentials, str = "\"", textOp = TXOP_CASE_SENSE)), "Can not handle quotes (\") in the credential")
 	ASSERT(IsNaN(GetRowIndex(credentials, str = " ", textOp = TXOP_CASE_SENSE)), "Can not handle spaces ( ) in the credential")
 
-	sprintf result, "--db_user %s --db_password %s --db_host %s --db_name %s", credentials[%$"Db User"], credentials[%$"Db Password"], credentials[%$"Db Host"], credentials[%$"Db Name"]
+	sprintf result, "--db_user=%s --db_password=%s --db_host=%s --db_name=%s", credentials[%$"Db User"], credentials[%$"Db Password"], credentials[%$"Db Host"], credentials[%$"Db Name"]
 
 	KillOrMoveToTrash(dfr = dfr)
 
