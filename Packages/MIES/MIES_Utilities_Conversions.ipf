@@ -12,7 +12,7 @@
 /// @brief Convert Bytes to MiBs, a mebibyte being 2^20.
 Function ConvertFromBytesToMiB(variable var)
 
-	return var / 1024 / 1024
+	return var * ONE_TO_MEBI
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz

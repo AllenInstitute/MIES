@@ -43,11 +43,10 @@ static Function TestSweepUpgrade([string str])
 	CHECK_EQUAL_WAVES(channel0, channelB0)
 	CHECK_EQUAL_WAVES(channel1, channelB1)
 
+	// the AnalysisBrowser does not keep a copy of the original 2D sweep wave
 	preUpgradeName = GetSweepWaveName(sweepNo) + "_preUpgrade"
 	WAVE/Z/SDFR=sweepDFR sweepPre = $preUpgradeName
-	CHECK_WAVE(sweepPre, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(channelSize, DimSize(sweepPre, ROWS))
-	CHECK_EQUAL_VAR(2, DimSize(sweepPre, COLS))
+	CHECK_WAVE(sweepPre, NULL_WAVE)
 
 	DFREF            dfr0    = sweepDFR:X_0
 	SVAR/Z/SDFR=dfr0 noteStr = note

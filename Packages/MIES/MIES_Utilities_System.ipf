@@ -43,22 +43,39 @@ Function RestoreExperimentModified(variable modifiedBefore)
 	endif
 End
 
-/// @brief Return the amount of free memory in GB
+/// @brief Return the amount of free physical memory of the system in GiB
 ///
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
 threadsafe Function GetFreeMemory()
 
-	variable freeMem
-
-#if defined(IGOR64)
-	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
-#else
-	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
-#endif
-
-	return freeMem / 1024 / 1024 / 1024
+	return MU_GetMemoryStatistics(MEMORY_STATISTICS_FREE_PHYSICAL) * ONE_TO_GIBI
 End
+
+#ifdef MACINTOSH
+
+/// @brief Replacement for the function of the MIES Utils XOP, which is only available on Windows
+///
+/// Igor Pro only reports its own memory use, so the free physical memory ignores the memory used by other
+/// processes. Supports only the types #MEMORY_STATISTICS_TOTAL_PHYSICAL, #MEMORY_STATISTICS_FREE_PHYSICAL
+/// and #MEMORY_STATISTICS_WORKING_SET, see @ref MemoryStatisticsTypes.
+threadsafe Function MU_GetMemoryStatistics(variable type)
+
+	string info = IgorInfo(0)
+
+	switch(type)
+		case MEMORY_STATISTICS_TOTAL_PHYSICAL:
+			return NumberByKey("PHYSMEM", info)
+		case MEMORY_STATISTICS_FREE_PHYSICAL:
+			return NumberByKey("PHYSMEM", info) - NumberByKey("USEDPHYSMEM", info)
+		case MEMORY_STATISTICS_WORKING_SET:
+			return NumberByKey("USEDPHYSMEM", info)
+		default:
+			FATAL_ERROR("Unsupported memory statistics type: " + num2str(type))
+	endswitch
+End
+
+#endif // MACINTOSH
 
 /// @brief Check wether the given background task is currently running
 ///

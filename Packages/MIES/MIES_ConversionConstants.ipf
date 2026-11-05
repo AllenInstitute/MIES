@@ -447,5 +447,46 @@ Constant YOCTO_TO_ATTO  = 1e-06
 Constant YOCTO_TO_ZEPTO = 1e-03
 ///@}
 
+/// @name Conversion constants for binary multiples
+///
+/// These must be used only with `*` to avoid confusion, the inverse exists
+/// as well, so this is no limitation.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///    // bytes -> MiB
+///    value_MiB = value_bytes * ONE_TO_MEBI
+///
+///    // GiB -> bytes
+///    value_bytes = value_GiB * GIBI_TO_ONE
+/// \endrst
+///
+/// Generated code from GenerateBinaryMultiplierConstants().
+///@{
+Constant ONE_TO_KIBI  = 0.0009765625
+Constant ONE_TO_MEBI  = 9.5367431640625e-07
+Constant ONE_TO_GIBI  = 9.3132257461547852e-10
+Constant ONE_TO_TEBI  = 9.0949470177292824e-13
+Constant KIBI_TO_ONE  = 1024
+Constant KIBI_TO_MEBI = 0.0009765625
+Constant KIBI_TO_GIBI = 9.5367431640625e-07
+Constant KIBI_TO_TEBI = 9.3132257461547852e-10
+Constant MEBI_TO_ONE  = 1048576
+Constant MEBI_TO_KIBI = 1024
+Constant MEBI_TO_GIBI = 0.0009765625
+Constant MEBI_TO_TEBI = 9.5367431640625e-07
+Constant GIBI_TO_ONE  = 1073741824
+Constant GIBI_TO_KIBI = 1048576
+Constant GIBI_TO_MEBI = 1024
+Constant GIBI_TO_TEBI = 0.0009765625
+Constant TEBI_TO_ONE  = 1099511627776
+Constant TEBI_TO_KIBI = 1073741824
+Constant TEBI_TO_MEBI = 1048576
+Constant TEBI_TO_GIBI = 1024
+///@}
+
 Constant ONE_TO_PERCENT = 1e+02
 Constant PERCENT_TO_ONE = 1e-02

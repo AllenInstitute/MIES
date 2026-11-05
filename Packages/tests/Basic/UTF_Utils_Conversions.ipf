@@ -1026,6 +1026,22 @@ Function GMC_SomeVariants()
 	CHECK_EQUAL_VAR(MICRO_TO_TERA, 1e-18)
 End
 
+/// @brief Generic test against the generated binary conversion constants
+static Function GBMC_SomeVariants()
+
+	// powers of two are exact
+	CHECK_EQUAL_VAR(KIBI_TO_ONE, 2^10)
+	CHECK_EQUAL_VAR(ONE_TO_MEBI, 2^-20)
+	CHECK_EQUAL_VAR(GIBI_TO_ONE, 2^30)
+	CHECK_EQUAL_VAR(ONE_TO_TEBI, 2^-40)
+	CHECK_EQUAL_VAR(TEBI_TO_KIBI, 2^30)
+	CHECK_EQUAL_VAR(KIBI_TO_GIBI, 2^-20)
+
+	// round trip
+	CHECK_EQUAL_VAR(5 * GIBI_TO_ONE * ONE_TO_GIBI, 5)
+	CHECK_EQUAL_VAR(3 * MEBI_TO_KIBI * KIBI_TO_MEBI, 3)
+End
+
 Function TestNumericWaveByKey()
 
 	// all defaults

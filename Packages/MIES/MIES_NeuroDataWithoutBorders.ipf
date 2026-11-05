@@ -858,7 +858,7 @@ static Function NWB_GetExportedFileSize(string device)
 		return NaN
 	endif
 
-	return GetFileSize(filePathExport) / 1024 / 1024
+	return GetFileSize(filePathExport) * ONE_TO_MEBI
 End
 
 /// @brief Export all stimsets into NWB

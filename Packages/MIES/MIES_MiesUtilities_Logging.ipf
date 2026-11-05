@@ -142,7 +142,7 @@ Function ArchiveLogFilesOnceAndKeepMonth()
 		if(fSize < ARCHIVE_SIZETHRESHOLD)
 			continue
 		endif
-		if(fSize > (512 * 1024 * 1024))
+		if(fSize > (512 * MEBI_TO_ONE))
 			printf "Just a moment, archiving log file %s.\rThis is only done once.\r", file
 		endif
 

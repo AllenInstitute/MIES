@@ -168,7 +168,9 @@ End
 /// @param doUpgrade       When this flag is set, then the sweep wave is upgraded to the latest format. When set, createBackup must be set and targetDFR must not be a free DF.
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param createBackup    [optional, defaults 1] flag to enable/disable backup creation of single channel sweep waves
-threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, variable doUpgrade, [DFREF targetDFR, variable createBackup])
+/// @param keepOriginal    [optional, defaults 1] when upgrading a 2D numerical sweep wave, keep a copy of it named
+///                        `Sweep_X_preUpgrade` next to the upgraded sweep wave
+threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, WAVE sweepWave, WAVE configWave, variable rescale, variable doUpgrade, [DFREF targetDFR, variable createBackup, variable keepOriginal])
 
 	variable numRows, i, ttlBits
 	variable channelsPresent
@@ -178,6 +180,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 	endif
 
 	createBackup = ParamIsDefault(createBackup) ? 1 : !!createBackup
+	keepOriginal = ParamIsDefault(keepOriginal) ? 1 : !!keepOriginal
 	doUpgrade    = !!doUpgrade
 
 	ASSERT_TS(IsFinite(sweep), "Sweep number must be finite")
@@ -206,7 +209,7 @@ threadsafe Function SplitAndUpgradeSweep(WAVE numericalValues, variable sweep, W
 	endif
 
 	if(doUpgrade)
-		UpgradeSweepWave(sweepWave, componentNames, targetDFR)
+		UpgradeSweepWave(sweepWave, componentNames, targetDFR, keepOriginal)
 	endif
 End
 
@@ -282,7 +285,7 @@ threadsafe static Function SplitSweepWave(WAVE numericalValues, variable sweep, 
 	string/G targetDFR:note = note(sweepWave)
 End
 
-threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentNames, DFREF targetDFR)
+threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentNames, DFREF targetDFR, variable keepOriginal)
 
 	string sweepWaveName, sweepWaveNameBak, tgtDFName, oldSweepName, str
 	variable sweepCreationTimeUTC = NaN
@@ -306,8 +309,10 @@ threadsafe static Function UpgradeSweepWave(WAVE sweepWave, WAVE/T componentName
 		sweepCreationTimeUTC  = LocalTimeToUTC(str2num(modTimeStr))
 		sweepCreationTimeUTC -= DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) * MILLI_TO_ONE
 
-		oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
-		Duplicate sweepWave, sweepWaveDFR:$oldSweepName
+		if(keepOriginal)
+			oldSweepName = UniqueWaveName(sweepWaveDFR, sweepWaveName + "_preUpgrade")
+			Duplicate sweepWave, sweepWaveDFR:$oldSweepName
+		endif
 	endif
 
 	WAVE/Z wv = sweepWaveDFR:$sweepWaveName

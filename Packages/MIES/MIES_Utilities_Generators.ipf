@@ -9,13 +9,28 @@
 /// @file MIES_Utilities_Generators.ipf
 /// @brief utility functions that generate code
 
+/// @brief Print the constants for converting between the decimal (SI) prefixes, see MIES_ConversionConstants.ipf
 Function GenerateMultiplierConstants()
 
-	variable numElements, i, j, maxLength
-	string str
+	GenerateMultiplierConstantsImpl(PREFIX_LONG_LIST, PREFIX_VALUE_LIST, "%.0e")
+End
 
-	WAVE/T prefixes = ListToTextWave(PREFIX_LONG_LIST, ";")
-	WAVE/D values   = ListToNumericWave(PREFIX_VALUE_LIST, ";")
+/// @brief Print the constants for converting between the binary prefixes, see MIES_ConversionConstants.ipf
+Function GenerateBinaryMultiplierConstants()
+
+	// powers of two need all digits
+	GenerateMultiplierConstantsImpl(PREFIX_BINARY_LONG_LIST, PREFIX_BINARY_VALUE_LIST, "%.17g")
+End
+
+static Function GenerateMultiplierConstantsImpl(string prefixList, string valueList, string valueFormat)
+
+	variable numElements, i, j, maxLength
+	string str, format
+
+	WAVE/T prefixes = ListToTextWave(prefixList, ";")
+	WAVE/D values   = ListToNumericWave(valueList, ";")
+
+	format = "Constant %*s_TO_%-*s = " + valueFormat
 
 	numElements = DimSize(prefixes, ROWS)
 	ASSERT(DimSize(values, ROWS) == numElements, "Non matching list sizes")
@@ -29,7 +44,7 @@ Function GenerateMultiplierConstants()
 				continue
 			endif
 
-			sprintf str, "Constant %*s_TO_%-*s = %.0e", maxLength, UpperStr(prefixes[i]), maxLength, UpperStr(prefixes[j]), (values[i] / values[j])
+			sprintf str, format, maxLength, UpperStr(prefixes[i]), maxLength, UpperStr(prefixes[j]), (values[i] / values[j])
 			print str
 		endfor
 	endfor

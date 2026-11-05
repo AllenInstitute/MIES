@@ -6,7 +6,6 @@
 // Missing Tests for:
 // GetExperimentName
 // GetExperimentFileType
-// GetFreeMemory
 // IsBackgroundTaskRunning
 // QuerySetIgorOption
 // ForceRecompile
@@ -139,6 +138,20 @@ static Function RestoreExperimentModifiedKeepsModified()
 	ExperimentModified 1
 	RestoreExperimentModified(1)
 	CHECK_EQUAL_VAR(GetExperimentModified(), 1)
+End
+
+static Function GetFreeMemoryReturnsFreePhysicalMemory()
+
+	variable freeMem, totalMem
+
+	freeMem  = GetFreeMemory()
+	totalMem = MU_GetMemoryStatistics(MEMORY_STATISTICS_TOTAL_PHYSICAL) * ONE_TO_GIBI
+
+	CHECK_GT_VAR(freeMem, 0)
+	CHECK_LT_VAR(freeMem, totalMem)
+
+	// free memory changes constantly
+	CHECK_CLOSE_VAR(freeMem, MU_GetMemoryStatistics(MEMORY_STATISTICS_FREE_PHYSICAL) * ONE_TO_GIBI, tol = 1)
 End
 
 static Function TestCacheBackupAndRestore()

@@ -112,6 +112,17 @@ static Function/WAVE GetHistoricDataFiles()
 	return files
 End
 
+/// @brief Files covering all paths of loading sweeps into the SweepBrowser: NWB, PXP with text sweeps and PXP with 2D sweeps
+static Function/WAVE GetHistoricDataFilesForSweepBackups()
+
+	Make/FREE/T files = {"nwb2_H17.03.016.11.09.01.nwb", "AB_SweepsTextFormat.pxp", "AB_SweepsFromMultipleDevices.pxp"}
+
+	DownloadFilesIfRequired(files)
+	SetDimensionLabelsFromWaveContents(files, cleanup = 1)
+
+	return files
+End
+
 static Function/WAVE GetHistoricDataFilesPXP()
 
 	Make/FREE/T files = {"C57BL6J-629713.05.01.02.pxp",                       \

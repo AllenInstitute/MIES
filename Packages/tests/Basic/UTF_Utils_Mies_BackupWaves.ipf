@@ -12,6 +12,7 @@
 /// - GetBackupWave
 /// - ReplaceWaveWithBackup
 /// - ReplaceWaveWithBackupForAll
+/// - RemoveBackupWaves
 /// @{
 
 Function CreateBackupWaveChecksArgs()
@@ -265,6 +266,69 @@ Function ReplaceWaveWithBackupForAllWorks()
 
 	// backup waves are kept
 	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements + 2)
+
+	KillDataFolder/Z dfr
+End
+
+static Function ReplaceWaveWithBackupForAllRemovesBackups()
+
+	variable originalSum1, originalSum2
+
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
+	variable numElements = CountElementsInFolder_IGNORE(dfr)
+
+	WAVE/SDFR=dfr data1, data2
+	originalSum1 = Sum(data1)
+	originalSum2 = Sum(data2)
+
+	CreateBackupWavesForAll(dfr)
+
+	data1 = 0
+	data2 = 0
+
+	ReplaceWaveWithBackupForAll(dfr, keepBackup = 0)
+
+	WAVE/SDFR=dfr data1_restored = data1
+	WAVE/SDFR=dfr data2_restored = data2
+	CHECK_EQUAL_VAR(Sum(data1_restored), originalSum1)
+	CHECK_EQUAL_VAR(Sum(data2_restored), originalSum2)
+
+	// backup waves are deleted
+	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements)
+
+	KillDataFolder/Z dfr
+End
+
+static Function RemoveBackupWavesWorks()
+
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
+	variable numElements = CountElementsInFolder_IGNORE(dfr)
+
+	CreateBackupWavesForAll(dfr)
+	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements + 2)
+
+	WAVE/SDFR=dfr data1
+	data1 = 0
+
+	RemoveBackupWaves(dfr)
+
+	// only the backups are deleted, the modified data stays
+	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements)
+	WAVE/Z/SDFR=dfr data1_bak, data2_bak
+	CHECK_WAVE(data1_bak, NULL_WAVE)
+	CHECK_WAVE(data2_bak, NULL_WAVE)
+	CHECK_EQUAL_VAR(Sum(data1), 0)
+
+	KillDataFolder/Z dfr
+End
+
+static Function RemoveBackupWavesWithoutBackups()
+
+	DFREF    dfr         = PrepareFolderForBackup_IGNORE()
+	variable numElements = CountElementsInFolder_IGNORE(dfr)
+
+	RemoveBackupWaves(dfr)
+	CHECK_EQUAL_VAR(CountElementsInFolder_IGNORE(dfr), numElements)
 
 	KillDataFolder/Z dfr
 End
