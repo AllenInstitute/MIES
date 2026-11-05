@@ -313,13 +313,23 @@ static Function/WAVE PSQ_DeterminePulseDuration(string device, variable sweepNo,
 	endfor
 
 	WAVE durations = PSQ_DeterminePulseDurationFinder(statusHS, allSingleDA, type, totalOnsetDelay)
+	ASSERT(!IsFinite(GetRowIndex(durations, val = PSQ_PULSE_DURATION_NOT_FOUND)), "Could not find the pulse")
 
 	return durations
 End
 
+/// @brief Determine the pulse duration on each active headstage
+///
+/// @param statusHS        active headstages
+/// @param allSingleDA     DA data of each active headstage
+/// @param type            analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
+/// @param totalOnsetDelay total onset delay in ms
+///
+/// @returns labnotebook wave with the pulse duration in ms of each active headstage, or #PSQ_PULSE_DURATION_NOT_FOUND
+///          if the DA data has no complete pulse, e.g. as the acquisition was stopped during the pulse
 Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingleDA, variable type, variable totalOnsetDelay)
 
-	variable i, first, last, level, duration
+	variable i, first, last, level, duration, minVal, maxVal
 
 	WAVE durations = LBN_GetNumericWave()
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -333,22 +343,42 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 		if(type == PSQ_CHIRP || type == PSQ_RAMP)
 			// search something above/below zero from front and back
 			FindLevel/Q/R=(totalOnsetDelay, Inf) singleDA, 0
-			ASSERT(!V_Flag, "Could not find an edge")
+			if(V_Flag)
+				durations[i] = PSQ_PULSE_DURATION_NOT_FOUND
+				continue
+			endif
 			first = V_LevelX
 
 			FindLevel/Q/R=(Inf, totalOnsetDelay) singleDA, 0
-			ASSERT(!V_Flag, "Could not find an edge")
+			if(V_Flag)
+				durations[i] = PSQ_PULSE_DURATION_NOT_FOUND
+				continue
+			endif
 			last = V_LevelX
+
+			// the search from the back finds a zero crossing within an incomplete pulse, so the acquired data after
+			// the end must be the baseline
+			[minVal, maxVal] = WaveMinAndMax(singleDA, last + DimDelta(singleDA, ROWS), Inf)
+			if(!(minVal == 0 && maxVal == 0))
+				durations[i] = PSQ_PULSE_DURATION_NOT_FOUND
+				continue
+			endif
 		else
 			level = WaveMin(singleDA, totalOnsetDelay, Inf) + GetMachineEpsilon(WaveType(singleDA))
 
 			// search a square pulse
 			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_INCREASING) singleDA, level
-			ASSERT(!V_Flag, "Could not find a rising edge")
+			if(V_Flag)
+				durations[i] = PSQ_PULSE_DURATION_NOT_FOUND
+				continue
+			endif
 			first = V_LevelX
 
 			FindLevel/Q/R=(totalOnsetDelay, Inf)/EDGE=(FINDLEVEL_EDGE_DECREASING) singleDA, level
-			ASSERT(!V_Flag, "Could not find a falling edge")
+			if(V_Flag)
+				durations[i] = PSQ_PULSE_DURATION_NOT_FOUND
+				continue
+			endif
 			last = V_LevelX
 		endif
 
@@ -358,9 +388,7 @@ Function/WAVE PSQ_DeterminePulseDurationFinder(WAVE statusHS, WAVE/WAVE allSingl
 			duration = first - last + DimDelta(singleDA, ROWS)
 		endif
 
-		ASSERT(duration > 0, "Duration must be strictly positive")
-
-		durations[i] = duration
+		durations[i] = (duration > 0) ? duration : PSQ_PULSE_DURATION_NOT_FOUND
 	endfor
 
 	return durations

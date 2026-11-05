@@ -1209,6 +1209,9 @@ Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
 
 Constant PSQ_BL_FAILED = 1
 
+/// Pulse duration of a headstage whose pulse could not be found in the DA data, see PSQ_DeterminePulseDurationFinder()
+Constant PSQ_PULSE_DURATION_NOT_FOUND = -1
+
 StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX         = "BLC"
 StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_RE_MATCHER     = "^U_BLC[[:digit:]]+$"
 StrConstant PSQ_BASELINE_SELECTION_SHORT_NAME_RE_MATCHER = "^U_BLS[[:digit:]]+$"

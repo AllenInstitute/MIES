@@ -11,6 +11,12 @@ static StrConstant UPLOAD_MSG_HTTP_404_REGEXP      = "^The server responded with
 static StrConstant UPLOAD_MSG_HTTP_500_REGEXP      = "^The server responded with the HTTP status code 500: fake response$"
 ///@}
 
+/// @name Pulse in the DA data of PulseDurationDA() in ms
+///@{
+static Constant PULSE_DURATION_DA_START = 120
+static Constant PULSE_DURATION_DA_END   = 220
+///@}
+
 static Function/WAVE MajorNWBVersions()
 
 	Make/FREE wv = {1, 2}
@@ -2533,6 +2539,54 @@ static Function/WAVE UploadJSONPayloadOutcomes()
 	wv[4] = UploadJSONPayloadOutcome(0, 500, 500, UPLOAD_MSG_HTTP_500_REGEXP)
 
 	SetDimensionLabels(wv, "Success;Timeout;OtherError;HTTPClientError;HTTPServerError", ROWS)
+
+	return wv
+End
+
+/// @brief DA data of 300 ms with a pulse from PULSE_DURATION_DA_START to PULSE_DURATION_DA_END after the onset delay
+///        of 20 ms
+///
+/// The data is NaN from cutOffTime on, as for an acquisition which was stopped at that time.
+/// The wave note holds the analysis function type and the expected pulse duration.
+static Function/WAVE PulseDurationDA(variable type, variable cutOffTime, variable expected)
+
+	variable chirpPeriod = 10 // ms
+
+	Make/FREE/D/N=15000 wv
+	SetScale/P x, 0, 0.02, "ms", wv
+
+	if(type == PSQ_CHIRP)
+		wv[] = (x >= PULSE_DURATION_DA_START && x < PULSE_DURATION_DA_END) ? sin(2 * pi * (x - PULSE_DURATION_DA_START) / chirpPeriod) : 0
+	else
+		wv[] = (x >= PULSE_DURATION_DA_START && x < PULSE_DURATION_DA_END) ? 1 : 0
+	endif
+
+	if(IsFinite(cutOffTime))
+		wv[ScaleToIndex(wv, cutOffTime, ROWS), Inf] = NaN
+	endif
+
+	SetNumberInWaveNote(wv, "type", type)
+	SetNumberInWaveNote(wv, "expected", expected)
+
+	return wv
+End
+
+static Function/WAVE PulseDurationCases()
+
+	variable duration = PULSE_DURATION_DA_END - PULSE_DURATION_DA_START
+
+	Make/FREE/WAVE/N=9 wv
+	wv[0] = PulseDurationDA(PSQ_DA_SCALE, NaN, duration)
+	wv[1] = PulseDurationDA(PSQ_DA_SCALE, PULSE_DURATION_DA_START + 10, PSQ_PULSE_DURATION_NOT_FOUND)
+	wv[2] = PulseDurationDA(PSQ_DA_SCALE, PULSE_DURATION_DA_START - 20, PSQ_PULSE_DURATION_NOT_FOUND)
+	wv[3] = PulseDurationDA(PSQ_CHIRP, NaN, duration)
+	wv[4] = PulseDurationDA(PSQ_CHIRP, PULSE_DURATION_DA_START + 2, PSQ_PULSE_DURATION_NOT_FOUND)
+	wv[5] = PulseDurationDA(PSQ_CHIRP, PULSE_DURATION_DA_START + 17, PSQ_PULSE_DURATION_NOT_FOUND)
+	wv[6] = PulseDurationDA(PSQ_CHIRP, PULSE_DURATION_DA_END - 0.02, PSQ_PULSE_DURATION_NOT_FOUND)
+	wv[7] = PulseDurationDA(PSQ_CHIRP, PULSE_DURATION_DA_END + 1, duration)
+	wv[8] = PulseDurationDA(PSQ_CHIRP, PULSE_DURATION_DA_START - 20, PSQ_PULSE_DURATION_NOT_FOUND)
+
+	SetDimensionLabels(wv, "SquarePulse;SquarePulseCutOff;SquarePulseMissing;Chirp;ChirpCutOff;ChirpCutOffAfterZeroCrossing;ChirpCutOffAtEnd;ChirpCutOffAfterEnd;ChirpMissing", ROWS)
 
 	return wv
 End
