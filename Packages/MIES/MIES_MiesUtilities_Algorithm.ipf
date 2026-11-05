@@ -447,8 +447,7 @@ End
 /// value could not be found.
 threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
 
-	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective
-	string key
+	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
 	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
@@ -550,89 +549,104 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	numLayersEffective = (endLayer - startLayer) + 1
 
 	// Algorithm:
-	// * The matches wave has the same size as one column of the input wave
-	// * -1 means no match, every value larger or equal than zero is the row index of the match
-	// * There is no distinction between different layers matching
-	// * After the matches have been calculated we take the maximum of the transposed matches
-	//   wave in each colum transpose back and replace -1 with NaN. This multiple layer matching algorithm
-	//   using maxCols is also the reason why we can't start with NaN on no match but have to use -1
-	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
-	// * Delete all NaNs in the wave and return it
+	// * The matches wave holds a match as the row index and no match as `noMatch`
+	// * Searching only the first layer:
+	//   * The matches wave is 1D, `noMatch` is NaN
+	//   * Delete the rows before startRow and all NaNs in the wave and return it
+	// * Searching other layers:
+	//   * The matches wave has the same size as one column of the input wave, `noMatch` is -1
+	//   * There is no distinction between different layers matching
+	//   * Take the maximum of the searched layers in each row and replace -1 with NaN. This gives a 1D wave with NaN
+	//     in the rows with no match, and the row index of the match otherwise
+	//   * Delete all NaNs in the wave and return it
 
-	WAVE/D matches = GetTemporaryWave({numRows, numLayers}, IGOR_TYPE_64BIT_FLOAT)
+	if(startLayer == 0 && endLayer == 0)
+		Make/FREE/D/N=(endRow + 1) matches
+		noMatch = NaN
+	else
+		WAVE/D matches = GetTemporaryWave({numRows, numLayers}, IGOR_TYPE_64BIT_FLOAT)
+		noMatch = -1
+	endif
 
 	numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective})
-
-	FastOp matches = -1
 
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2) ? p : noMatch
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(wv[p][col][q] & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(wv[p][col][q] & var) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var) ? p : noMatch
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(num2strHighPrec(wv[p][col][q]), str) ? p : noMatch
 				endif
 			elseif(prop & PROP_WILDCARD)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(num2strHighPrec(wv[p][col][q]), str) ? p : noMatch
 				endif
 			elseif(prop & PROP_NOT)
-				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] != var) ? p : -1
+				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] != var) ? p : noMatch
 			endif
 		else
 			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
-			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] == var) ? p : -1
+			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] == var) ? p : noMatch
 		endif
 	else
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = strlen(wvText[p][col][q]) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = strlen(wvText[p][col][q]) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !strlen(wvText[p][col][q]) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !strlen(wvText[p][col][q]) ? p : noMatch
 				endif
 			elseif(prop & PROP_MATCHES_VAR_BIT_MASK)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(str2numSafe(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !(str2numSafe(wvText[p][col][q]) & var) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (str2numSafe(wvText[p][col][q]) & var) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = (str2numSafe(wvText[p][col][q]) & var) ? p : noMatch
 				endif
 			elseif(prop & PROP_GREP)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !GrepString(wvText[p][col][q], str) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = GrepString(wvText[p][col][q], str) ? p : noMatch
 				endif
 			elseif(prop & PROP_WILDCARD)
 				if(prop & PROP_NOT)
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !StringMatch(wvText[p][col][q], str) ? p : noMatch
 				else
-					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(wvText[p][col][q], str) ? p : -1
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(wvText[p][col][q], str) ? p : noMatch
 				endif
 			elseif(prop & PROP_NOT)
-				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : -1
+				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : noMatch
 			endif
 		else
-			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], str) ? p : -1
+			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], str) ? p : noMatch
 		endif
 	endif
 
-	MatrixOp/FREE result = zapNans(replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN))
+	if(startLayer == 0 && endLayer == 0)
+		if(startRow > 0)
+			DeletePoints/M=(ROWS) 0, startRow, matches
+		endif
+
+		WaveTransform/O zapNaNs, matches
+		WAVE result = matches
+	else
+		MatrixOp/FREE result = zapNans(replace(maxRows(subRange(matches, startRow, endRow, startLayer, endLayer)), -1, NaN))
+	endif
 
 	if(DimSize(result, ROWS) == 0)
 		return $""
