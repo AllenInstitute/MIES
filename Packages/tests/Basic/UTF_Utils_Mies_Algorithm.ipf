@@ -878,6 +878,9 @@ Function GNOT_Works()
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({4097}), 2)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 8}), 2)
 
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}, pointsPerThread = 1000), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}, pointsPerThread = 500), 2)
+
 	// limited to ThreadProcessorCount
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 1000, 1000, 1000}), ThreadProcessorCount)
 End
@@ -903,6 +906,20 @@ Function GNOT_ChecksParameters()
 	try
 		Make/FREE dimsTooLarge
 		GetNumberOfUsefulThreads(dimsTooLarge)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		GetNumberOfUsefulThreads({1000}, pointsPerThread = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		GetNumberOfUsefulThreads({1000}, pointsPerThread = 1.5)
 		FAIL()
 	catch
 		CHECK_NO_RTE()

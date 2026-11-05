@@ -9,6 +9,8 @@
 /// @file MIES_MiesUtilities_Algorithm.ipf
 /// @brief This file holds MIES utility functions implementing various algorithms
 
+static Constant DEFAULT_POINTS_PER_THREAD = 4096
+
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
 /// For performance enhancements:
@@ -380,9 +382,18 @@ End
 ///    MultiThread/Y=(numThreads) data = ...
 ///
 /// \endrst
-threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
+///
+/// @param dims            dimensions of the problem
+/// @param pointsPerThread [optional, defaults to 4096] minimum number of points for each thread
+threadsafe Function GetNumberOfUsefulThreads(WAVE dims, [variable pointsPerThread])
 
-	variable pointsPerThread, numCores, numPoints, numThreads, numRows, i
+	variable numCores, numPoints, numThreads, numRows, i
+
+	if(ParamIsDefault(pointsPerThread))
+		pointsPerThread = DEFAULT_POINTS_PER_THREAD
+	else
+		ASSERT_TS(IsInteger(pointsPerThread) && pointsPerThread > 0, "Invalid pointsPerThread")
+	endif
 
 	ASSERT_TS(WaveExists(dims) && IsNumericWave(dims), "Needs a numeric wave")
 
@@ -390,8 +401,6 @@ threadsafe Function GetNumberOfUsefulThreads(WAVE dims)
 	ASSERT_TS(numRows <= MAX_DIMENSION_COUNT, "Expected at most MAX_DIMENSION_COUNT rows")
 
 	ASSERT_TS(GetWaveDimensionality(dims) == ROWS, "Expected a 1D wave")
-
-	pointsPerThread = 4096
 
 	numPoints = 1
 	for(i = 0; i < numRows; i += 1)
