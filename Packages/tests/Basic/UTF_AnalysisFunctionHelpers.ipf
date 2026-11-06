@@ -789,6 +789,110 @@ End
 /// END AFH_GetListOfAnalysisParams
 /// @}
 
+/// BEGIN PSQ_SearchForSpikesIncrementally
+/// @{
+
+// UTF_TD_GENERATOR DataGenerators#SpikeSearchNumbersOfSpikes
+static Function SpikeSearchIncrementally([variable var])
+
+	variable numberOfSpikesReq, acquiredEnd, numFoundRef, numFound, spikeStart, last, index
+	variable sweepNo   = 0
+	variable headstage = 1
+	variable first     = 20
+	variable step      = 7.5
+
+	numberOfSpikesReq = var
+
+	// AD baseline with a spike of two points, whose first point is the end of a step, so that the box smoothing of
+	// its rising edge differs as long as the next point is not acquired, and with spikes of 1 ms, where a step ends
+	// shortly after the rising edge of the spike at 49.94 ms, so that the next step searches it again, and another
+	// step ends at the rising edge of the spike at 80 ms
+	Make/FREE/D/N=10000 ad = -60
+	SetScale/P x, 0, 0.02, "ms", ad
+	index                = ScaleToIndex(ad, first + 3 * step, ROWS)
+	ad[index, index + 1] = 100
+	Make/FREE/D spikeStarts = {49.94, 80, 120, 160}
+	for(spikeStart : spikeStarts)
+		ad[ScaleToIndex(ad, spikeStart, ROWS), ScaleToIndex(ad, spikeStart + 1, ROWS)] = 20
+	endfor
+	last = IndexToScale(ad, DimSize(ad, ROWS) - 1, ROWS)
+
+	WAVE state     = GetAnalysisFuncSpikeSearchState(device)
+	WAVE positions = GetAnalysisFuncSpikeSearchPositions(device)
+
+	// one search over all data
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, numberOfSpikesReq)
+	numFoundRef = MIES_PSQ#PSQ_SearchForSpikesIncrementally(ad, state, positions, headstage, first, last, Inf, PSQ_SPIKE_LEVEL, numberOfSpikesReq)
+	CHECK_EQUAL_VAR(numFoundRef, min(numberOfSpikesReq, DimSize(spikeStarts, ROWS) + 1))
+	Duplicate/FREE/R=[0, numFoundRef - 1][headstage] positions, positionsRef
+
+	// the same data acquired step by step in the next sweep
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo + 1, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, numberOfSpikesReq)
+
+	// nothing acquired at fifo position zero, nothing to search up to the start and too few points after the start
+	Make/FREE/D acquiredEnds = {-DimDelta(ad, ROWS), 0, first, first + DimDelta(ad, ROWS), first + 2 * DimDelta(ad, ROWS), first + 4 * DimDelta(ad, ROWS)}
+	for(acquiredEnd : acquiredEnds)
+		Duplicate/FREE ad, acquired
+		if(acquiredEnd < 0)
+			acquired[] = NaN
+		else
+			acquired[ScaleToIndex(acquired, acquiredEnd, ROWS) + 1, Inf] = NaN
+		endif
+
+		numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(acquired, state, positions, headstage, first, last, acquiredEnd, PSQ_SPIKE_LEVEL, numberOfSpikesReq)
+		CHECK_NO_RTE()
+		CHECK_EQUAL_VAR(numFound, 0)
+		CHECK_EQUAL_VAR(state[headstage][%SearchedUntil], NaN)
+	endfor
+
+	for(acquiredEnd = first + step; acquiredEnd < last; acquiredEnd += step)
+		Duplicate/FREE ad, acquired
+		acquired[ScaleToIndex(acquired, acquiredEnd, ROWS) + 1, Inf] = NaN
+
+		numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(acquired, state, positions, headstage, first, last, acquiredEnd, PSQ_SPIKE_LEVEL, numberOfSpikesReq)
+		if(numFound >= numberOfSpikesReq)
+			break
+		endif
+	endfor
+
+	CHECK_EQUAL_VAR(numFound, numFoundRef)
+	Duplicate/FREE/R=[0, numFound - 1][headstage] positions, positionsIncremental
+	CHECK_EQUAL_WAVES(positionsIncremental, positionsRef, mode = WAVE_DATA)
+End
+
+static Function SpikeSearchStateReset()
+
+	variable numFound, last
+	variable sweepNo   = 0
+	variable headstage = 1
+	variable first     = 20
+
+	Make/FREE/D/N=10000 ad = -60
+	SetScale/P x, 0, 0.02, "ms", ad
+	last = IndexToScale(ad, DimSize(ad, ROWS) - 1, ROWS)
+
+	ad[ScaleToIndex(ad, 50, ROWS), ScaleToIndex(ad, 51, ROWS)] = 20
+
+	WAVE state     = GetAnalysisFuncSpikeSearchState(device)
+	WAVE positions = GetAnalysisFuncSpikeSearchPositions(device)
+
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, 1)
+	numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(ad, state, positions, headstage, first, last, Inf, PSQ_SPIKE_LEVEL, 1)
+	CHECK_EQUAL_VAR(numFound, 1)
+
+	// a sweep without spikes and with the same sweep number, as after resetting the sweep counter
+	ad = -60
+
+	MIES_PSQ#PSQ_ResetSpikeSearchState(state, positions, headstage)
+	MIES_PSQ#PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, PSQ_RAMP, first, PSQ_SPIKE_LEVEL, 1)
+	numFound = MIES_PSQ#PSQ_SearchForSpikesIncrementally(ad, state, positions, headstage, first, last, Inf, PSQ_SPIKE_LEVEL, 1)
+	CHECK_EQUAL_VAR(numFound, 0)
+	CHECK_EQUAL_VAR(positions[0][headstage], NaN)
+End
+
+/// END PSQ_SearchForSpikesIncrementally
+/// @}
+
 /// BEGIN AFH_GetHeadstageFromActiveADC
 /// @{
 

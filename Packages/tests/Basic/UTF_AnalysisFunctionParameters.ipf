@@ -1027,3 +1027,41 @@ static Function GAP_Works()
 End
 
 /// @}
+
+/// @name PSQ_Ramp_CheckParam
+/// @{
+
+static Function/S CheckNumberOfSpikes(variable numberOfSpikes)
+
+	string message
+	string params = ""
+	STRUCT CheckParametersStruct s
+
+	AFH_AddAnalysisParameterToParams(params, "NumberOfSpikes", var = numberOfSpikes)
+	s.params = params
+
+	// null means no error, as in AFH_CheckAnalysisParameter()
+	message = PSQ_Ramp_CheckParam("NumberOfSpikes", s)
+
+	return SelectString(IsNull(message), message, "")
+End
+
+// UTF_TD_GENERATOR DataGenerators#ValidNumbersOfSpikes
+static Function PRCP_AcceptsNumberOfSpikes([variable var])
+
+	string result
+
+	result = CheckNumberOfSpikes(var)
+	CHECK_EMPTY_STR(result)
+End
+
+// UTF_TD_GENERATOR DataGenerators#InvalidNumbersOfSpikes
+static Function PRCP_RejectsNumberOfSpikes([variable var])
+
+	string result
+
+	result = CheckNumberOfSpikes(var)
+	CHECK_NON_EMPTY_STR(result)
+End
+
+/// @}
