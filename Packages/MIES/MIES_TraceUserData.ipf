@@ -174,19 +174,13 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 
 	numEntries = DimSize(keys, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE/Z indizes = FindIndizes(graphUserData, colLabel = keys[i], str = values[i])
+		WAVE/Z indizes = FindIndizes(graphUserData, colLabel = keys[i], str = values[i], rowIndizes = matches)
 
 		if(!WaveExists(indizes))
 			return $""
 		endif
 
-		WAVE/Z matchesReturn = GetSetIntersection(matches, indizes)
-
-		if(!WaveExists(matchesReturn))
-			return $""
-		endif
-
-		WAVE matches = matchesReturn
+		WAVE matches = indizes
 	endfor
 
 	if(returnIndizes)

@@ -2590,3 +2590,19 @@ static Function/WAVE PulseDurationCases()
 
 	return wv
 End
+
+static Function/WAVE InvalidRowIndizes()
+
+	Make/FREE/WAVE/N=6 wv
+	wv[0] = WaveRef({-1})
+	wv[1] = WaveRef({5})
+	wv[2] = WaveRef({0, NaN})
+	wv[3] = WaveRef({{0}, {1}})
+	Make/FREE/T text = {"0"}
+	wv[4] = text
+	wv[5] = WaveRef({0, 0.5})
+
+	SetDimensionLabels(wv, "Negative;TooLarge;NaN;TwoDimensional;Text;Fractional", ROWS)
+
+	return wv
+End

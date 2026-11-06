@@ -4311,13 +4311,8 @@ static Function/WAVE AB_GetSelectedExperimentsIndices()
 
 	WAVE   expBrowserSel = GetExperimentBrowserGUISel()
 	WAVE/Z indizesSel    = FindIndizes(expBrowserSel, col = EXPERIMENT_TREEVIEW_COLUMN, var = LISTBOX_SELECT_OR_SHIFT_SELECTION, prop = PROP_MATCHES_VAR_BIT_MASK)
-	WAVE/Z indizesExp    = AB_GetExperimentsIndices()
-	if(WaveExists(indizesSel) && WaveExists(indizesExp))
-		WAVE/Z indizes = GetSetIntersection(indizesSel, indizesExp)
-		return indizes
-	endif
 
-	return $""
+	return FindIndizes(expBrowserSel, col = EXPERIMENT_TREEVIEW_COLUMN, var = LISTBOX_TREEVIEW, prop = PROP_MATCHES_VAR_BIT_MASK, rowIndizes = indizesSel)
 End
 
 /// @brief Adds a tag to all selected experiments from the experiment list

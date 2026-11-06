@@ -442,6 +442,10 @@ End
 ///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
+/// `rowIndizes` allows to search for the rows matching multiple conditions by passing the result of the
+/// previous call. This is faster than intersecting the results of separate calls, especially if the
+/// first condition is the most selective one.
+///
 /// @param numericOrTextWave   wave to search in
 /// @param col [optional, default=0] column to search in only
 /// @param colLabel [optional] column label to search in only
@@ -452,12 +456,15 @@ End
 /// @param endRow [optional]   ending row to restrict the search to
 /// @param startLayer [optional, defaults to zero] starting layer to restrict search to
 /// @param endLayer [optional, defaults to zero] ending layer to restrict search to
+/// @param rowIndizes [optional] row indizes to restrict the search to, in addition to `startRow`/`endRow`.
+///                            An invalid wave reference or an empty wave finds nothing.
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
+threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer, WAVE rowIndizes])
 
 	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch, pointsPerThread
+	variable minRow, maxRow, numRowsInRange
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
 	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
@@ -561,6 +568,45 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	ASSERT_TS(startLayer <= endLayer, "endLayer must be larger than startLayer")
 	numLayersEffective = (endLayer - startLayer) + 1
+
+	if(!ParamIsDefault(rowIndizes))
+		if(!WaveExists(rowIndizes) || DimSize(rowIndizes, ROWS) == 0)
+			return $""
+		endif
+
+		ASSERT_TS(IsNumericWave(rowIndizes) && GetWaveDimensionality(rowIndizes) == ROWS, "rowIndizes must be a 1D numeric wave")
+		[minRow, maxRow] = WaveMinAndMax(rowIndizes)
+		ASSERT_TS(IsFinite(sum(rowIndizes)) && minRow >= 0 && maxRow < numRows, "Invalid rowIndizes")
+
+		// fractional row indizes become -1, so that they fail the check below
+		Make/FREE/D/N=(DimSize(rowIndizes, ROWS)) rowsInRange = (rowIndizes[p] != trunc(rowIndizes[p])) ? -1 : ((rowIndizes[p] >= startRow && rowIndizes[p] <= endRow) ? rowIndizes[p] : NaN)
+		WaveTransform/O zapNaNs, rowsInRange
+
+		numRowsInRange = DimSize(rowsInRange, ROWS)
+		if(numRowsInRange == 0)
+			return $""
+		endif
+
+		ASSERT_TS(WaveMin(rowsInRange) >= 0, "rowIndizes must be integers")
+
+		// search a copy of only these rows of the column and layers, see the end for mapping back to the rows
+		if(WaveExists(wvText))
+			Make/FREE/T/N=(numRowsInRange, 1, numLayersEffective) subText = wvText[rowsInRange[p]][col][startLayer + r]
+			WAVE/T wvText = subText
+		else
+			Make/FREE/Y=(WaveType(wv))/N=(numRowsInRange, 1, numLayersEffective) sub = wv[rowsInRange[p]][col][startLayer + r]
+			WAVE wv = sub
+		endif
+
+		col              = 0
+		numRows          = numRowsInRange
+		numLayers        = numLayersEffective
+		startRow         = 0
+		endRow           = numRowsInRange - 1
+		numRowsEffective = numRowsInRange
+		startLayer       = 0
+		endLayer         = numLayersEffective - 1
+	endif
 
 	// Algorithm:
 	// * The matches wave holds a match as the row index and no match as `noMatch`
@@ -675,6 +721,10 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 
 	if(DimSize(result, ROWS) == 0)
 		return $""
+	endif
+
+	if(!ParamIsDefault(rowIndizes))
+		result[] = rowsInRange[result[p]]
 	endif
 
 	return result
