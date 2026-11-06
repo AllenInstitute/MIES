@@ -156,11 +156,18 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts '^[[:space:]]*[^\/].*;$' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
+# 1: semicolon at the end of the line
+# 2: semicolon before a trailing comment, semicolons in string literals are ignored
+# 3: respects NOLINT
+matches=$(git grep $opts                                                                                              \
+          \( -e '^[[:space:]]*[^\/].*;$'                                                                              \
+          --or -e '^[[:space:]]*+(?!//)(?:[^";/]++|"(?:[^"\x5c]++|\x5c.)*+"|/(?!/)|;(?![[:space:]]*+//))*+;[[:space:]]*+//' \) \
+          --and --not -e '//[[:space:]]*NOLINT$'                                                                      \
+          '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "The trailing semicolon check failed and found the following occurences:"
+  echo "The trailing semicolon check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi
