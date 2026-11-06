@@ -903,3 +903,8 @@ Function/S GetInputDialogState(DFREF dfr)
 
 	return GetNVARAsString(dfr, "state", initialValue = NaN)
 End
+
+threadsafe Function/S GetZeroMQXOPCallInfo()
+
+	return GetSVARAsString(GetMiesPath(), "ZeroMQXOPCallInfo", initialValue = ZeroMQ_INFO_UNDEFINED)
+End
