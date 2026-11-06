@@ -551,6 +551,32 @@ Function FI_TextSearchWithColAndVar()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
+Function FI_TextSearchWithVarAndNot()
+
+	Make/FREE/T text = {"1", "2", "1"}
+
+	WAVE/Z indizes = FindIndizes(text, var = 1, prop = PROP_NOT)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_WAVES(indizes, {1}, mode = WAVE_DATA)
+End
+
+Function FI_NumSearchWithStrAndNot()
+
+	Make/FREE/D numeric = {1, 2, 0}
+
+	WAVE/Z indizes = FindIndizes(numeric, str = "1", prop = PROP_NOT)
+	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
+End
+
+Function FI_TextSearchBitMaskIgnoresNonNumbers()
+
+	Make/FREE/T text = {"1", "abc", "3", ""}
+
+	WAVE/Z indizes = FindIndizes(text, var = 1, prop = PROP_MATCHES_VAR_BIT_MASK)
+	CHECK_NO_RTE()
+	CHECK_EQUAL_WAVES(indizes, {0, 2}, mode = WAVE_DATA)
+End
+
 Function FI_TextSearchIgnoresCase()
 
 	DFREF dfr = root:FindIndizes
@@ -848,7 +874,12 @@ Function GNOT_Works()
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads(empty), 1)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({0}), 1)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({4096}), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({4097}), 2)
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 8}), 2)
+
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}, pointsPerThread = 1000), 1)
+	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000}, pointsPerThread = 500), 2)
 
 	// limited to ThreadProcessorCount
 	CHECK_EQUAL_VAR(GetNumberOfUsefulThreads({1000, 1000, 1000, 1000}), ThreadProcessorCount)
@@ -875,6 +906,20 @@ Function GNOT_ChecksParameters()
 	try
 		Make/FREE dimsTooLarge
 		GetNumberOfUsefulThreads(dimsTooLarge)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		GetNumberOfUsefulThreads({1000}, pointsPerThread = 0)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	try
+		GetNumberOfUsefulThreads({1000}, pointsPerThread = 1.5)
 		FAIL()
 	catch
 		CHECK_NO_RTE()
