@@ -208,6 +208,26 @@ then
   ret=1
 fi
 
+# statements after return on the same line are never executed, e.g. AbortOnRTE does not catch a pending runtime error
+# return can also follow other statements on the same line
+# semicolons in string literals and comments are ignored
+statement='(?:[^";/]++|"(?:[^"\x5c]++|\x5c.)*+"|/(?!/))*+'
+matches=$(git grep $opts "^[[:space:]]*+(?:(?!return\b)${statement};[[:space:]]*+)*+return\b${statement};[[:space:]]*+[^[:space:]/]" '*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The statement after return check failed and found the following occurences (statements after return on the same line are dead code):"
+  echo "$matches"
+
+  if echo "$matches" | grep --quiet --ignore-case '\bAbortOnRTE\b'
+  then
+    echo "AbortOnRTE after return is never executed, so a runtime error of the returned expression is not caught."
+    echo "Assign the result to a variable inside try and return it after endtry instead."
+  fi
+
+  ret=1
+fi
+
 matches=$(git grep $opts '^// I?UTF_TD_GENERATOR [^#]+$' '**/MIES_*.ipf' '**/UTF*.ipf')
 
 if [[ -n "$matches" ]]
