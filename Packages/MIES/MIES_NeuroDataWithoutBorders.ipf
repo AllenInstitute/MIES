@@ -585,7 +585,7 @@ End
 ///
 /// @param nwbVersion            major NWB format version, one of 1 or 2 (aka NWB_VERSION_LATEST)
 /// @param device                [optional, defaults to all devices] when set, only data for the given single device is exported
-/// @param overrideFullFilePath  [optional, defaults to auto-gen] use this full file path instead of an internally derived one, only valid when single device has data
+/// @param overrideFullFilePath  [optional, defaults to auto-gen] use this full file path instead of an internally derived one, only valid for data from a single device
 /// @param overrideFileTemplate  [optional, defaults to auto-gen] use this template file path instead of an internally derived one
 /// @param writeStoredTestPulses [optional, defaults to false] store the raw test pulse data
 /// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file

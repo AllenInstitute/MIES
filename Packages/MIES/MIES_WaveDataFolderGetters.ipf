@@ -6537,10 +6537,16 @@ threadsafe Function/WAVE GetCacheKeyHashMap()
 
 	if(ExistsWithCorrectLayoutVersion(wv, HM_HASHMAP_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
-		WAVE wv_new = HM_Upgrade(wv)
+	endif
 
-		return MoveWaveWithOverwrite(wv, wv_new)
+	if(WaveExists(wv))
+		WAVE/Z wv_new = HM_Upgrade(wv)
+
+		if(WaveExists(wv_new))
+			return MoveWaveWithOverwrite(wv, wv_new)
+		endif
+
+		KillOrMoveToTrash(wv = wv)
 	endif
 
 	WAVE/Z/T/SDFR=dfr keys
@@ -9285,10 +9291,16 @@ threadsafe Function/WAVE GetLogbookKeyHashmap(WAVE values)
 
 	if(ExistsWithCorrectLayoutVersion(hashmap, HM_HASHMAP_WAVE_VERSION))
 		return hashmap
-	elseif(WaveExists(hashmap))
+	endif
+
+	if(WaveExists(hashmap))
 		WAVE hashmap_new = HM_Upgrade(hashmap)
 
-		return MoveWaveWithOverwrite(hashmap, hashmap_new)
+		if(WaveExists(hashmap_new))
+			return MoveWaveWithOverwrite(hashmap, hashmap_new)
+		endif
+
+		KillOrMoveToTrash(wv = hashmap)
 	endif
 
 	Duplicate/FREE/RMD=[FindDimLabel(keys, ROWS, "Parameter")][] keys, onlyNames
