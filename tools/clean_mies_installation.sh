@@ -115,7 +115,7 @@ then
   base_folder=$top_level
 elif [ "$sourceLoc" = "release" ]
 then
-  release_pkg=$(ls Release*.zip)
+  release_pkg=$(ls MIES-*.zip)
 
   if [ ! -e "$release_pkg" ]
   then

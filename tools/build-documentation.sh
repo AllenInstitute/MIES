@@ -2,7 +2,7 @@
 
 top_level=$(git rev-parse --show-toplevel)
 branch=$(git rev-parse --abbrev-ref HEAD)
-version=$(git describe --always --tags --match "Release_*")
+version=$(git describe --always --tags --match "Release_*" --match "Development_*")
 
 case $(uname) in
     Linux)

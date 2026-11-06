@@ -31,10 +31,10 @@ esac
 
 cd $top_level
 ./tools/create-release.sh
-zipfile=$(ls Release_*.zip)
+zipfile=$(ls MIES-*.zip)
 
 cd tools
-rm -f installer/*.inc installer/MIES-Release*.exe
+rm -f installer/*.inc installer/MIES-*.exe
 
 #Include file name, must be undecorated file names
 #The first name of NSISDEFINCS is fixed to "setincnames.inc"
@@ -56,7 +56,7 @@ echo "!define NSISUNINSTDIRLIST \"$NSISUNINSTDIRLIST\"" >> installer/$NSISDEFINC
 
 # Create include to set installer file name
 echo "$zipfile" > installer/$NSISOUTFILE
-sed -i 's/.zip/.exe/;s/.*/outFile \"MIES-&\"/' installer/$NSISOUTFILE
+sed -i 's/.zip/.exe/;s/.*/outFile \"&\"/' installer/$NSISOUTFILE
 
 if [ "$#" -eq 0 ]
 then
@@ -79,7 +79,8 @@ tmpdir=$(mktemp --tmpdir=. -d)
 # These must be integer numbers
 VERSIONMAJOR=$(sed -r '1!d;s/^[^0-9]*([0-9]+).*/\1/' $tmpdir/version.txt)
 VERSIONMINOR=$(sed -r '1!d;s/^[^0-9]*[0-9]+[.]([0-9]+).*/\1/' $tmpdir/version.txt)
-VERSIONMINOR2=$(sed -r '1!d;s/^[^0-9]*[0-9]+[.][0-9]+[_][0-9]+[-]([0-9]+).*/\1/' $tmpdir/version.txt)
+VERSIONMINOR2=$(sed -r '1!d;s/^[^0-9]*[0-9]+[.][0-9]+(_[0-9]+)?-([0-9]+).*/\2/' $tmpdir/version.txt)
+
 # Creates include file for nsis with defines for version
 echo "!define PACKAGEVERSION \"$VERSION\"" > installer/$NSISVERSION
 echo "!define VERSIONMAJOR "$VERSIONMAJOR >> installer/$NSISVERSION

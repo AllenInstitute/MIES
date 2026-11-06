@@ -41,11 +41,11 @@ then
 fi
 
 git_dir=$(git rev-parse --git-dir)
-superproject_version=$(git --git-dir=$git_dir describe --tags --always --match "Release_*")
+superproject_version=$(git --git-dir=$git_dir describe --tags --always --match "Release_*" --match "Development_*")
 submodule_status=$(git --git-dir=$git_dir submodule status)
 date_of_version=$(git --git-dir=$git_dir log -1 --pretty=format:%cI)
 branch_of_version=$(git --git-dir=$git_dir rev-parse --abbrev-ref HEAD)
-output_file=${superproject_version}.zip
+output_file=MIES-${superproject_version}.zip
 
 full_version="${superproject_version}
 Date and time of last commit: ${date_of_version}
@@ -60,8 +60,8 @@ case $OS in
     export zip_exe=zip;;
 esac
 
-echo "Removing old release packages"
-rm -f Release_*zip
+echo "Removing old MIES packages"
+rm -f MIES-*zip
 
 git --git-dir=$git_dir archive -o $output_file HEAD
 
