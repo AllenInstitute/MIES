@@ -767,6 +767,15 @@ Function CheckHelpStringsOfAllAnalysisFunctions()
 	endfor
 End
 
+static Function GetHelpIgnoresRuntimeErrors()
+
+	string help
+
+	help = AFH_GetHelpForAnalysisParameter("RuntimeErrorInHelp", "param")
+	CHECK_NO_RTE()
+	CHECK_EMPTY_STR(help)
+End
+
 /// UTF_TD_GENERATOR DataGenerators#GetAnalysisFunctions
 static Function CheckAbbrevName([string func])
 

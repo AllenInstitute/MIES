@@ -505,6 +505,8 @@ End
 /// @param name     Parameter name
 Function/S AFH_GetHelpForAnalysisParameter(string funcname, string name)
 
+	string help
+
 	FUNCREF AFP_PARAM_HELP_GETTER_V3 func = $(funcname + "_GetHelp")
 
 	if(!FuncRefIsAssigned(FuncRefInfo(func)))
@@ -513,13 +515,14 @@ Function/S AFH_GetHelpForAnalysisParameter(string funcname, string name)
 
 	AssertOnAndClearRTError()
 	try
-		return func(name); AbortOnRTE
+		help = func(name); AbortOnRTE
 	catch
 		ClearRTError()
 		// ignoring errors here
+		help = ""
 	endtry
 
-	return ""
+	return help
 End
 
 /// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters
