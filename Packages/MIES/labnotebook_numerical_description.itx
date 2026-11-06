@@ -1,5 +1,5 @@
 IGOR
-WAVES/T/N=(203,6)	labnotebook_numerical_description
+WAVES/T/N=(204,6)	labnotebook_numerical_description
 BEGIN
 	"Name"	"Unit"	"Tolerance"	"Description"	"Headstage Contingency"	"ClampMode"
 	"SweepNum"	""	"-"	"Sweep number: Non-repeating non-negative numeric identifier for sweep time series. Increments in the order of acquisition. Starts at zero."	"ALL"	""
@@ -204,6 +204,7 @@ BEGIN
 	"RsComp Lag"	"s"	"1e-6"	"Lag time of the series resistance correction of the Sutter amplifier."	"DEPEND"	"VC"
 	"Dynamic Hold Enable"	"On/Off"	"-"	"Dynamic hold of the Sutter amplifier, slowly adjusts the current to keep the membrane potential at the dynamic hold level."	"DEPEND"	"IC"
 	"Dynamic Hold Level"	"mV"	"0.1"	"Membrane potential the dynamic hold of the Sutter amplifier keeps the cell at."	"DEPEND"	"IC"
+	"PostProcessed"	"On/Off"	"-"	"Information added at a later time through a post processing step. (e.g. recreated epoch information)"	"ALL"	""
 END
 X SetScale/P x 0,1,"", labnotebook_numerical_description; SetScale/P y 0,1,"", labnotebook_numerical_description; SetScale d 0,0,"", labnotebook_numerical_description
 X Note labnotebook_numerical_description, "WAVE_LAYOUT_VERSION:2;"

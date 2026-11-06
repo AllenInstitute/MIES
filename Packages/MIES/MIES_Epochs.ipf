@@ -1207,6 +1207,7 @@ static Function EP_AddEpoch(WAVE/T epochWave, variable channel, variable channel
 
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd   = limit(epEnd, -Inf, upperlimit)
+	ASSERT(epBegin >= 0, "Epoch begin must be >= 0")
 
 	i = EP_GetEpochCount(epochWave, channel, channelType)
 	EnsureLargeEnoughWave(epochWave, indexShouldExist = i, dimension = ROWS)
@@ -1787,7 +1788,7 @@ Function EP_GetEpochAmplitude(string epochTag)
 	return NumberByKey(EPOCH_AMPLITUDE_KEY, epochTag, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 End
 
-/// @brief Recreate DA epochs from loaded data. The following must be loaded: LabNotebook, Sweep data of sweepNo, Stimsets used in the sweep
+/// @brief Recreate DA and TTL epochs from loaded data. The following must be loaded: LabNotebook, Sweep data of sweepNo, Stimsets used in the sweep
 ///        User epochs are not recreated !
 ///
 /// @param numericalValues numerical LabNotebook
@@ -1795,7 +1796,7 @@ End
 /// @param sweepDFR        single sweep folder, e.g. for measurement with a device this wold be DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 /// @param sweepNo         sweep number
 /// @returns recreated 4D epoch wave
-static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
+Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/T textualValues, DFREF sweepDFR, variable sweepNo)
 
 	STRUCT DataConfigurationResult s
 	variable channelNr, plannedTime, acquiredTime, adSize, firstUnacquiredIndex
@@ -1811,6 +1812,7 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 
 	WAVE/T recEpochWave = GetEpochsWaveAsFree()
 	EP_CollectEpochInfoDA(recEpochWave, s)
+	EP_CollectEpochInfoTTL(recEpochWave, s)
 	EP_AddRecreatedUserEpochs(numericalValues, textualValues, sweepDFR, sweepNo, s, recEpochWave)
 
 	WAVE/Z channelDA = GetDAQDataSingleColumnWaveNG(numericalValues, textualValues, sweepNo, sweepDFR, XOP_CHANNEL_TYPE_DAC, s.DACList[0])
@@ -1825,6 +1827,12 @@ static Function/WAVE EP_RecreateEpochsFromLoadedData(WAVE numericalValues, WAVE/
 	[plannedTime, acquiredTime] = SWS_DeterminePlannedAndAcquiredTime(channelDA, channelAD, adSize, firstUnacquiredIndex)
 	for(channelNr : s.DACList)
 		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_DAC, s.samplingIntervalDA, acquiredTime, plannedTime)
+	endfor
+	for(channelNr = 0; channelNr < NUM_DA_TTL_CHANNELS; channelNr += 1)
+		if(!s.statusTTLFiltered[channelNr])
+			continue
+		endif
+		EP_AdaptEpochInfoChannelImpl(recEpochWave, channelNr, XOP_CHANNEL_TYPE_TTL, s.samplingIntervalTTL, acquiredTime, plannedTime)
 	endfor
 	EP_SortEpochs(recEpochWave)
 

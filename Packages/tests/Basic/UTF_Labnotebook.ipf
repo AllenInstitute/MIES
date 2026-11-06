@@ -1564,3 +1564,295 @@ Function EmptyLabnotebookWorks()
 	WAVE/Z entries = GetLastSetting(textualValues, 0, "Sweep Number", UNKNOWN_MODE)
 	CHECK_WAVE(entries, NULL_WAVE)
 End
+
+// UTF_TD_GENERATOR DataGenerators#InsertRowForPostProcessingSweepIndexerText
+static Function InsertRowForPostProcessingTextual([variable sweepNo])
+
+	variable sizeBefore, sizeAfter, row, col
+	string str
+
+	variable testHS  = 2
+	string   device  = "dummyDevice"
+	string   keyItem = "Cintamani Stone"
+
+	DFREF         dfr               = root:Labnotebook_misc:
+	WAVE/SDFR=dfr textualValuesSrc  = textualValues
+	WAVE          textualValuesTest = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/T        textualValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, device = device)
+	Duplicate/O/T textualValuesTest, textualValues
+
+	Make/FREE/T/N=(1, 1) keys
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]           = EPOCHS_ENTRY_KEY
+	values[0][0][testHS] = keyItem
+
+	sizeBefore = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	sizeAfter = GetNumberFromWaveNote(textualValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(sizeBefore + 1, sizeAfter)
+
+	WAVE/Z/T settings = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_STR(settings[testHS], keyItem)
+	WAVE/Z/T settings = GetLastSetting(textualValues, sweepNo, POSTPROCESSED_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_STR(settings[INDEP_HEADSTAGE], "1")
+
+	FindValue/TEXT=keyItem/TXOP=(TXOP_WHOLE_ELEM) textualValues
+	CHECK_NEQ_VAR(V_value, -1)
+	row = V_row
+	col = FindDimlabel(textualValues, COLS, POSTPROCESSED_ENTRY_KEY)
+	CHECK_NEQ_VAR(col, -2)
+	str = textualValues[row][col][INDEP_HEADSTAGE]
+	CHECK_EQUAL_STR(str, "1")
+End
+
+// UTF_TD_GENERATOR DataGenerators#InsertRowForPostProcessingSweepIndexerNum
+static Function InsertRowForPostProcessingNumerical([variable sweepNo])
+
+	variable sizeBefore, sizeAfter, row, col, val
+
+	variable testHS   = 2
+	string   device   = "dummyDevice"
+	variable keyValue = 3292385893
+
+	DFREF         dfr                 = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc  = numericalValues
+	WAVE          numericalValuesTest = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          numericalValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	Duplicate/O numericalValuesTest, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]           = "DAC"
+	values[0][0][testHS] = keyValue
+
+	sizeBefore = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	sizeAfter = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(sizeBefore + 1, sizeAfter)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(settings[testHS], keyValue)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, POSTPROCESSED_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], 1)
+
+	FindValue/V=(keyValue) numericalValues
+	CHECK_NEQ_VAR(V_value, -1)
+	row = V_row
+	col = FindDimlabel(numericalValues, COLS, POSTPROCESSED_ENTRY_KEY)
+	CHECK_NEQ_VAR(col, -2)
+	val = numericalValues[row][col][INDEP_HEADSTAGE]
+	CHECK_EQUAL_VAR(val, 1)
+End
+
+static Function InsertRowForPostProcessingTextualUnknownSweep()
+
+	variable sweepNo = 1337
+
+	variable testHS  = 2
+	string   device  = "dummyDevice"
+	string   keyItem = "Cintamani Stone"
+
+	DFREF         dfr               = root:Labnotebook_misc:
+	WAVE/SDFR=dfr textualValuesSrc  = textualValues
+	WAVE          textualValuesTest = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/T        textualValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, device = device)
+	Duplicate/O/T textualValuesTest, textualValues
+
+	Make/FREE/T/N=(1, 1) keys
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]           = EPOCHS_ENTRY_KEY
+	values[0][0][testHS] = keyItem
+
+	try
+		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function InsertRowForPostProcessingNumericalMultiple()
+
+	variable sizeBefore, sizeAfter, sweepNo, index, beforeVal
+
+	variable startSweep = 4
+	variable endSweep   = 15
+
+	variable testHS   = 2
+	string   device   = "dummyDevice"
+	variable keyValue = 3292385893
+
+	DFREF         dfr                 = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc  = numericalValues
+	WAVE          numericalValuesTest = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          numericalValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	Duplicate/O numericalValuesTest, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]           = "DAC"
+	values[0][0][testHS] = keyValue
+
+	[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", endSweep, "DA Gain", 0, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	beforeVal             = setting[index]
+
+	sizeBefore = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	for(sweepNo = startSweep; sweepNo <= endSweep; sweepNo += 1)
+		ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	endfor
+	sizeAfter = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK_EQUAL_VAR(sizeBefore + 1 + endSweep - startSweep, sizeAfter)
+
+	[WAVE setting, index] = GetLastSettingChannel(numericalValues, $"", endSweep, "DA Gain", 0, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(beforeVal, setting[index])
+
+End
+
+static Function CheckLogbookSlice(WAVE slice, WAVE values, variable col)
+
+	variable numRows
+
+	numRows = GetNumberFromWaveNote(values, NOTE_INDEX)
+
+	Make/FREE/D/N=(numRows) ref
+	if(IsTextWave(values))
+		WAVE/T valuesText = values
+		ref[] = str2num(valuesText[p][col])
+	else
+		ref[] = values[p][col]
+	endif
+
+	Duplicate/FREE/R=[0, numRows - 1] slice, sliceUsed
+	CHECK_EQUAL_WAVES(sliceUsed, ref, mode = WAVE_DATA)
+End
+
+static Function InsertRowForPostProcessingKeepsSlicesInSync()
+
+	variable sweepNo
+	string device = "dummyDevice"
+
+	DFREF         dfr                 = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc  = numericalValues
+	WAVE          numericalValuesTest = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          numericalValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	Duplicate/O numericalValuesTest, numericalValues
+
+	WAVE/SDFR=dfr textualValuesSrc  = textualValues
+	WAVE          textualValuesTest = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/T        textualValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, device = device)
+	Duplicate/O/T textualValuesTest, textualValues
+
+	// slices of earlier tests don't belong to the logbooks copied above
+	KillDataFolder/Z $(GetWavesDataFolder(numericalValues, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
+
+	Make/FREE/WAVE logbooks = {numericalValues, textualValues}
+	for(WAVE values : logbooks)
+		ExtractLogbookSliceTimeStamp(values)
+		ExtractLogbookSliceSweep(values)
+	endfor
+
+	Make/FREE/T/N=(1, 1) keys = "DAC"
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) numValues = NaN
+	numValues[0][0][2] = 1
+	for(sweepNo = 4; sweepNo <= 6; sweepNo += 1)
+		ED_AddEntriesToLabnotebook(numValues, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	endfor
+
+	keys = EPOCHS_ENTRY_KEY
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) textValues
+	textValues[0][0][2] = "someEpochs"
+	for(sweepNo = 0; sweepNo <= 1; sweepNo += 1)
+		ED_AddEntriesToLabnotebook(textValues, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+	endfor
+
+	for(WAVE values : logbooks)
+		CheckLogbookSlice(ExtractLogbookSliceTimeStamp(values), values, 1)
+		CheckLogbookSlice(ExtractLogbookSliceSweep(values), values, 0)
+	endfor
+End
+
+static Function WritingNewRowStoresEntrySourceType()
+
+	variable sweepNo, col, row
+	string actual, expected
+	string device = "dummyDevice"
+
+	DFREF         dfr                 = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc  = numericalValues
+	WAVE          numericalValuesTest = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          numericalValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	Duplicate/O numericalValuesTest, numericalValues
+
+	WAVE/SDFR=dfr textualValuesSrc  = textualValues
+	WAVE          textualValuesTest = PrepareLBNTextualValues(textualValuesSrc)
+	WAVE/T        textualValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, device = device)
+	Duplicate/O/T textualValuesTest, textualValues
+
+	sweepNo = 100
+
+	Make/FREE/T/N=(1, 1) keys = "DAC"
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) numValues = NaN
+	numValues[0][0][2] = 1
+	ED_AddEntriesToLabnotebook(numValues, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	row = GetNumberFromWaveNote(numericalValues, NOTE_INDEX) - 1
+	col = FindDimLabel(numericalValues, COLS, "EntrySourceType")
+	CHECK_EQUAL_VAR(numericalValues[row][col][INDEP_HEADSTAGE], DATA_ACQUISITION_MODE)
+
+	keys = EPOCHS_ENTRY_KEY
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) textValues
+	textValues[0][0][2] = "someEpochs"
+	ED_AddEntriesToLabnotebook(textValues, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	row      = GetNumberFromWaveNote(textualValues, NOTE_INDEX) - 1
+	col      = FindDimLabel(textualValues, COLS, "EntrySourceType")
+	actual   = textualValues[row][col][INDEP_HEADSTAGE]
+	expected = num2istr(DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+static Function InsertRowForPostProcessingKeepsEntrySourceTypeOfBlock()
+
+	variable beforeVal, row, entrySourceTypeCol
+	string device = "dummyDevice"
+
+	variable sweepNo  = 10
+	variable testHS   = 2
+	variable keyValue = 3292385893
+
+	DFREF         dfr                 = root:Labnotebook_misc:
+	WAVE/SDFR=dfr numericalValuesSrc  = numericalValues
+	WAVE          numericalValuesTest = PrepareLBNNumericalValues(numericalValuesSrc)
+	WAVE          numericalValues     = GetLogbookWaves(LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, device = device)
+	Duplicate/O numericalValuesTest, numericalValues
+
+	// as for a sweep acquired before the labnotebook had entry source types, while the other sweeps have them
+	entrySourceTypeCol                      = FindDimLabel(numericalValues, COLS, "EntrySourceType")
+	numericalValues[][entrySourceTypeCol][] = (numericalValues[p][0][0] == sweepNo) ? NaN : numericalValues[p][entrySourceTypeCol][r]
+
+	WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(setting, NUMERIC_WAVE)
+	beforeVal = setting[0]
+
+	Make/FREE/T/N=(1, 1) keys = "Autobias Vcom"
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0][0][testHS] = keyValue
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+
+	FindValue/V=(keyValue) numericalValues
+	CHECK_NEQ_VAR(V_value, -1)
+	row = V_row
+	CHECK_EQUAL_VAR(numericalValues[row][entrySourceTypeCol][INDEP_HEADSTAGE], NaN)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Autobias Vcom", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(settings[testHS], keyValue)
+
+	// the entries of the sweep from before the insertion are still found
+	WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, "DA Gain", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(setting, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(setting[0], beforeVal)
+End

@@ -162,6 +162,48 @@ Function/WAVE ExtractLogbookSliceEmpty(WAVE values)
 	return wv
 End
 
+/// @brief Insert a row of the labnotebook/results values wave into its existing slices
+///
+/// Inserting a row into the logbook shifts all following rows, so the slices, see ExtractLogbookSlice(), must get
+/// the row inserted as well.
+///
+/// @param values labnotebook/results values wave, with the row already inserted and initialized
+/// @param row    inserted row
+Function InsertRowIntoLogbookSlices(WAVE values, variable row)
+
+	variable i, numSlices
+	string suffix
+
+	DFREF dfr = $(GetWavesDataFolder(values, 1) + LOGBOOK_WAVE_TEMP_FOLDER)
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
+
+	// suffix and column of the slices, see ExtractLogbookSliceTimeStamp(), ExtractLogbookSliceSweep() and ExtractLogbookSliceEmpty()
+	Make/FREE/T suffixes = {"Dat", "Sweep", "Null"}
+	Make/FREE/D columns = {1, 0, NaN}
+
+	numSlices = DimSize(suffixes, ROWS)
+	for(i = 0; i < numSlices; i += 1)
+		suffix = suffixes[i]
+		WAVE/Z/SDFR=dfr slice = $(NameOfWave(values) + suffix)
+		if(!WaveExists(slice) || row >= DimSize(slice, ROWS))
+			continue
+		endif
+
+		InsertPoints/M=(ROWS) row, 1, slice
+
+		if(IsNaN(columns[i]))
+			slice[row] = 0
+		elseif(IsTextWave(values))
+			WAVE/T valuesText = values
+			slice[row] = str2num(valuesText[row][columns[i]])
+		else
+			slice[row] = values[row][columns[i]]
+		endif
+	endfor
+End
+
 /// @brief Extract a single column/layer of the labnotebook/TPStorage values wave
 ///
 /// This is useful if you want to plot values against e.g time and let
@@ -1291,7 +1333,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-threadsafe static Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
+threadsafe Function FindRange(WAVE wv, variable col, variable val, variable entrySourceType, variable &first, variable &last)
 
 	variable numRows, i, j, sourceTypeCol, firstRow, lastRow, isNumeric, index, startRow, endRow
 
@@ -2017,25 +2059,102 @@ Function InvalidateLBIndexAndRowCaches()
 	endfor
 
 	Make/FREE/WAVE valuesWave = {GetNumericalResultsValues(), GetTextualResultsValues()}
-	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+
+	for(WAVE values : valuesWave)
+		InvalidateLBIndexAndRowCache(values)
+	endfor
 End
 
 Function InvalidateLBIndexAndRowCachesForDevice(string device)
 
 	Make/FREE/WAVE valuesWave = {GetLBNumericalValues(device), GetLBTextualValues(device)}
 
-	InvalidateLBIndexAndRowCaches_Impl(valuesWave)
+	for(WAVE values : valuesWave)
+		InvalidateLBIndexAndRowCache(values)
+	endfor
 End
 
-static Function InvalidateLBIndexAndRowCaches_Impl(WAVE/WAVE valuesWave)
+Function InvalidateLBIndexAndRowCache(WAVE values)
 
 	string key
 
-	for(WAVE values : valuesWave)
-		Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
+	Make/FREE/T keys = {CA_CreateLBIndexCacheKey(values), CA_CreateLBRowCacheKey(values)}
 
-		for(key : keys)
-			CA_DeleteCacheEntry(key)
+	for(key : keys)
+		CA_DeleteCacheEntry(key)
+	endfor
+End
+
+/// @brief Recreate the epochs of a sweep from the loaded data and insert them into the labnotebook
+///
+/// The epochs and the current epoch version are inserted as post-processed entries after the
+/// DATA_ACQUISITION_MODE block of the sweep, see ED_AddEntriesToLabnotebook(). The labnotebook is changed in place.
+///
+/// @param numericalValues numerical labnotebook
+/// @param textualValues   textual labnotebook
+/// @param device          device
+/// @param sweepNo         sweep number
+Function InsertRecreatedEpochsIntoLBN(WAVE numericalValues, WAVE/T textualValues, string device, variable sweepNo)
+
+	string epochList
+	variable channelNumber, channelType, headstage, numChannelTypes, colCount, allocatedCols
+	variable assocCol = NaN
+
+	DFREF  deviceDFR = GetDeviceDataPath(device)
+	DFREF  sweepDFR  = GetSingleSweepFolder(deviceDFR, sweepNo)
+	WAVE/T recEpochs = EP_RecreateEpochsFromLoadedData(numericalValues, textualValues, sweepDFR, sweepNo)
+
+	Make/FREE/D channelTypes = {XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_TYPE_TTL}
+
+	numChannelTypes = DimSize(channelTypes, ROWS)
+	allocatedCols   = numChannelTypes * NUM_DA_TTL_CHANNELS
+	Make/FREE/T/N=(1, allocatedCols) keys
+	Make/FREE/T/N=(1, allocatedCols, LABNOTEBOOK_LAYER_COUNT) values
+
+	for(channelType : channelTypes)
+		for(channelNumber = 0; channelNumber < NUM_DA_TTL_CHANNELS; channelNumber += 1)
+
+			epochList = EP_EpochWaveToStr(recEpochs, channelNumber, channelType)
+			if(IsEmpty(epochList))
+				continue
+			endif
+
+			if(channelType == XOP_CHANNEL_TYPE_TTL)
+				keys[0][colCount]                    = CreateTTLChannelLBNKey(EPOCHS_ENTRY_KEY, channelNumber)
+				values[0][colCount][INDEP_HEADSTAGE] = epochList
+				colCount                            += 1
+				continue
+			endif
+
+			headstage = GetHeadstageForChannel(numericalValues, sweepNo, channelType, channelNumber, DATA_ACQUISITION_MODE)
+			if(IsAssociatedChannel(headstage))
+				if(IsNaN(assocCol))
+					assocCol          = colCount
+					colCount         += 1
+					keys[0][assocCol] = EPOCHS_ENTRY_KEY
+				endif
+				values[0][assocCol][headstage] = epochList
+				continue
+			endif
+
+			values[0][colCount][INDEP_HEADSTAGE] = epochList
+			keys[0][colCount]                    = CreateLBNUnassocKey(EPOCHS_ENTRY_KEY, channelNumber, channelType)
+			colCount                            += 1
 		endfor
 	endfor
+	if(!colCount)
+		// No Epochs could be recreated for any channel
+		return NaN
+	endif
+
+	Redimension/N=(-1, colCount) keys
+	Redimension/N=(-1, colCount, -1) values
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
+
+	Redimension/N=(-1, 1) keys
+	keys[0][0] = SWEEP_EPOCH_VERSION_ENTRY_KEY
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum
+	FastOp valuesNum = (NaN)
+	valuesNum[0][0][INDEP_HEADSTAGE] = SWEEP_EPOCH_VERSION
+	ED_AddEntriesToLabnotebook(valuesNum, keys, sweepNo, device, DATA_ACQUISITION_MODE, insertAsPostProc = 1)
 End
