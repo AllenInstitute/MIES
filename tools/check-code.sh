@@ -156,11 +156,18 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts '^[[:space:]]*[^\/].*;$' '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
+# 1: semicolon at the end of the line
+# 2: semicolon before a trailing comment, semicolons in string literals are ignored
+# 3: respects NOLINT
+matches=$(git grep $opts                                                                                              \
+          \( -e '^[[:space:]]*[^\/].*;$'                                                                              \
+          --or -e '^[[:space:]]*+(?!//)(?:[^";/]++|"(?:[^"\x5c]++|\x5c.)*+"|/(?!/)|;(?![[:space:]]*+//))*+;[[:space:]]*+//' \) \
+          --and --not -e '//[[:space:]]*NOLINT$'                                                                      \
+          '**/MIES_*.ipf' '**/UTF*.ipf' ':^*/MIES_Pictures.ipf')
 
 if [[ -n "$matches" ]]
 then
-  echo "The trailing semicolon check failed and found the following occurences:"
+  echo "The trailing semicolon check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
   ret=1
 fi
@@ -198,6 +205,26 @@ if [[ -n "$matches" ]]
 then
   echo "The DateTime check failed and found the following occurences (use \`// NOLINT\` to suppress if appropriate):"
   echo "$matches"
+  ret=1
+fi
+
+# statements after return on the same line are never executed, e.g. AbortOnRTE does not catch a pending runtime error
+# return can also follow other statements on the same line
+# semicolons in string literals and comments are ignored
+statement='(?:[^";/]++|"(?:[^"\x5c]++|\x5c.)*+"|/(?!/))*+'
+matches=$(git grep $opts "^[[:space:]]*+(?:(?!return\b)${statement};[[:space:]]*+)*+return\b${statement};[[:space:]]*+[^[:space:]/]" '*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The statement after return check failed and found the following occurences (statements after return on the same line are dead code):"
+  echo "$matches"
+
+  if echo "$matches" | grep --quiet --ignore-case '\bAbortOnRTE\b'
+  then
+    echo "AbortOnRTE after return is never executed, so a runtime error of the returned expression is not caught."
+    echo "Assign the result to a variable inside try and return it after endtry instead."
+  fi
+
   ret=1
 fi
 

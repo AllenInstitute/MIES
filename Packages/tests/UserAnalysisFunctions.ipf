@@ -1165,3 +1165,10 @@ Function FailPostDAQ(string device, STRUCT AnalysisFunction_V3 &s)
 		// do nothing
 	endswitch
 End
+
+Function/S RuntimeErrorInHelp_GetHelp(string name)
+
+	WAVE/Z wv = $""
+
+	return num2str(wv[0])
+End
