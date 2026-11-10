@@ -12,6 +12,7 @@
 static Constant DEFAULT_POINTS_PER_THREAD             = 4096
 static Constant FINDINDIZES_NUMERIC_POINTS_PER_THREAD = 1024
 static Constant FINDINDIZES_STRING_COPIES_MIN_THREADS = 5
+static Constant FINDINDIZES_IP9_NUM2STR_MAX_THREADS   = 4
 
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
@@ -595,6 +596,13 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 	else
 		numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective}, pointsPerThread = pointsPerThread)
 	endif
+
+#if IgorVersion() < 10
+	// converting numbers to strings serializes the threads in Igor Pro 9, more than a few make the search slower
+	if(WaveExists(wv) && (prop & (PROP_GREP | PROP_WILDCARD)))
+		numThreads = min(numThreads, FINDINDIZES_IP9_NUM2STR_MAX_THREADS)
+	endif
+#endif
 
 	// Threads reading the same string slow each other down, so from a few threads on each one mostly reads its own copy.
 	// Assigning a string to text wave elements shares it, only concatenating creates a new string for each element.
