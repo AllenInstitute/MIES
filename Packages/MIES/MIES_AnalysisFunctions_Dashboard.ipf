@@ -44,8 +44,7 @@ End
 /// @brief Update the dashboards of the given sweepbrowser/databrowser
 Function AD_Update(string win)
 
-	string mainPanel
-	variable numEntries, refTime
+	variable refTime
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -53,33 +52,55 @@ Function AD_Update(string win)
 
 	refTime = DEBUG_TIMER_START()
 
-	mainPanel = BSP_GetPanel(win)
+	AD_UpdateData(win)
+	AD_UpdateGUI(win)
+
+	DEBUGPRINT_ELAPSED(refTime)
+End
+
+/// @brief Fill the list, info and help waves of the dashboard
+static Function AD_UpdateData(string win)
+
+	variable numEntries
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
-	WAVE/T helpWave  = GetAnaFuncDashboardHelpWave(dfr)
-	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
-	WAVE   selWave   = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
-	WAVE/T infoWave  = GetAnaFuncDashboardInfoWave(dfr)
+	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
+	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 
-	if(BSP_IsActive(mainPanel, MIES_BSP_DS))
+	if(BSP_IsActive(BSP_GetPanel(win), MIES_BSP_DS))
 		numEntries = AD_FillWaves(win, listWave, infoWave)
 	endif
 
-	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
+	Redimension/N=(numEntries, -1) listWave, infoWave, helpWave
+
+	if(numEntries > 0)
+		helpWave[] = "Result:\r" + listWave[p][%Result]
+	else
+		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
+	endif
+End
+
+/// @brief Adapt the selection wave and the listbox of the given browser to the dashboard data
+static Function AD_UpdateGUI(string win)
+
+	variable numEntries
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE   selWave   = GetAnaFuncDashboardselWave(dfr)
+	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
+
+	numEntries = DimSize(listWave, ROWS)
+	Redimension/N=(numEntries, -1, -1) selWave
 
 	if(numEntries > 0)
 		selWave[][][%$LISTBOX_LAYER_FOREGROUND] = AD_GetColorForResultMessage(listWave[p][%Result])
 
-		helpWave[] = "Result:\r" + listWave[p][%Result]
-
-		ScrollListboxIntoView(mainPanel, "list_dashboard", Inf)
-	else
-		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
+		ScrollListboxIntoView(BSP_GetPanel(win), "list_dashboard", Inf)
 	endif
-
-	DEBUGPRINT_ELAPSED(refTime)
 End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
