@@ -11,6 +11,7 @@
 
 static Constant DEFAULT_POINTS_PER_THREAD             = 4096
 static Constant FINDINDIZES_NUMERIC_POINTS_PER_THREAD = 1024
+static Constant FINDINDIZES_STRING_COPIES_MIN_THREADS = 5
 
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
@@ -457,7 +458,7 @@ End
 /// value could not be found.
 threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, string colLabel, variable var, string str, variable prop, variable startRow, variable endRow, variable startLayer, variable endLayer])
 
-	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch, pointsPerThread
+	variable numCols, numRows, numLayers, maskedProp, numThreads, numRowsEffective, numLayersEffective, noMatch, pointsPerThread, numCopies
 
 	ASSERT_TS((ParamIsDefault(prop) && (ParamIsDefault(var) + ParamIsDefault(str)) == 1)                  \
 	          || ((prop & PROP_EMPTY) && (ParamIsDefault(var) + ParamIsDefault(str)) == 2)                \
@@ -595,6 +596,13 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 		numThreads = GetNumberOfUsefulThreads({numRowsEffective, numLayersEffective}, pointsPerThread = pointsPerThread)
 	endif
 
+	// Threads reading the same string slow each other down, so from a few threads on each one mostly reads its own copy.
+	// Assigning a string to text wave elements shares it, only concatenating creates a new string for each element.
+	if(numThreads >= FINDINDIZES_STRING_COPIES_MIN_THREADS && WaveExists(wvText) && !maskedProp)
+		numCopies = numThreads
+		Make/FREE/T/N=(numCopies) strCopies = str + ""
+	endif
+
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
 			if(prop & PROP_EMPTY)
@@ -655,8 +663,14 @@ threadsafe Function/WAVE FindIndizes(WAVE numericOrTextWave, [variable col, stri
 					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = StringMatch(wvText[p][col][q], str) ? p : noMatch
 				endif
 			elseif(prop & PROP_NOT)
-				MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : noMatch
+				if(numCopies)
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], strCopies[mod(p, numCopies)]) ? p : noMatch
+				else
+					MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = CmpStr(wvText[p][col][q], str) ? p : noMatch
+				endif
 			endif
+		elseif(numCopies)
+			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], strCopies[mod(p, numCopies)]) ? p : noMatch
 		else
 			MultiThread/NT=(numThreads) matches[startRow, endRow][startLayer, endLayer] = !CmpStr(wvText[p][col][q], str) ? p : noMatch
 		endif
