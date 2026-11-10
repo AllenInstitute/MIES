@@ -450,6 +450,15 @@ static Function/WAVE InfiniteValues()
 	return wv
 End
 
+static Function/WAVE FindIndizesStringProps()
+
+	Make/FREE wv = {0, PROP_NOT, PROP_GREP, PROP_GREP | PROP_NOT, PROP_WILDCARD, PROP_WILDCARD | PROP_NOT}
+
+	SetDimensionLabels(wv, "Equal;NotEqual;Grep;NotGrep;Wildcard;NotWildcard", ROWS)
+
+	return wv
+End
+
 static Function/WAVE RoundTripStimsetFileType()
 
 	Make/FREE/T wv = {"nwb", "pxp"}
