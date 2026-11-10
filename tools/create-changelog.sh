@@ -30,6 +30,7 @@ git_dir=$(git rev-parse --git-dir)
 # %w(0,0,10): rewraps next placeholder with 10 indentation
 # %b: body (+ means prefix with newline if not empty)
 fmt="(%h) %<(80,trunc)%s%w(0,0,10)%+b"
+# don't consider the Development tag here as want to get the changelog versus the old released version
 old_tag=$(git describe --tags --abbrev=0 --match "Release_*")
 
 git --git-dir=$git_dir log --submodule=diff --no-merges --pretty="$fmt" $old_tag..HEAD > changelog.txt

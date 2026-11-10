@@ -40,8 +40,8 @@ fi
 
 cd $top_level
 
-zipfile=$(ls Release_*.zip)
-installerfile=$(find -name "MIES-Release*.exe")
+zipfile=$(ls MIES-*.zip)
+installerfile=$(find -name "MIES-*.exe")
 
 if [ ! -f $zipfile ]
 then
