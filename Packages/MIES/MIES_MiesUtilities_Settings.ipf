@@ -47,7 +47,8 @@
 /// - "logfiles/last upload": ISO8601 timestamp when the last successfull
 ///                              upload of log files was tried. This is also set
 ///                              when no log files have been uploadad.
-/// - "/<group>/<name>/coordinates": window coordinates
+/// - "<group>/<name>/coordinates": window coordinates
+/// - "lims/credentials/<name>/<value>": Credentials for accessing LIMS
 ///
 /// @return JSONid
 ///
@@ -223,4 +224,67 @@ Function SetUserPingTimestamp(variable timeStamp)
 	isoTS = GetISO8601TimeStamp(secondsSinceIgorEpoch = timeStamp)
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_SetString(JSONid, "/" + PACKAGE_SETTINGS_USERPING + "/last upload", isoTS)
+End
+
+/// @brief Store the LIMS credentials in the packages settings
+Function StoreLIMSCredentials(WAVE/T credentials)
+
+	string key, value, path
+	variable idx
+
+	// pass TXOP_CASE_SENSE as there is no better default
+	ASSERT(IsNaN(GetRowIndex(credentials, str = "\"", textOp = TXOP_CASE_SENSE)), "Can not handle quotes (\") in the credential")
+	ASSERT(IsNaN(GetRowIndex(credentials, str = " ", textOp = TXOP_CASE_SENSE)), "Can not handle spaces ( ) in the credential")
+
+	NVAR JSONid = $GetSettingsJSONid()
+
+	// validate before starting to write
+	// to avoid partially valid entries
+	for(value : credentials)
+		ASSERT(!IsEmpty(value), "value can not be empty")
+
+		key = GetDimLabel(credentials, ROWS, idx++)
+		ASSERT(!IsEmpty(key), "key can not be empty")
+	endfor
+
+	if(!JSON_Exists(JSONid, "/lims/credentials"))
+		JSON_AddTreeObject(JSONid, "/lims/credentials")
+	endif
+
+	idx = 0
+	for(value : credentials)
+		key   = GetDimLabel(credentials, ROWS, idx++)
+		path  = "/lims/credentials/" + key
+		value = Base64Encode(value)
+		JSON_SetString(JSONid, path, value)
+	endfor
+End
+
+/// @brief Query the LIMS credentials from the package settings
+///
+/// The format of the returned text wave is that the JSON object keys are the
+/// dimension labels and their values are the wave contents.
+///
+/// @return free wave on success, null wave ref on error
+Function/WAVE QueryLIMSCredentials()
+
+	string key, value
+
+	NVAR JSONid = $GetSettingsJSONid()
+
+	if(!JSON_Exists(JSONid, "/lims/credentials"))
+		return $""
+	endif
+
+	WAVE/T keys = JSON_GetKeys(JSONid, "/lims/credentials")
+
+	SetDimensionLabelsFromWaveContents(keys)
+	Duplicate/T/FREE keys, credentials
+
+	for(key : keys)
+		value              = Base64Decode(JSON_GetString(JSONid, "/lims/credentials/" + key))
+		credentials[%$key] = value
+	endfor
+
+	return credentials
 End
