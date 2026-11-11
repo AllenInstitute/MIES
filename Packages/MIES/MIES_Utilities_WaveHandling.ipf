@@ -1449,7 +1449,7 @@ threadsafe Function/WAVE FindNeighbourWithPredicate(WAVE wv, FUNCREF FindNeighbo
 		return $""
 	endif
 
-	WAVE indizesClean = ZapNaNs(indizes)
+	WAVE indizesClean = ZapNaNs(indizes, dontDuplicate = 1)
 
 	return indizesClean
 End

@@ -81,7 +81,7 @@ static Function DCR_RecreateDataConfigurationResultFromLNB_TTL(STRUCT DataConfig
 		WAVE   TTLList   = ListToNumericWave(settingsT[indep_hs_text], ";")
 		ASSERT(DimSize(TTLList, ROWS) == NUM_DA_TTL_CHANNELS, "Unexpected number of TTL channels from LNB.")
 		s.statusTTLFiltered[] = !IsNaN(TTLList[p])
-		WAVE/Z s.TTLList = ZapNaNs(TTLList)
+		WAVE/Z s.TTLList = ZapNaNs(TTLList, dontDuplicate = 1)
 		if(WaveExists(s.TTLList))
 			s.numTTLEntries = DimSize(s.TTLList, ROWS)
 		else
@@ -315,7 +315,7 @@ static Function DCR_FindStimsetOffset(STRUCT DataConfigurationResult &s, WAVE nu
 
 	Make/FREE/N=(s.numDACEntries) offsets
 	offsets[] = DCR_FindStimsetOffsetForChannel(s, numericalValues, textualValues, sweepDFR, sweepNo, p)
-	WAVE/Z zappedOffsets = ZapNaNs(offsets)
+	WAVE/Z zappedOffsets = ZapNaNs(offsets, dontDuplicate = 1)
 	if(!WaveExists(zappedOffsets))
 		return NaN
 	endif
