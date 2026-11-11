@@ -861,6 +861,80 @@ Function FI_AbortsWithInvalidRegExp()
 		PASS()
 	endtry
 End
+
+/// UTF_TD_GENERATOR DataGenerators#FindIndizesStringProps
+static Function FI_TextSearchMultiThreaded([variable var])
+
+	variable numRows, invert
+	string str
+
+	numRows = 100000
+	CHECK_GT_VAR(GetNumberOfUsefulThreads({numRows}), 1)
+
+	invert = !!(var & PROP_NOT)
+	if(var & PROP_GREP)
+		str = "3$"
+	elseif(var & PROP_WILDCARD)
+		str = "*3"
+	else
+		str = "abc3"
+	endif
+
+	Make/FREE/T/N=(numRows, 2, 2) text = "abc" + num2istr(mod(p + r, 7))
+
+	if(var)
+		WAVE/Z indizes       = FindIndizes(text, str = str, prop = var)
+		WAVE/Z indizesLayers = FindIndizes(text, str = str, prop = var, startRow = 10, endLayer = 1)
+	else
+		WAVE/Z indizes       = FindIndizes(text, str = str)
+		WAVE/Z indizesLayers = FindIndizes(text, str = str, startRow = 10, endLayer = 1)
+	endif
+
+	Make/FREE/D/N=(numRows) ref = ((mod(p, 7) == 3) != invert) ? p : NaN
+	WaveTransform/O zapNaNs, ref
+	CHECK_EQUAL_WAVES(indizes, ref, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numRows) refLayers = (p >= 10 && (((mod(p, 7) == 3) != invert) || ((mod(p + 1, 7) == 3) != invert))) ? p : NaN
+	WaveTransform/O zapNaNs, refLayers
+	CHECK_EQUAL_WAVES(indizesLayers, refLayers, mode = WAVE_DATA)
+End
+
+/// UTF_TD_GENERATOR DataGenerators#FindIndizesStringProps
+static Function FI_NumSearchMultiThreaded([variable var])
+
+	variable numRows, invert
+	string str
+
+	numRows = 100000
+	CHECK_GT_VAR(GetNumberOfUsefulThreads({numRows}), 1)
+
+	invert = !!(var & PROP_NOT)
+	if(var & PROP_GREP)
+		str = "^3\\."
+	elseif(var & PROP_WILDCARD)
+		str = "3.*"
+	else
+		str = "3"
+	endif
+
+	Make/FREE/D/N=(numRows, 2, 2) numeric = mod(p + r, 7)
+
+	if(var)
+		WAVE/Z indizes       = FindIndizes(numeric, str = str, prop = var)
+		WAVE/Z indizesLayers = FindIndizes(numeric, str = str, prop = var, startRow = 10, endLayer = 1)
+	else
+		WAVE/Z indizes       = FindIndizes(numeric, str = str)
+		WAVE/Z indizesLayers = FindIndizes(numeric, str = str, startRow = 10, endLayer = 1)
+	endif
+
+	Make/FREE/D/N=(numRows) ref = ((mod(p, 7) == 3) != invert) ? p : NaN
+	WaveTransform/O zapNaNs, ref
+	CHECK_EQUAL_WAVES(indizes, ref, mode = WAVE_DATA)
+
+	Make/FREE/D/N=(numRows) refLayers = (p >= 10 && (((mod(p, 7) == 3) != invert) || ((mod(p + 1, 7) == 3) != invert))) ? p : NaN
+	WaveTransform/O zapNaNs, refLayers
+	CHECK_EQUAL_WAVES(indizesLayers, refLayers, mode = WAVE_DATA)
+End
 /// @}
 
 /// GetNumberOfUsefulThreads
