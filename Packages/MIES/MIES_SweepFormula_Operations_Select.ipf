@@ -1025,9 +1025,9 @@ static Function/WAVE SFOS_GetSelectDataWithRACorSCIIndex(string graph, WAVE sele
 		return $""
 	endif
 	Redimension/N=(outIndex, -1) selectData
-	WAVE cycleIdsZapped = ZapNaNs(cycleIds)
+	WAVE cycleIdsZapped = ZapNaNs(cycleIds, dontDuplicate = 1)
 	if(mode == SELECTDATA_MODE_SCI)
-		WAVE headStagesZapped = ZapNaNs(headStages)
+		WAVE headStagesZapped = ZapNaNs(headStages, dontDuplicate = 1)
 	endif
 
 	switch(mode)

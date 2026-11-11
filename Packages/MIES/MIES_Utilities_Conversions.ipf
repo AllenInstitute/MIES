@@ -646,7 +646,7 @@ Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable doZapNaNs, variable doS
 	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2numSafe(unique[p])
 
 	if(doZapNaNs)
-		WAVE/Z numericReduced = ZapNaNs(numeric)
+		WAVE/Z numericReduced = ZapNaNs(numeric, dontDuplicate = 1)
 
 		if(!WaveExists(numericReduced))
 			return $""

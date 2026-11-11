@@ -379,8 +379,8 @@ static Function AD_FillWaves(string win, WAVE/T list, WAVE/T info)
 					passingSweepsAll[] = sweepPass[p] ? sweeps[p] : NaN
 					failingSweepsAll[] = !sweepPass[p] ? sweeps[p] : NaN
 
-					WAVE/Z passingSweeps = ZapNaNs(passingSweepsAll)
-					WAVE/Z failingSweeps = ZapNaNs(failingSweepsAll)
+					WAVE/Z passingSweeps = ZapNaNs(passingSweepsAll, dontDuplicate = 1)
+					WAVE/Z failingSweeps = ZapNaNs(failingSweepsAll, dontDuplicate = 1)
 
 					break
 				case PSQ_RHEOBASE:

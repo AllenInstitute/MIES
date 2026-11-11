@@ -1493,7 +1493,7 @@ threadsafe Function/WAVE GetUniqueSettings(WAVE values, string setting)
 
 		WAVE dataUnique = GetUniqueEntries(data)
 
-		return ZapNaNs(dataUnique)
+		return ZapNaNs(dataUnique, dontDuplicate = 1)
 	elseif(IsTextWave(values))
 		Make/T/FREE/N=(numMatches, LABNOTEBOOK_LAYER_COUNT) dataTxt
 

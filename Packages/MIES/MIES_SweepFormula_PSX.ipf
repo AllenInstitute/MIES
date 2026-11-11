@@ -793,7 +793,7 @@ static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 	idx = FindDimLabel(psxEvent, COLS, "weightedTau")
 	Duplicate/FREE/RMD=[][idx] psxEvent, tauWithNaN
 
-	WAVE/Z taus = ZapNaNs(tauWithNaN)
+	WAVE/Z taus = ZapNaNs(tauWithNaN, dontDuplicate = 1)
 
 	if(!WaveExists(taus))
 		return PSX_DEFAULT_X_START_OFFSET
@@ -2509,7 +2509,7 @@ Function PSX_FilterFitAverageParameters(WAVE input, WAVE newState, variable stat
 
 	Make/FREE/N=(numEvents) result = (newState[p] & state) ? input[p] : NaN
 
-	WAVE/Z resultClean = ZapNaNs(result)
+	WAVE/Z resultClean = ZapNaNs(result, dontDuplicate = 1)
 	if(WaveExists(resultClean))
 		return mean(resultClean)
 	endif
@@ -5780,7 +5780,7 @@ Function PSX_MouseEventSelection(variable newState, variable stateType)
 			Redimension/S matches
 			matches[] = (IsFinite(offFiltMatch[p]) || IsFinite(offFiltDeconvMatch[p])) ? matches[p] : NaN
 
-			WAVE/Z matchesClean = ZapNaNs(matches)
+			WAVE/Z matchesClean = ZapNaNs(matches, dontDuplicate = 1)
 
 			if(!WaveExists(matchesClean))
 				return NaN
@@ -5884,7 +5884,7 @@ static Function/WAVE PSX_GetEventsInsideMarqueeForStatsPlot(string win, variable
 		Redimension/S matches
 		matches[] = IsFinite(yAxisMatch[p]) ? matches[p] : NaN
 
-		WAVE/Z matchesClean = ZapNaNs(matches)
+		WAVE/Z matchesClean = ZapNaNs(matches, dontDuplicate = 1)
 
 		if(!WaveExists(matchesClean))
 			continue
