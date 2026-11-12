@@ -188,6 +188,12 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
+// number of points before the end of the previous spike search where the next one starts, more than the box smoothing
+static Constant PSQ_SPIKE_SEARCH_OVERLAP = 5
+
+// minimum number of points of a spike search range, FindLevels with box smoothing needs three, one more for the rounding of the range
+static Constant PSQ_SPIKE_SEARCH_MIN_POINTS = 4
+
 static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
 static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 10
 static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
@@ -1402,6 +1408,117 @@ static Function PSQ_StoreStepSizeInLBN(string device, variable type, variable sw
 	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = sweepNo)
 End
 
+/// @brief Return a channel of the scaled data of the running sweep without copying it
+static Function/WAVE PSQ_GetChannelOfScaledData(string device, WAVE/WAVE scaledData, WAVE config, variable headstage, variable channelType)
+
+	variable channelNum, col
+
+	if(channelType == XOP_CHANNEL_TYPE_DAC)
+		channelNum = AFH_GetDACFromHeadstage(device, headstage)
+	else
+		channelNum = AFH_GetADCFromHeadstage(device, headstage)
+	endif
+
+	col = AFH_GetDAQDataColumn(config, channelNum, channelType)
+	ASSERT(IsFinite(col), "Invalid headstage and/or channel type")
+
+	return scaledData[col]
+End
+
+/// @brief Reset the spike search state of the headstage
+static Function PSQ_ResetSpikeSearchState(WAVE state, WAVE positions, variable headstage)
+
+	state[headstage][]     = NaN
+	positions[][headstage] = NaN
+End
+
+/// @brief Reset the spike search state of the headstage if it belongs to another search
+static Function PSQ_PrepareSpikeSearchState(WAVE state, WAVE positions, variable headstage, variable sweepNo, variable type, variable offset, variable level, variable numberOfSpikesReq)
+
+	if(state[headstage][%SweepNo] == sweepNo && state[headstage][%Type] == type && state[headstage][%Offset] == offset \
+	   && state[headstage][%Level] == level && state[headstage][%NumberOfSpikesReq] == numberOfSpikesReq)
+		return NaN
+	endif
+
+	PSQ_ResetSpikeSearchState(state, positions, headstage)
+
+	state[headstage][%SweepNo]             = sweepNo
+	state[headstage][%Type]                = type
+	state[headstage][%Offset]              = offset
+	state[headstage][%Level]               = level
+	state[headstage][%NumberOfSpikesReq]   = numberOfSpikesReq
+	state[headstage][%NumberOfSpikesFound] = 0
+End
+
+/// @brief Search the AD data for spikes, continuing the search of the previous call
+///
+/// The search starts PSQ_SPIKE_SEARCH_OVERLAP points before the end of the previous search, as the box smoothing
+/// needs the points around a crossing, and ends one point before the end of the acquired data, as the box smoothing
+/// of the last acquired point needs the next point. The spikes found before are kept, so that the result is the same
+/// as for one search over all data.
+///
+/// @param singleAD          AD data
+/// @param state             spike search state, see GetAnalysisFuncSpikeSearchState()
+/// @param positions         spike positions, see GetAnalysisFuncSpikeSearchPositions()
+/// @param headstage         headstage
+/// @param first             start of the search range in ms
+/// @param last              end of the search range in ms
+/// @param acquiredEnd       position in ms of the last acquired point
+/// @param level             level of the spike search
+/// @param numberOfSpikesReq number of spikes to look for, Inf for all
+///
+/// @returns number of spikes found
+static Function PSQ_SearchForSpikesIncrementally(WAVE singleAD, WAVE state, WAVE positions, variable headstage, variable first, variable last, variable acquiredEnd, variable level, variable numberOfSpikesReq)
+
+	variable start, searchEnd, numFound, i
+
+	numFound = state[headstage][%NumberOfSpikesFound]
+	if(numFound >= numberOfSpikesReq)
+		return numFound
+	endif
+
+	if(IsNaN(state[headstage][%SearchedUntil]))
+		start = first
+	else
+		start = max(first, state[headstage][%SearchedUntil] - (PSQ_SPIKE_SEARCH_OVERLAP * DimDelta(singleAD, ROWS)))
+	endif
+
+	searchEnd = min(last, acquiredEnd - DimDelta(singleAD, ROWS))
+
+	// nothing new acquired or too few points, the search would error out
+	if(searchEnd <= state[headstage][%SearchedUntil] || (searchEnd - start) < (PSQ_SPIKE_SEARCH_MIN_POINTS * DimDelta(singleAD, ROWS)))
+		return numFound
+	endif
+
+	if(numberOfSpikesReq == 1)
+		FindLevel/Q/R=(start, searchEnd)/B=3 singleAD, level
+		if(!V_flag)
+			positions[0][headstage] = V_LevelX
+			numFound                = 1
+		endif
+	else
+		Make/D/FREE/N=0 crossings
+		FindLevels/Q/R=(start, searchEnd)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=(FINDLEVEL_EDGE_INCREASING)/B=3 singleAD, level
+
+		for(i = 0; i < V_LevelsFound && numFound < numberOfSpikesReq; i += 1)
+			// already found by the previous search, the tolerance makes this independent of rounding as two rising
+			// crossings are more than one point apart
+			if(numFound > 0 && crossings[i] < (positions[numFound - 1][headstage] + 0.5 * DimDelta(singleAD, ROWS)))
+				continue
+			endif
+
+			EnsureLargeEnoughWave(positions, indexShouldExist = numFound, initialValue = NaN)
+			positions[numFound][headstage] = crossings[i]
+			numFound                      += 1
+		endfor
+	endif
+
+	state[headstage][%SearchedUntil]       = searchEnd
+	state[headstage][%NumberOfSpikesFound] = numFound
+
+	return numFound
+End
+
 /// @brief Search the AD channel of the given headstage for spikes from the
 /// pulse onset until the end of the sweep or `searchEnd` if given
 ///
@@ -1417,11 +1534,16 @@ End
 ///                                  Inf: Return value is 1 if at least 1 spike was found
 /// @param[out] spikePositions       [optional] returns the position of the first `numberOfSpikes` found on success in ms
 /// @param[out] numberOfSpikesFound  [optional] returns the number of spikes found
+/// @param[in] sweepNo               [optional] sweep number of the running sweep, required with `acquiredEnd`
+/// @param[in] acquiredEnd           [optional] end in ms of the acquired data of the running sweep in `sweepWave`, the
+///                                  scaled data wave. The search then only covers the data acquired since the previous
+///                                  search during the same sweep, see GetAnalysisFuncSpikeSearchState(). Not
+///                                  supported for #PSQ_CHIRP and #PSQ_TRUE_REST_VM.
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE sweepWave, variable headstage, variable offset, variable level, [variable searchEnd, variable numberOfSpikesReq, WAVE spikePositions, variable &numberOfSpikesFound])
+static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE sweepWave, variable headstage, variable offset, variable level, [variable searchEnd, variable numberOfSpikesReq, WAVE spikePositions, variable &numberOfSpikesFound, variable sweepNo, variable acquiredEnd])
 
-	variable first, last, overrideValue, rangeSearchLevel
+	variable first, last, overrideValue, rangeSearchLevel, midSweep, numFound
 	variable minVal, maxVal, numSpikesFoundOverride
 	string msg
 
@@ -1437,12 +1559,24 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 	if(ParamIsDefault(numberOfSpikesReq))
 		numberOfSpikesReq = 1
 	else
-		ASSERT(numberOfSpikesReq > 0, "Invalid numberOfSpikesFound")
+		ASSERT(numberOfSpikesReq >= 1, "Invalid numberOfSpikesReq")
 		numberOfSpikesReq = trunc(numberOfSpikesReq)
 	endif
 
 	if(!ParamIsDefault(numberOfSpikesFound))
 		numberOfSpikesFound = NaN
+	endif
+
+	midSweep = !ParamIsDefault(acquiredEnd)
+	if(midSweep)
+		ASSERT(IsFinite(acquiredEnd), "Expected a finite end of the acquired data")
+		ASSERT(!ParamIsDefault(sweepNo), "Missing sweep number")
+		ASSERT(IsWaveRefWave(sweepWave), "Expected the scaled data wave")
+		ASSERT(type != PSQ_CHIRP && type != PSQ_TRUE_REST_VM, "Unsupported type")
+
+		WAVE state     = GetAnalysisFuncSpikeSearchState(device)
+		WAVE positions = GetAnalysisFuncSpikeSearchPositions(device)
+		PSQ_PrepareSpikeSearchState(state, positions, headstage, sweepNo, type, offset, level, numberOfSpikesReq)
 	endif
 
 	sprintf msg, "Type %d, headstage %d, offset %g, numberOfSpikesReq %d", type, headstage, offset, numberOfSpikesReq
@@ -1451,9 +1585,16 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 	if(type == PSQ_CHIRP || type == PSQ_TRUE_REST_VM)
 		first = offset
 		last  = searchEnd
+	elseif(midSweep && IsFinite(state[headstage][%First]))
+		first = state[headstage][%First]
+		last  = state[headstage][%Last]
 	else
 		// search pulse in DA and use the pulse as search region
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
+		if(midSweep)
+			WAVE singleDA = PSQ_GetChannelOfScaledData(device, sweepWave, config, headstage, XOP_CHANNEL_TYPE_DAC)
+		else
+			WAVE singleDA = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
+		endif
 		[minVal, maxVal] = WaveMinAndMax(singleDA, offset, Inf)
 
 		if(minVal == 0 && maxVal == 0)
@@ -1476,6 +1617,11 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 			else
 				last = searchEnd
 			endif
+		endif
+
+		if(midSweep)
+			state[headstage][%First] = first
+			state[headstage][%Last]  = last
 		endif
 	endif
 
@@ -1533,7 +1679,11 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 		endif
 	else
 
-		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
+		if(midSweep)
+			WAVE singleAD = PSQ_GetChannelOfScaledData(device, sweepWave, config, headstage, XOP_CHANNEL_TYPE_ADC)
+		else
+			WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
+		endif
 		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 		if(type == PSQ_CHIRP)
@@ -1547,6 +1697,22 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 
 			if(!ParamIsDefault(numberOfSpikesFound))
 				numberOfSpikesFound = DimSize(spikePositionsResult, ROWS)
+			endif
+		elseif(midSweep)
+			numFound                  = PSQ_SearchForSpikesIncrementally(singleAD, state, positions, headstage, first, last, acquiredEnd, level, numberOfSpikesReq)
+			spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (numFound >= numberOfSpikesReq) : (numFound > 0)
+
+			if(!ParamIsDefault(spikePositions))
+				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+				Redimension/D/N=(numFound) spikePositions
+
+				if(numFound > 0)
+					spikePositions[] = positions[p][headstage]
+				endif
+			endif
+
+			if(!ParamIsDefault(numberOfSpikesFound))
+				numberOfSpikesFound = numFound
 			endif
 		else
 			if(numberOfSpikesReq == 1)
@@ -5907,7 +6073,7 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			return PSQ_CheckParamCommon(name, s)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0))
+			if(!((IsInteger(val) && val >= 1) || val == Inf))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -6052,6 +6218,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			if(ret)
 				return 1
 			endif
+
+			PSQ_ResetSpikeSearchState(GetAnalysisFuncSpikeSearchState(device), GetAnalysisFuncSpikeSearchPositions(device), s.headstage)
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(device)
@@ -6133,8 +6301,9 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 		// and we are after the pulse onset
 
 		Make/FREE/D spikePos
-		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                \
-		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
+		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                  \
+		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes, \
+		                                          sweepNo = s.sweepNo, acquiredEnd = s.lastKnownRowIndexAD * s.sampleIntervalAD)
 
 		if(spikeDetection[s.headstage]                                                                    \
 		   && ((TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !TestOverrideActive()))
