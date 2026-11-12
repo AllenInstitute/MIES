@@ -1466,7 +1466,7 @@ threadsafe Function/WAVE GetSweepsWithSetting(WAVE labnotebookValues, string set
 		return $""
 	endif
 
-	return GetUniqueEntries(sweeps)
+	return GetUniqueEntries(cleanSweeps)
 End
 
 /// @brief Return a unique list of labnotebook entries of the given setting
