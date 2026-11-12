@@ -1068,7 +1068,7 @@ Function DashboardAnaFunc(string device, STRUCT AnalysisFunction_V3 &s)
 	variable index
 
 	win = DB_GetBoundDataBrowser(device)
-	DFREF  dfr      = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF  dfr      = AD_GetDashboardFolder(win)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 

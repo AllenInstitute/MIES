@@ -336,12 +336,7 @@ Function BSP_BindListBoxWaves(string win)
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	BSP_ChannelSelectionWaveToGUI(bsPanel, channelSelection)
 
-	// dashboard
-	WAVE   listBoxHelpWave  = GetAnaFuncDashboardHelpWave(dfr)
-	WAVE   listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
-	WAVE   listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listBoxWave      = GetAnaFuncDashboardListWave(dfr)
-	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave, helpWave=listBoxHelpWave
+	AD_BindListBoxWaves(mainPanel)
 End
 
 /// @brief Get the channel selection wave
