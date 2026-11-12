@@ -1339,6 +1339,41 @@ Function ZN_RemovesNaNs2D()
 
 End
 
+static Function ZN_KeepsInputByDefault()
+
+	Make/FREE wv = {NaN, Inf, 1}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_VAR(WaveRefsEqual(reduced, wv), 0)
+	CHECK_EQUAL_WAVES(wv, {NaN, Inf, 1})
+End
+
+static Function ZN_DontDuplicateRemovesNaNsInPlace()
+
+	Make/FREE wv = {NaN, Inf, 1}
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = 1)
+	CHECK_EQUAL_VAR(WaveRefsEqual(reduced, wv), 1)
+	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
+End
+
+static Function ZN_DontDuplicateRemovesNaNs2D()
+
+	Make/FREE wv = {{NaN, 2}, {Inf, 1}}
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = 1)
+	CHECK_EQUAL_VAR(WaveRefsEqual(reduced, wv), 1)
+	CHECK_EQUAL_WAVES(reduced, {2, Inf, 1})
+End
+
+static Function ZN_DontDuplicateAllNaNToNull()
+
+	Make/FREE/N=2 wv = {NaN, NaN}
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = 1)
+	CHECK_WAVE(reduced, NULL_WAVE)
+
+	Make/FREE/N=0 wv
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = 1)
+	CHECK_WAVE(reduced, NULL_WAVE)
+End
+
 /// @}
 
 /// ChangeFreeWaveName

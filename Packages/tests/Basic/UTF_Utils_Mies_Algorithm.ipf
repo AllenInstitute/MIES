@@ -326,7 +326,7 @@ End
 /// FindIndizes
 /// @{
 
-Function FI_NumSearchWithCol1()
+static Function FI_NumSearchWithCol1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -344,7 +344,7 @@ static Function FI_NumSearchWithCol1Inverted()
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndLayer1()
+static Function FI_NumSearchWithColAndLayer1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -353,7 +353,7 @@ Function FI_NumSearchWithColAndLayer1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndLayer2()
+static Function FI_NumSearchWithColAndLayer2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -362,7 +362,7 @@ Function FI_NumSearchWithColAndLayer2()
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithCol2()
+static Function FI_NumSearchWithCol2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -371,7 +371,7 @@ Function FI_NumSearchWithCol2()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithCol3()
+static Function FI_NumSearchWithCol3()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -380,7 +380,7 @@ Function FI_NumSearchWithCol3()
 	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
-Function FI_NumSearchWithColLabel()
+static Function FI_NumSearchWithColLabel()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -389,7 +389,7 @@ Function FI_NumSearchWithColLabel()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndStr()
+static Function FI_NumSearchWithColAndStr()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -398,7 +398,7 @@ Function FI_NumSearchWithColAndStr()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp1()
+static Function FI_NumSearchWithColAndProp1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -407,7 +407,7 @@ Function FI_NumSearchWithColAndProp1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp2()
+static Function FI_NumSearchWithColAndProp2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -416,7 +416,7 @@ Function FI_NumSearchWithColAndProp2()
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp3()
+static Function FI_NumSearchWithColAndProp3()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -425,7 +425,7 @@ Function FI_NumSearchWithColAndProp3()
 	CHECK_EQUAL_WAVES(indizes, {1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp4()
+static Function FI_NumSearchWithColAndProp4()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -434,7 +434,7 @@ Function FI_NumSearchWithColAndProp4()
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp5()
+static Function FI_NumSearchWithColAndProp5()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -452,7 +452,7 @@ static Function FI_NumSearchWithColAndProp5Inverted()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp6()
+static Function FI_NumSearchWithColAndProp6()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -470,7 +470,7 @@ static Function FI_NumSearchWithColAndProp6Inverted()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithColAndProp6a()
+static Function FI_NumSearchWithColAndProp6a()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -479,7 +479,7 @@ Function FI_NumSearchWithColAndProp6a()
 	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithRestRows()
+static Function FI_NumSearchWithRestRows()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -488,7 +488,7 @@ Function FI_NumSearchWithRestRows()
 	CHECK_EQUAL_WAVES(indizes, {2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithCol1()
+static Function FI_TextSearchWithCol1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -497,7 +497,7 @@ Function FI_TextSearchWithCol1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndLayer1()
+static Function FI_TextSearchWithColAndLayer1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -506,7 +506,7 @@ Function FI_TextSearchWithColAndLayer1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndLayer2()
+static Function FI_TextSearchWithColAndLayer2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -515,7 +515,7 @@ Function FI_TextSearchWithColAndLayer2()
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithCol2()
+static Function FI_TextSearchWithCol2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -524,7 +524,7 @@ Function FI_TextSearchWithCol2()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithCol3()
+static Function FI_TextSearchWithCol3()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -533,7 +533,7 @@ Function FI_TextSearchWithCol3()
 	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
-Function FI_TextSearchWithColLabel()
+static Function FI_TextSearchWithColLabel()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -542,7 +542,7 @@ Function FI_TextSearchWithColLabel()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndVar()
+static Function FI_TextSearchWithColAndVar()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -551,7 +551,7 @@ Function FI_TextSearchWithColAndVar()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithVarAndNot()
+static Function FI_TextSearchWithVarAndNot()
 
 	Make/FREE/T text = {"1", "2", "1"}
 
@@ -560,7 +560,7 @@ Function FI_TextSearchWithVarAndNot()
 	CHECK_EQUAL_WAVES(indizes, {1}, mode = WAVE_DATA)
 End
 
-Function FI_NumSearchWithStrAndNot()
+static Function FI_NumSearchWithStrAndNot()
 
 	Make/FREE/D numeric = {1, 2, 0}
 
@@ -568,7 +568,7 @@ Function FI_NumSearchWithStrAndNot()
 	CHECK_EQUAL_WAVES(indizes, {1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchBitMaskIgnoresNonNumbers()
+static Function FI_TextSearchBitMaskIgnoresNonNumbers()
 
 	Make/FREE/T text = {"1", "abc", "3", ""}
 
@@ -577,7 +577,7 @@ Function FI_TextSearchBitMaskIgnoresNonNumbers()
 	CHECK_EQUAL_WAVES(indizes, {0, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchIgnoresCase()
+static Function FI_TextSearchIgnoresCase()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -586,7 +586,7 @@ Function FI_TextSearchIgnoresCase()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp1()
+static Function FI_TextSearchWithColAndProp1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -595,7 +595,7 @@ Function FI_TextSearchWithColAndProp1()
 	CHECK_EQUAL_WAVES(indizes, {0, 1, 2}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp2()
+static Function FI_TextSearchWithColAndProp2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -604,7 +604,7 @@ Function FI_TextSearchWithColAndProp2()
 	CHECK_EQUAL_WAVES(indizes, {3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp3()
+static Function FI_TextSearchWithColAndProp3()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -613,7 +613,7 @@ Function FI_TextSearchWithColAndProp3()
 	CHECK_EQUAL_WAVES(indizes, {1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp4()
+static Function FI_TextSearchWithColAndProp4()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -622,7 +622,7 @@ Function FI_TextSearchWithColAndProp4()
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp5()
+static Function FI_TextSearchWithColAndProp5()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -631,7 +631,7 @@ Function FI_TextSearchWithColAndProp5()
 	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithColAndProp6()
+static Function FI_TextSearchWithColAndProp6()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -640,7 +640,7 @@ Function FI_TextSearchWithColAndProp6()
 	CHECK_EQUAL_WAVES(indizes, {0, 3, 4}, mode = WAVE_DATA)
 End
 
-Function FI_TextSearchWithRestRows()
+static Function FI_TextSearchWithRestRows()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
@@ -649,14 +649,14 @@ Function FI_TextSearchWithRestRows()
 	CHECK_EQUAL_WAVES(indizes, {2}, mode = WAVE_DATA)
 End
 
-Function FI_EmptyWave()
+static Function FI_EmptyWave()
 
 	Make/FREE/N=0 emptyWave
 	WAVE/Z indizes = FindIndizes(emptyWave, var = NaN)
 	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
-Function FI_AbortsWithInvalidParams1()
+static Function FI_AbortsWithInvalidParams1()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -669,7 +669,7 @@ Function FI_AbortsWithInvalidParams1()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams2()
+static Function FI_AbortsWithInvalidParams2()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -682,7 +682,7 @@ Function FI_AbortsWithInvalidParams2()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams3()
+static Function FI_AbortsWithInvalidParams3()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -695,7 +695,7 @@ Function FI_AbortsWithInvalidParams3()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams4()
+static Function FI_AbortsWithInvalidParams4()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -708,7 +708,7 @@ Function FI_AbortsWithInvalidParams4()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams5()
+static Function FI_AbortsWithInvalidParams5()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -721,7 +721,7 @@ Function FI_AbortsWithInvalidParams5()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams6()
+static Function FI_AbortsWithInvalidParams6()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -734,7 +734,7 @@ Function FI_AbortsWithInvalidParams6()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams7()
+static Function FI_AbortsWithInvalidParams7()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -747,7 +747,7 @@ Function FI_AbortsWithInvalidParams7()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams8()
+static Function FI_AbortsWithInvalidParams8()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -760,7 +760,7 @@ Function FI_AbortsWithInvalidParams8()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams9()
+static Function FI_AbortsWithInvalidParams9()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -773,7 +773,7 @@ Function FI_AbortsWithInvalidParams9()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams10()
+static Function FI_AbortsWithInvalidParams10()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -786,7 +786,7 @@ Function FI_AbortsWithInvalidParams10()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams11()
+static Function FI_AbortsWithInvalidParams11()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -799,7 +799,7 @@ Function FI_AbortsWithInvalidParams11()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams12()
+static Function FI_AbortsWithInvalidParams12()
 
 	Make/FREE/N=(1, 2, 3, 4) data
 	try
@@ -810,7 +810,7 @@ Function FI_AbortsWithInvalidParams12()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams13()
+static Function FI_AbortsWithInvalidParams13()
 
 	Make/FREE data
 	try
@@ -821,7 +821,7 @@ Function FI_AbortsWithInvalidParams13()
 	endtry
 End
 
-Function FI_AbortsWithInvalidParams14()
+static Function FI_AbortsWithInvalidParams14()
 
 	Make/FREE data
 	try
@@ -839,7 +839,7 @@ Function FI_AbortsWithInvalidParams14()
 	endtry
 End
 
-Function FI_AbortsWithInvalidWave()
+static Function FI_AbortsWithInvalidWave()
 
 	try
 		FindIndizes($"", var = 0)
@@ -849,7 +849,7 @@ Function FI_AbortsWithInvalidWave()
 	endtry
 End
 
-Function FI_AbortsWithInvalidRegExp()
+static Function FI_AbortsWithInvalidRegExp()
 
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr numeric
@@ -934,6 +934,113 @@ static Function FI_NumSearchMultiThreaded([variable var])
 	Make/FREE/D/N=(numRows) refLayers = (p >= 10 && (((mod(p, 7) == 3) != invert) || ((mod(p + 1, 7) == 3) != invert))) ? p : NaN
 	WaveTransform/O zapNaNs, refLayers
 	CHECK_EQUAL_WAVES(indizesLayers, refLayers, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesRestrictsSearch()
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+	Make/FREE/D rowIndizes = {0, 1, 3, 4}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {0, 3}, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesWithTextColumnAndLayers()
+
+	Make/FREE/T/N=(4, 2, 2) text = "a"
+	text[1][1][1] = "b"
+	text[2][1][0] = "b"
+	text[3][1][1] = "b"
+
+	Make/FREE/D rowIndizes = {0, 1, 3}
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", startLayer = 0, endLayer = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {1, 3}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "b", rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesWithRowRange()
+
+	Make/FREE/D numeric = {1, 1, 1, 1, 1}
+
+	Make/FREE/D rowIndizes = {0, 2, 3, 4}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 3, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {2, 3}, mode = WAVE_DATA)
+
+	Make/FREE/D rowIndizes = {0, 2}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, startRow = 1, endRow = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesInvalidWaveRefFindsNothing()
+
+	Make/FREE/D numeric = {1, 2}
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = $"")
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+static Function FI_RowIndizesChainsSearches()
+
+	Make/FREE/T/N=(6, 2) text
+	text[][0] = num2str(mod(p, 2))
+	text[][1] = num2str(mod(p, 3))
+
+	WAVE/Z indizes = FindIndizes(text, col = 0, var = 0)
+	CHECK_EQUAL_WAVES(indizes, {0, 2, 4}, mode = WAVE_DATA)
+
+	WAVE/Z indizesBoth = FindIndizes(text, col = 1, str = "1", rowIndizes = indizes)
+	CHECK_EQUAL_WAVES(indizesBoth, {4}, mode = WAVE_DATA)
+End
+
+static Function FI_RowIndizesIgnoresRowsOutsideAndRounds()
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	Make/FREE/D rowIndizes = {-1, 5, NaN, Inf, -Inf, 0.4, 2.6}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {0, 3}, mode = WAVE_DATA)
+
+	Make/FREE/D rowIndizes = {-1, 5, NaN}
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+// covers the MatrixOP code path on IP10
+static Function FI_RowIndizesWithManyRows()
+
+	Make/FREE/D/N=1000 numeric = mod(p, 2)
+
+	// 600 row indizes from -99.7 to 1098.3
+	Make/FREE/D/N=600 rowIndizes = 2 * p - 99.7
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, rowIndizes = rowIndizes)
+	Make/FREE/D/N=500 expected = 2 * p
+	CHECK_EQUAL_WAVES(indizes, expected, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 10, endRow = 20, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {10, 12, 14, 16, 18, 20}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 0, startRow = 4, endRow = 4, rowIndizes = rowIndizes)
+	CHECK_EQUAL_WAVES(indizes, {4}, mode = WAVE_DATA)
+
+	WAVE/Z indizes = FindIndizes(numeric, var = 1, rowIndizes = rowIndizes)
+	CHECK_WAVE(indizes, NULL_WAVE)
+End
+
+// UTF_TD_GENERATOR DataGenerators#InvalidRowIndizes
+static Function FI_AbortsWithInvalidRowIndizes([WAVE wv])
+
+	Make/FREE/D numeric = {1, 2, 1, 1, 3}
+
+	try
+		FindIndizes(numeric, var = 1, rowIndizes = wv)
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
 End
 /// @}
 

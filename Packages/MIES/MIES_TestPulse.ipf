@@ -222,7 +222,7 @@ Function/WAVE TP_GetStoredTPsFromCycle(string device, variable cycleId, variable
 	numStored = GetNumberFromWaveNote(tpStored, NOTE_INDEX)
 	Make/FREE/D/N=(numStored) matchCycleId
 	matchCycleId[] = (cycleId == GetNumberFromWaveNote(tpStored[p], "TPCycleID")) ? p : NaN
-	WAVE/Z tpIndices = ZapNaNs(matchCycleId)
+	WAVE/Z tpIndices = ZapNaNs(matchCycleId, dontDuplicate = 1)
 	if(!WaveExists(tpIndices))
 		return $""
 	endif
@@ -533,7 +533,7 @@ static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResult
 
 	if(needsUpdate)
 		// now use the maximum of all baselines
-		WAVE baselineFracClean = ZapNaNs(baselineFrac)
+		WAVE baselineFracClean = ZapNaNs(baselineFrac, dontDuplicate = 1)
 
 		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * ONE_TO_PERCENT, TP_SET_PRECISION)
 
@@ -1023,7 +1023,7 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 			slice[] = (TPStorage[p][headstage][%autoTPCycleID] == latestAutoTPCycleID) ? slice[p] : NaN
 		endif
 
-		return ZapNaNs(slice)
+		return ZapNaNs(slice, dontDuplicate = 1)
 	endif
 
 	ASSERT(IsInteger(numReqEntries) && numReqEntries > 0, "Number of required entries must be larger than zero")

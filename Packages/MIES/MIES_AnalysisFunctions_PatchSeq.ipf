@@ -3710,7 +3710,7 @@ static Function/WAVE PSQ_DS_FilterPassingData(WAVE/Z data, WAVE/Z booleanQC, [va
 		indices[] = (booleanQC[p] == 1) ? NaN : p
 	endif
 
-	WAVE/Z indicesToRemove = ZapNaNs(indices)
+	WAVE/Z indicesToRemove = ZapNaNs(indices, dontDuplicate = 1)
 
 	Duplicate/FREE data, passingData
 

@@ -2599,3 +2599,21 @@ static Function/WAVE PulseDurationCases()
 
 	return wv
 End
+
+static Function/WAVE InvalidRowIndizes()
+
+	Make/FREE/WAVE/N=5 wv
+	wv[0] = WaveRef({{0}, {1}})
+	Make/FREE/T text = {"0"}
+	wv[1] = text
+	Make/FREE/D/N=0 empty
+	wv[2] = empty
+	Make/FREE/R single = {0}
+	wv[3] = single
+	Make/FREE/I integer = {0}
+	wv[4] = integer
+
+	SetDimensionLabels(wv, "TwoDimensional;Text;Empty;SinglePrecision;Integer", ROWS)
+
+	return wv
+End
