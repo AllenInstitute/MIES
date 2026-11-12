@@ -232,6 +232,10 @@ Function StoreLIMSCredentials(WAVE/T credentials)
 	string key, value, path
 	variable idx
 
+	// pass TXOP_CASE_SENSE as there is no better default
+	ASSERT(IsNaN(GetRowIndex(credentials, str = "\"", textOp = TXOP_CASE_SENSE)), "Can not handle quotes (\") in the credential")
+	ASSERT(IsNaN(GetRowIndex(credentials, str = " ", textOp = TXOP_CASE_SENSE)), "Can not handle spaces ( ) in the credential")
+
 	NVAR JSONid = $GetSettingsJSONid()
 
 	// validate before starting to write

@@ -124,10 +124,6 @@ static Function/S PY_GetLimsCredentials()
 		StoreLIMSCredentials(credentials)
 	endif
 
-	// pass TXOP_CASE_SENSE as there is no better default
-	ASSERT(IsNaN(GetRowIndex(credentials, str = "\"", textOp = TXOP_CASE_SENSE)), "Can not handle quotes (\") in the credential")
-	ASSERT(IsNaN(GetRowIndex(credentials, str = " ", textOp = TXOP_CASE_SENSE)), "Can not handle spaces ( ) in the credential")
-
 	sprintf result, "--db_user=%s --db_password=%s --db_host=%s --db_name=%s", credentials[%$"Db User"], credentials[%$"Db Password"], credentials[%$"Db Host"], credentials[%$"Db Name"]
 
 	KillOrMoveToTrash(dfr = dfr)
