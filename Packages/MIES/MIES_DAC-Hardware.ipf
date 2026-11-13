@@ -3367,7 +3367,7 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 		endswitch
 	endfor
 	numDevices = ItemsInList(deviceList)
-	// @todo Check for SU MultiDevices if Master is subdev 0 (when multi device setup is available)
+	// the first device is the master device, see the Sutter amplifier documentation
 	deviceInfo[%MASTERDEVICE]     = StringFromList(0, deviceList)
 	deviceInfo[%LISTOFDEVICES]    = deviceList
 	deviceInfo[%LISTOFHEADSTAGES] = numHSList
@@ -3492,7 +3492,7 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 					ASSERT(config[i][%CLAMPMODE] != I_EQUAL_ZERO_MODE, "I=0 is not supported for Sutter amplifiers")
 					if(config[i][%CLAMPMODE] == I_CLAMP_MODE)
 						// the output of this headstage is a current in Ampere
-						// @todo confirm with Sutter that the bit is the headstage index over all IPA devices
+						// the bit is the headstage index over all IPA devices
 						currentClampMask = currentClampMask | (1 << headstage)
 					endif
 				endif
@@ -3533,6 +3533,21 @@ Function HW_SU_PrepareAcq(variable deviceId, variable mode, [WAVE/Z data, FUNCRE
 	SetNumberInWaveNote(output, SUTTER_CURRENT_CLAMP_MASK_KEY, currentClampMask)
 End
 
+/// @brief Return the hardware channel and the encoding of the given headstage
+///
+/// The hardware channels are numbered per device, as documented by Sutter Instrument:
+///
+/// - IPA outputs: 0 command, 1 and 2 auxiliary outputs, 3 digital outputs
+/// - IPA inputs: 0 current, 1 voltage, 2 to 5 auxiliary inputs
+/// - double IPA outputs: 0 and 1 command of the first and second headstage, 2 and 3 auxiliary outputs,
+///   4 digital outputs
+/// - double IPA inputs: 0 and 1 current and voltage of the first headstage, 2 and 3 of the second
+///   headstage, 4 to 7 auxiliary inputs
+///
+/// Current and voltage are acquired on these channels in both clamp modes.
+///
+/// @returns the headstage index on its device, which is also the hardware channel of its command, and
+///          the encoding of the device, amplifier type and headstage index on the device
 static Function [variable channel, string encode] HW_SU_GetEncodeFromHS(variable headstage)
 
 	variable i, index, subHS, numAmps, ampType
