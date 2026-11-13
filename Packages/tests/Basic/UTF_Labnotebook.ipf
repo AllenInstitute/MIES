@@ -1366,6 +1366,58 @@ Function GetUniqueSettingsWorks()
 	CHECK_EQUAL_TEXTWAVES(resultsTxt, {"131415", "192021", "161718", "222324", "252627"})
 End
 
+static Function AddEntryForSweep_IGNORE(string device, string key, variable sweepNo, variable entrySourceType)
+
+	Make/FREE/T/N=(3, 1, 1) keys
+	keys[0][0][0] = key
+
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0][0][INDEP_HEADSTAGE] = 1
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, entrySourceType)
+
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesTxt
+	valuesTxt[0][0][INDEP_HEADSTAGE] = "a"
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, entrySourceType)
+End
+
+static Function GetSweepsWithSettingIgnoresEntriesWithoutSweep()
+
+	string device = "ITC16USB_0_DEV"
+	string key    = LABNOTEBOOK_USER_PREFIX + "some key"
+
+	// entries before the first sweep have NaN as sweep number
+	AddEntryForSweep_IGNORE(device, key, NaN, TEST_PULSE_MODE)
+	AddEntryForSweep_IGNORE(device, key, 0, DATA_ACQUISITION_MODE)
+	AddEntryForSweep_IGNORE(device, key, NaN, TEST_PULSE_MODE)
+	AddEntryForSweep_IGNORE(device, key, 2, DATA_ACQUISITION_MODE)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+	CHECK_EQUAL_WAVES(sweeps, {0, 2}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, key)
+	CHECK_EQUAL_WAVES(sweeps, {0, 2}, mode = WAVE_DATA)
+End
+
+static Function GetSweepsWithSettingWithoutSweepsIsNull()
+
+	string device = "ITC16USB_0_DEV"
+	string key    = LABNOTEBOOK_USER_PREFIX + "some key"
+
+	AddEntryForSweep_IGNORE(device, key, NaN, TEST_PULSE_MODE)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+	CHECK_WAVE(sweeps, NULL_WAVE)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, key)
+	CHECK_WAVE(sweeps, NULL_WAVE)
+End
+
 Function LabnotebookUpgradeMissingNoteIndexNumerical()
 
 	variable idx, idxRedone
