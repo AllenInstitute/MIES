@@ -29,6 +29,14 @@ assigned automatically when locking the device. Therefore the following controls
 disabled for Sutter devices: the DA/AD channel popups, ``Amplfier (700B)``, ``Clear Associations`` and
 ``Query connected Amp(s)``.
 
+Several IPA devices
+^^^^^^^^^^^^^^^^^^^
+
+With several IPA devices the first device is the master device. For a synchronized acquisition connect the
+``Trigger Out`` of the master device to the ``Trigger In`` of all other devices with BNC cables. The TTL
+channels of MIES are the digital outputs of the master device. Auxiliary and digital outputs which are set
+outside of the data acquisition are not synchronized between the devices.
+
 Gains and units
 ^^^^^^^^^^^^^^^
 
@@ -123,7 +131,8 @@ The following amplifier settings have no control in the DA_Ephys panel yet. They
    * - Primary output low pass filter
      - ``Filter``
      - 500 Hz, 1 kHz, 2 kHz, 5 kHz, 10 kHz or 20 kHz, one filter for both clamp modes. Other values are
-       rounded to the next one, there is no bypass.
+       rounded to the next one, there is no bypass. The 10-90 % rise time is about 0.35 divided by the
+       cutoff frequency, e.g. 70 µs at 5 kHz.
    * - Primary output gain
      - ``IGain`` (V-Clamp), ``VGain`` (I-Clamp)
      - 0.5 to 25 mV/pA in V-Clamp and 10 to 500 mV/mV in I-Clamp. As the data is acquired in SI units, the
@@ -188,4 +197,5 @@ Analysis functions
 Known limitations
 -----------------
 
-- The double IPA is supported by the headstage assignment, but has not been tested with hardware yet.
+- The double IPA is supported by the headstage assignment, but has not been tested with hardware yet. The
+  same applies to several IPA devices.
