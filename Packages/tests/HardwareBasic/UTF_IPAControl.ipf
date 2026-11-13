@@ -137,6 +137,42 @@ static Function IPAAutoOffset()
 	RestoreIPA_IGNORE(state)
 End
 
+/// The automatic offset is done with the holding disabled, which is enabled again afterwards
+///
+/// Requires the model cell in position "Cell", as IPAAutoOffset
+static Function IPAAutoOffsetKeepsHolding()
+
+	variable startOffset
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_VC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET_LOCK, 0), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_V_HOLD, 0.01), 1)
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_OFFSET, 0.05), 1)
+	startOffset = IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET)
+
+	CHECK_EQUAL_VAR(IPA_MIES_SetValue(IPA_PROBE, IPA_SET_AUTO_OFFSET, 1), 1)
+
+	CHECK_NEQ_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_OFFSET), startOffset)
+	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_V_HOLD_ON), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_V_HOLD), 0.01, tol = 1e-6)
+
+	RestoreIPA_IGNORE(state)
+End
+
+static Function IPAAutoCellCompKeepsBridge()
+
+	string state = InitIPA_IGNORE()
+
+	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_VC_MODE, 1), 1)
+	CHECK_EQUAL_VAR(IPA_MIES_SetValue(IPA_PROBE, IPA_SET_BRIDGE, 5e6), 1)
+
+	CHECK_EQUAL_VAR(IPA_MIES_SetValue(IPA_PROBE, IPA_SET_AUTO_CELL_COMP, 1), 1)
+	CHECK_CLOSE_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_BRIDGE), 5e6, tol = 1e-6)
+
+	RestoreIPA_IGNORE(state)
+End
+
 static Function IPAOffsetLimit()
 
 	string state = InitIPA_IGNORE()

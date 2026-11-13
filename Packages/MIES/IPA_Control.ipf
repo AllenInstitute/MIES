@@ -2654,8 +2654,15 @@ End
 /// In contrast to IPA_SetValue() the keywords "VHold", "IHold", "Bridge",
 /// "CmComp", "RsComp", "RsCorr" and "RsPred" do not enable the
 /// corresponding setting. The value is stored and then sent to the
-/// amplifier with the unchanged enable state. All other keywords are
-/// passed to IPA_SetValue().
+/// amplifier with the unchanged enable state.
+///
+/// The automatic functions behave as for MCC amplifiers:
+/// - "AutoCellComp" keeps the bridge balance, IPA_SetValue() also stores the
+///   found series resistance as bridge balance.
+/// - "AutoOffset" is done with the holding disabled, as the automatic offset
+///   would otherwise also compensate the holding.
+///
+/// All other keywords are passed to IPA_SetValue().
 ///
 /// @param probeCount one-based probe index
 /// @param setting    keyword of IPA_SetValue()
@@ -2664,7 +2671,8 @@ End
 /// @returns TRUE on success and FALSE on error
 Function IPA_MIES_SetValue(variable probeCount, string setting, variable value)
 
-	variable probeIndex
+	variable probeIndex, bridge, holdOn, dynHoldOn, ret
+	string holdOnSetting
 
 	STRUCT IPASeries SIPA
 
@@ -2714,6 +2722,44 @@ Function IPA_MIES_SetValue(variable probeCount, string setting, variable value)
 			value                          = limit(value, 0, 1)
 			SIPA.ipa.HS[probeIndex].rspred = value * 100
 			break
+		case IPA_SET_AUTO_CELL_COMP:
+			bridge = SIPA.ipa.HS[probeIndex].bridge
+			ret    = IPA_SetValue(probeCount, setting, value)
+
+			// only the stored value is changed, it is sent when switching to current clamp
+			GetStructure(SIPA)
+			SIPA.ipa.HS[probeIndex].bridge = bridge
+			SaveStructure(SIPA)
+
+			return ret
+		case IPA_SET_AUTO_OFFSET:
+			if(SIPA.ipa.HS[probeIndex].vc == 0)
+				holdOnSetting = IPA_SET_V_HOLD_ON
+				holdOn        = SIPA.ipa.HS[probeIndex].hpoton
+			else
+				// in current clamp the dynamic hold is sent instead of the holding current
+				holdOnSetting = IPA_SET_I_HOLD_ON
+				holdOn        = SIPA.ipa.HS[probeIndex].hcurron
+				dynHoldOn     = SIPA.ipa.HS[probeIndex].trackon
+			endif
+
+			if(holdOn)
+				IPA_SetValue(probeCount, holdOnSetting, 0)
+			endif
+			if(dynHoldOn)
+				IPA_SetValue(probeCount, IPA_SET_DYN_HOLD_ON, 0)
+			endif
+
+			ret = IPA_SetValue(probeCount, setting, value)
+
+			if(holdOn)
+				ret = IPA_SetValue(probeCount, holdOnSetting, 1) && ret
+			endif
+			if(dynHoldOn)
+				ret = IPA_SetValue(probeCount, IPA_SET_DYN_HOLD_ON, 1) && ret
+			endif
+
+			return ret
 		default:
 			return IPA_SetValue(probeCount, setting, value)
 	endswitch

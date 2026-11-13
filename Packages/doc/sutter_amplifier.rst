@@ -79,7 +79,9 @@ The amplifier controls of the Data Acquisition tab work for Sutter amplifiers, w
    * - Pipette offset
      - The amplifier has **one** pipette offset for both clamp modes, changing it in one clamp mode also
        changes it in the other one. The range is -250 mV to +249.98 mV. The automatic pipette offset
-       (``Auto``) is meant to be used with the pipette in the bath.
+       (``Auto``) is meant to be used with the pipette in the bath. MIES disables the holding during the
+       automatic pipette offset and enables it again afterwards, as the amplifier would otherwise also
+       compensate the holding.
    * - Bridge balance
      - 0 to 200 MΩ. There is no automatic bridge balance, its ``Auto`` button is disabled.
    * - Capacitance neutralization (I-Clamp)
@@ -92,8 +94,7 @@ The amplifier controls of the Data Acquisition tab work for Sutter amplifiers, w
      - Not available, the button is disabled.
    * - Whole cell compensation
      - Capacitance 0 to 100 pF, resistance 0 to 100 MΩ, only active in V-Clamp. The automatic whole cell
-       compensation (``Auto``) requires the fast capacitance compensation (``Cp Fast``) first. It also sets
-       the bridge balance to the resulting series resistance.
+       compensation (``Auto``) requires the fast capacitance compensation (``Cp Fast``) first.
    * - Rs compensation
      - The enable checkbox enables correction and prediction together. ``Chain`` works as for MCC
        amplifiers.
