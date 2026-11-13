@@ -3346,7 +3346,8 @@ Function HW_SU_GetDeviceInfo(WAVE/T deviceInfo)
 		return NaN
 	endif
 
-	numIPAs                   = SutterDAQusbreset()
+	// same arguments as IPA_ResetUSB() of IPA_Control.ipf
+	numIPAs                   = SutterDAQUSBReset(0, 0)
 	deviceInfo[%NUMBEROFDACS] = num2istr(numIPAs)
 	for(i = 0; i < numIPAs; i += 1)
 		serial = CleanupName(SutterDAQSN(i), 0)
@@ -3787,8 +3788,11 @@ End
 Function HW_SU_GetADCSamplePosition()
 
 	variable pos
+	variable index = 0
 
-	SutterDAQReadAvailable(pos)
+	// since XOP 2.87 the first parameter is an input, the second one returns the position
+	// @todo ask Sutter if the first parameter is the device index
+	SutterDAQReadAvailable(index, pos)
 
 	return pos
 End

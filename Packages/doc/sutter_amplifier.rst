@@ -10,7 +10,7 @@ MultiClamp 700B amplifiers, with the differences described below.
 Requirements
 ------------
 
-- The Sutter XOP (``SutterXOP``, version 2.60) must be installed. Without it MIES can not use Sutter devices
+- The Sutter XOP (``SutterXOP``, version 2.87) must be installed. Without it MIES can not use Sutter devices
   and the amplifier control procedures ``IPA_Control.ipf`` from Sutter Instrument are not loaded.
 - There is no separate amplifier control software like the MultiClamp Commander. The amplifiers are
   initialized when the device is locked in the DA_Ephys panel and released when it is unlocked. Locking

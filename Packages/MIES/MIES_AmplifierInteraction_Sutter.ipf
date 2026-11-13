@@ -321,7 +321,7 @@ Function AI_SU_Initialize(string device)
 		return 1
 	endif
 
-	if(!IPA_Initialize() || !IPA_MIES_Connect())
+	if(!IPA_MIES_Initialize() || !IPA_MIES_OkToSendCommand())
 		printf "(%s) Could not connect to the Sutter amplifiers.\r", device
 		ControlWindowToFront()
 		return 1
@@ -387,7 +387,7 @@ Function AI_SU_Shutdown(string device)
 	PerformSubsystemEntry()
 
 	if(IPA_MIES_IsInitialized())
-		IPA_Shutdown()
+		IPA_MIES_Shutdown()
 	endif
 End
 
@@ -545,7 +545,7 @@ Function AI_SU_SelectMultiClamp(string device, variable headstage)
 		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
-	if(!IPA_OkToSendCommand())
+	if(!IPA_MIES_OkToSendCommand())
 		return AMPLIFIER_CONNECTION_MCC_FAILED
 	endif
 

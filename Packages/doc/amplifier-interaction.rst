@@ -83,7 +83,7 @@ Initialization
 
 :cpp:func:`AI_InitializeAmplifiers` and :cpp:func:`AI_ShutdownAmplifiers` are called when locking and unlocking a
 device. MCC amplifiers are independent of the device and need no initialization. For Sutter devices the IPA
-control procedures are initialized and switched to live mode. As the package stores its control values in
+control procedures are initialized, which connects them to the amplifiers. As the package stores its control values in
 its preferences on disk, they are then reset to the package defaults with ``IPA_MIES_ResetToDefaults`` and
 sent to the amplifiers, otherwise the settings of the previous session would be applied. Afterwards the
 clamp modes of MIES are sent and the amp storage wave and the DA_Ephys GUI are updated to the reset values,

@@ -12,7 +12,7 @@
 /// The test cases with a device lock it, which initializes the package via MIES.
 
 static Constant    IPA_PROBE          = 1
-static StrConstant IPA_PACKAGE_FOLDER = "root:SutterIPAControl"
+static StrConstant IPA_PACKAGE_FOLDER = "root:SutterIPA"
 
 // IPA_Control.ipf is only included with the Sutter XOP, see MIES_Include.ipf
 #if defined(TESTS_WITH_SUTTER_HARDWARE) && exists("SutterDAQScanWave")
@@ -24,30 +24,36 @@ static StrConstant IPA_PACKAGE_FOLDER = "root:SutterIPAControl"
 /// @returns the package state for RestoreIPA_IGNORE()
 static Function/S InitIPA_IGNORE()
 
-	STRUCT IPASeries SIPA
-
 	CHECK_EQUAL_VAR(DataFolderExists(IPA_PACKAGE_FOLDER), 0)
-	REQUIRE_EQUAL_VAR(IPA_Initialize(), 1)
+	REQUIRE_EQUAL_VAR(IPA_DoInitialize(), 1)
 
-	IPAControl#GetStructure(SIPA)
-	if(!cmpstr(SIPA.amp[0].serialNum, "demo"))
-		KillDataFolder $IPA_PACKAGE_FOLDER
+	// without a connected IPA the package is in demo mode
+	if(!IPA_MIES_OkToSendCommand())
+		DiscardIPA_IGNORE()
 		INFO("Requires a connected IPA")
 		SKIP_TESTCASE()
 	endif
 
-	// the package stays in demo mode until connected, see IPA_OkToSendCommand()
-	NVAR SD_USB       = $(IPA_PACKAGE_FOLDER + ":SD_USB")
-	NVAR demo_amptype = $(IPA_PACKAGE_FOLDER + ":demo_amptype")
-	SD_USB       = SIPA.numAmps
-	demo_amptype = -1 // live mode
-	REQUIRE_EQUAL_VAR(IPA_OkToSendCommand(), 1)
-
 	return ROStr(IPA_PACKAGE_FOLDER + ":SD_Struct")
+End
+
+/// @brief Discard the package without saving its preferences
+static Function DiscardIPA_IGNORE()
+
+	// started by IPA_DoInitialize()
+	IPA_StopTimerTask()
+	KillDataFolder $IPA_PACKAGE_FOLDER
 End
 
 /// @brief Restore the package state, send it to the amplifiers and discard the package
 static Function RestoreIPA_IGNORE(string state)
+
+	RestoreIPASettings_IGNORE(state)
+	DiscardIPA_IGNORE()
+End
+
+/// @brief Restore the package state and send it to the amplifiers
+static Function RestoreIPASettings_IGNORE(string state)
 
 	variable probe, numProbes
 
@@ -66,8 +72,6 @@ static Function RestoreIPA_IGNORE(string state)
 		IPA_SetValue(probe, IPA_SET_AUX_OUT1, IPA_GetValue(probe, IPA_SET_AUX_OUT1))
 		IPA_SetValue(probe, IPA_SET_AUX_OUT2, IPA_GetValue(probe, IPA_SET_AUX_OUT2))
 	endfor
-
-	KillDataFolder $IPA_PACKAGE_FOLDER
 End
 
 static Function IPABridgeOnState()
@@ -149,19 +153,6 @@ static Function IPAOffsetLimit()
 	RestoreIPA_IGNORE(state)
 End
 
-static Function IPASetCompensationInvalidProbe()
-
-	string state = InitIPA_IGNORE()
-
-	STRUCT IPASeries SIPA
-	IPAControl#GetStructure(SIPA)
-
-	CHECK_EQUAL_VAR(IPAControl#SetCompensation(SIPA, -1), 0)
-	CHECK_EQUAL_VAR(IPAControl#SetCompensation(SIPA, SIPA.numHeadstages), 0)
-
-	RestoreIPA_IGNORE(state)
-End
-
 static Function IPAInvalidProbe()
 
 	variable invalidProbe, probe
@@ -196,27 +187,17 @@ End
 
 static Function IPAAuxInputs()
 
-	variable i, numAmps
+	variable i
 	string state = InitIPA_IGNORE()
 
-	// without connection ReadAuxIn returns the register number of the input
-	NVAR SD_USB = $(IPA_PACKAGE_FOLDER + ":SD_USB")
-	numAmps = SD_USB
-	SD_USB  = 0
-
-	if(IPA_GetValue(IPA_PROBE, IPA_SET_AMP_TYPE) == 1)
-		Make/FREE/D expected = {3, 4, 5, 6}
-	else
-		Make/FREE/D expected = {5, 6, 23, 24}
-	endif
+	// the XOP updates SD_Meter continuously, rows 4 to 7 hold the auxiliary inputs of each amplifier
+	WAVE SD_Meter = $(IPA_PACKAGE_FOLDER + ":SD_Meter")
 
 	Make/FREE/T auxInputs = {IPA_SET_AUX_IN1, IPA_SET_AUX_IN2, IPA_SET_AUX_IN3, IPA_SET_AUX_IN4}
 	for(i = 0; i < 4; i += 1)
 		INFO("%s", s0 = auxInputs[i])
-		CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, auxInputs[i]), expected[i])
+		CHECK_SMALL_VAR(IPA_GetValue(IPA_PROBE, auxInputs[i]) - SD_Meter[4 + i][0], tol = 1e-3)
 	endfor
-
-	SD_USB = numAmps
 
 	RestoreIPA_IGNORE(state)
 End
@@ -227,8 +208,22 @@ static Function IPANotInitialized()
 
 	CHECK_EQUAL_VAR(IPA_GetValue(IPA_PROBE, IPA_SET_NUM_PROBES), 0)
 	CHECK_EQUAL_VAR(IPA_SetValue(IPA_PROBE, IPA_SET_V_HOLD, 0), 0)
-	CHECK_EQUAL_VAR(IPA_Shutdown(), 0)
+	CHECK_EQUAL_VAR(IPA_DoShutdown(), 0)
+	CHECK_EQUAL_VAR(IPA_MIES_Shutdown(), 0)
 	CHECK_NO_RTE()
+End
+
+static Function IPAShutdownKeepsUSBConnection()
+
+	string state = InitIPA_IGNORE()
+
+	RestoreIPASettings_IGNORE(state)
+
+	CHECK_EQUAL_VAR(IPA_MIES_Shutdown(), 1)
+	CHECK_EQUAL_VAR(DataFolderExists(IPA_PACKAGE_FOLDER), 0)
+
+	// reading a register fails without USB connection
+	CHECK_GE_VAR(SutterDAQRead(0, 0), 0)
 End
 
 /// @brief Lock the device with the first headstage in the given clamp mode
@@ -273,6 +268,16 @@ static Function IPAIsInitialized([string str])
 	CHECK_EQUAL_VAR(IPA_MIES_IsInitialized(), 0)
 End
 
+/// Locking the device does not run the background task of the package
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function IPANoBackgroundTask([string str])
+
+	SetupIPA_IGNORE(str, V_CLAMP_MODE)
+
+	CtrlNamedBackground IPA_TimerTask, status
+	CHECK_EQUAL_VAR(NumberByKey("RUN", S_info), 0)
+End
+
 /// Locking the device resets the settings of the previous session and the GUI shows the reset state
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
 static Function IPAResetOnLock([string str])
@@ -305,30 +310,6 @@ static Function IPAResetOnLock([string str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_Hold_VC"), 0)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "check_DatAcq_HoldEnableVC"), 0)
-End
-
-/// The reset to the package defaults keeps the DAC offset trim of the hardware
-// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
-static Function IPAResetKeepsDACOffset([string str])
-
-	variable dacOffset
-
-	STRUCT IPASeries SIPA
-
-	SetupIPA_IGNORE(str, V_CLAMP_MODE)
-
-	IPAControl#GetStructure(SIPA)
-	dacOffset                            = SIPA.ipa.HS[IPA_PROBE - 1].DACOffset
-	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset + 1
-	IPAControl#SaveStructure(SIPA)
-
-	CHECK_EQUAL_VAR(IPA_MIES_ResetToDefaults(), 1)
-
-	IPAControl#GetStructure(SIPA)
-	CHECK_EQUAL_VAR(SIPA.ipa.HS[IPA_PROBE - 1].DACOffset, dacOffset + 1)
-
-	SIPA.ipa.HS[IPA_PROBE - 1].DACOffset = dacOffset
-	IPAControl#SaveStructure(SIPA)
 End
 
 // UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1

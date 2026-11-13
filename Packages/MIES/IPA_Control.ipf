@@ -1,11 +1,11 @@
-// Copyright Sutter Instrument Corp. 2015 - 2024
-
+// Copyright Sutter Instrument Corp. 2015 - 2026
+// Modified November 5, 2026 TG
 // ---------------- Pragmas ----------------
 #pragma IgorVersion = 8.00						// Require Igor version 8.0 or later for compatbility
 #pragma rtGlobals=3									// Use modern global access method and strict wave access.
 #pragma ModuleName = IPAControl 				//This will become an independent module
 
-Static Strconstant AmpPath = "root:SutterIPAControl"							
+Static Strconstant AmpPath = "root:SutterIPA"							
 Static Constant IPA_StructVersion = 100
 Static StrConstant 	kIPAPrefsFileName = "IPAControl.bin"
 Static Constant kIPAPrefsRecordID = 0	
@@ -13,13 +13,13 @@ Static StrConstant ksPackageName = "SutterIPA"
 
 Static Constant TRUE = 1
 Static Constant FALSE = 0
-Static Constant SutterXOP_XOPVersion = 2.60			// SutterXOP major version number needs to match SutterPatch, minor version is for info only
+Static Constant SutterXOP_XOPVersion = 2.87			// SutterXOP major version number needs to match SutterPatch, minor version is for info only
 
 Static Constant kLiveMode = -1
 Static Constant kNoDevice = 255 // ampIndex and HSIndex are uchar, so -1 would be stored as 255
 Static Constant kIPASingle = 1
 Static Constant kIPADouble = 2
-Static Constant kSutterInterface = 3
+Static Constant kSutterInterface = 4
 Static Constant kMaxDigBits = 8
 Static Constant kMaxAmplifiers = 4
 Static Constant kMaxHeadstages = 8 //(2 double IPA * max amplifiers) 
@@ -31,9 +31,20 @@ Static Constant kStabilityControl = 1  //pF moved to prefs
 Static Constant kOffsetMin = -16384
 Static Constant kOffsetMax = 16383
 
+Static StrConstant IGainList = "0.5;1;2.5;5;10;25;"
+Static StrConstant VGainList = "10;20;50;100;200;500;"
+Static StrConstant FilterList ="500;1000;2000;5000;10000;20000;"
+
+Static Constant VID_Sutter = 0x1342			// Sutter's main manufacture VID
+Static Constant PID_DPatch = 0x0500			// dPatch
+Static Constant PID_IPA = 0x0400			// IPA
+
+Static StrConstant kIPAStr = "IPA"
+Static StrConstant kDIPAStr = "Double IPA"
+
 //-------------------Structure to store amplifier values ------------------------
 
-STRUCTURE ControlValues
+static STRUCTURE ControlValues
 	uchar vc			//VC - CC - I=0
 	uchar filter		//Output Filter
 	uchar gainvc		//VC Gain
@@ -60,12 +71,15 @@ STRUCTURE ControlValues
 	uchar bridgeon	//bridge balance on
 	uchar trackon 	// Tracking on
 	float track		//Tracking potential
+
 	char DACOffset  //For Trimming DAC... this is only necessary in rare cases.
 	uchar ampIndex
 	uchar hsIndex
+	double vmon
+	double imon
 EndStructure
 
-Structure AmpControls
+static Structure AmpControls
 	double analogOut[2]		//Aux out
 	double analogIn[4]	//Aux In
 	uchar amptype	//amplifier type
@@ -73,19 +87,210 @@ Structure AmpControls
 	uchar dout		//Digital Output (1-8)
 EndStructure
 
-Structure IPAControls
+static Structure IPAControls
 	uchar version
 	struct ControlValues HS[8] //max headstages
 EndStructure
 
-Structure IPASeries
+static Structure IPASeries
 	struct IPAControls ipa
 	struct AmpControls Amp[4] // max amplifiers
 	uchar activeHS
 	uchar numHeadstages
 	uchar numAmps
 EndStructure	
+
+static Constant Sutter_DeviceListVersion = 101
+static Constant Sutter_MaxDeviceListEntrie = 16
+static Constant Sutter_DeviceSerialNumberSize = 64
+
+static Structure Sutter_SerialNumberStruct
+	uchar s[ Sutter_DeviceSerialNumberSize ]
+EndStructure
+
+static Structure Sutter_AmpListStruct
+    uint32 VendorID
+    uint32 ProductID[ Sutter_MaxDeviceListEntrie ]
+    uint32 EntryID[ Sutter_MaxDeviceListEntrie ]
+    uint32 EntryIndex[ Sutter_MaxDeviceListEntrie ]
+    uint32 EntryAvailable[ Sutter_MaxDeviceListEntrie ]
+	Struct Sutter_SerialNumberStruct EntrySerialNo[ Sutter_MaxDeviceListEntrie ]
+    uint32 EntriesFound
+    uint32 DeviceListVersion
+EndStructure
+
+
+Static Function SP_IsWindows()
+#ifdef WINDOWS
+	return TRUE
+#else
+	return FALSE
+#endif
+End
+
+Static Function Sutter_GetDevicesListEntry(
+	Struct Sutter_AmpListStruct &DeviceList,
+	Variable Target_PID,
+	Variable StartIndex )
+
+	Variable i
+	for( i = StartIndex; i < DeviceList.EntriesFound; i++ )
+		if( SP_IsWindows() || DeviceList.EntryAvailable[ i ] )
+			if( DeviceList.EntryID[ i ] == Target_PID )
+				return i
+			EndIf
+		EndIf
+	EndFor
+	return -1
+End
+
+// This function gets a list of Sutter Amplifiers connected to the USB bus inclusing their serial numbers.
+// Based on the serial number we can distinquish between an IPA, Double IPA or Dendrite interface
+// This code is only intrested in IPA and Douple IPA amplifiers
+// If the device was already opened, then it will not be shown on the list as it is locked 
+Static Function Sutter_GetDevicesList( Struct Sutter_AmpListStruct &DeviceList )
+	Variable i
+	for( i = 0; i < Sutter_MaxDeviceListEntrie; i++ )
+		DeviceList.ProductID[ i ] = 0
+	EndFor
+	DeviceList.VendorID = VID_Sutter
+	DeviceList.ProductID[ 0 ] = PID_DPatch
+	DeviceList.ProductID[ 1 ] = PID_IPA
+	DeviceList.EntriesFound = 0
+	DeviceList.DeviceListVersion = Sutter_DeviceListVersion
+
+#if exists( "Sutter_GetListOfDevices" )
+	Sutter_GetListOfDevices( DeviceList )
+#endif
+
+	return DeviceList.EntriesFound
+End
+
+// Get a list of serial numbers to use with IPA_Connect
+Static Function/S Sutter_GetIPASerialNumberList( Struct Sutter_AmpListStruct &DeviceList)
+	String dev_list = ""
+	if (DeviceList.EntriesFound > 0)
+		//IPA and DoubleIPA use the same PID
+		Variable target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, 0 )
+		if( target_entry < 0 )
+			//no IPA devices
+			return dev_list
+		EndIf
+
+		String serial_number
+		do
+			serial_number = DeviceList.EntrySerialNo[ target_entry ].s
+			switch (IPA_DeviceTypeFromSerialNumber( serial_number ) )
+				case kIPASingle:
+				case kIPADouble:
+					dev_List += serial_number + ";"
+					break
+			endswitch
+			target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, target_entry + 1 )
+		while( target_entry > 0 )
+	endif
 	
+	return dev_list
+End			
+
+// Get the number of IPA series amplifiers that are connected to the USB bus
+Static Function Sutter_GetNumIPAConnected( Struct Sutter_AmpListStruct &DeviceList)
+	Variable num_ipa = 0
+	if (DeviceList.EntriesFound > 0)
+		//IPA and DoubleIPA use the same PID
+		Variable target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, 0 )
+		if( target_entry >= 0 )
+			String serial_number
+			do
+				serial_number = DeviceList.EntrySerialNo[ target_entry ].s
+				switch (IPA_DeviceTypeFromSerialNumber( serial_number ) )
+					case kIPASingle:
+					case kIPADouble:
+						num_ipa+=1
+				endswitch
+				target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, target_entry + 1 )
+			while( target_entry > 0 )
+		endif
+	endif
+	
+	return num_ipa
+End			
+
+//use a string match to determine the IPA series device type
+Static Function IPA_DeviceTypeFromSerialNumber( String SerialNumber )
+	// serial numbers are:
+	//    IPA = “IPA/E-1*”
+	//    DIPA = “IPA/E-2*
+	//    Dendrite = “DAQ*”
+	if( stringmatch( SerialNumber, "IPA/E-1*" ) )
+		return kIPASingle
+	elseif( stringmatch( SerialNumber, "IPA/E-2*" ) )
+		return kIPADouble
+	elseif( stringmatch( SerialNumber, "DAQ/E-*" ) )
+		return kSutterInterface
+	endif
+	return 0
+End
+
+//connect a single device by serial number match or all connected
+Static Function IPA_ConnectToDevice(
+	Struct Sutter_AmpListStruct &DeviceList,
+	Variable UseSerialNo,
+	String TargetSerialNo,
+	Variable TargetDevice,
+	String &ErrorMessage )	
+	
+	ErrorMessage = ""
+	// start with the first IPA device found on the device list
+	String serial_number
+	Variable num_amps
+
+	Variable target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, 0 )
+	if( target_entry < 0 )
+		return FALSE
+	EndIf
+
+	// Igor code:
+	//		Switch( TargetDevice )
+	//			case 0:		// first hardware found
+	//			case 1:		// IPA or DIPA
+	//			case 2:		// dPatch
+	//			case 3:		// dendrite
+	//		EndSwitch
+	// SutterXOP code, argument of SutterDAQUSBReset:
+	//		1 => don't care: IPA or dendrite; 2 = IPA only; 3 => Dendrite only
+
+	Variable ampl_kind = 1
+	String name_match = "IPA*"
+	if( TargetDevice == 1 )
+		ampl_kind = 2
+	EndIf
+
+	// connect to the device and
+	// - use the serial number to discriminate between IPA and Dendrite
+	// - if requested, ensure the correct serial number.
+	do
+		serial_number = DeviceList.EntrySerialNo[ target_entry ].s
+		// check whether this device is either a IPA or Double IPA
+		if( stringmatch( serial_number, name_match ) )
+			// check whether this device serial number is equal to the target serial number, if required
+			if( ( ! UseSerialNo ) || ( cmpstr( serial_number, TargetSerialNo ) == 0 ) )
+				num_amps = SutterDAQUSBReset( DeviceList.EntryIndex[ target_entry ], ampl_kind )
+				if( num_amps > 0 )
+					return num_amps
+				endif
+			EndIf
+		EndIf
+		target_entry = Sutter_GetDevicesListEntry( DeviceList, PID_IPA, target_entry + 1 )
+	while( target_entry > 0 )
+
+	if( UseSerialNo )
+		ErrorMessage = "Connect to IPA with serial number" + TargetSerialNo + " not found."
+	endif
+	
+	return FALSE
+End
+
 
 static Function SetBit( Variable Bit, Variable BitSet )
 	return BitSet | ( 1 << Bit )
@@ -95,6 +300,215 @@ End
 static Function ClearBit( Variable Bit, Variable BitSet )
 	return BitSet & ~( 1 << Bit )
 End
+
+
+static Function IPA_GetDigOutWordChannel(Variable ampType)
+	switch (ampType)
+		case kIPASingle:
+			return 3
+			break
+		case kIPADouble:
+		case kSutterInterface:
+			return 4
+			break
+	endswitch	
+End
+
+
+static Function IPA_GetHSHardwareOutChannel(Variable probeIndex)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if (SIPA.numAmps > 0)
+		if (SIPA.ipa.HS[probeIndex].HSIndex == 0)
+			return 0
+		else
+			return 1
+		endif
+	endif
+		
+	return kNoDevice
+End
+
+
+static Function IPA_GetHSHardwareInChannel(Variable probeIndex, Variable isCurrent)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if (SIPA.numAmps > 0)
+		if (SIPA.ipa.HS[probeIndex].HSIndex == 0)
+			if (isCurrent)
+				return 0
+			else
+				return 1
+			endif
+		else
+			if (isCurrent)
+				return 2
+			else
+				return 3
+			endif
+		endif
+	endif
+		
+	return kNoDevice
+End
+
+
+static Function IPA_GetAmpAuxInChannel(Variable amplIndex, Variable auxIndex)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+
+	if ((auxIndex < 0) || (auxIndex > 3))
+		return kNoDevice
+	endif
+	
+	if (SIPA.numAmps > 0)
+		Variable startChannel
+		if (SIPA.amp[amplIndex].ampType == kIPASingle)
+			startChannel = 2
+		else
+			startChannel = 4
+		endif
+		return (startChannel+auxIndex)
+	endif
+		
+	return kNoDevice
+End
+
+
+static Function IPA_GetAmpAuxOutChannel(Variable amplIndex, Variable auxIndex)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+
+	if ((auxIndex < 0) || (auxIndex > 2))
+		return kNoDevice
+	endif
+	
+	if (SIPA.numAmps > 0)
+		Variable startChannel
+		if (SIPA.amp[amplIndex].ampType == kIPASingle)
+			startChannel = 1
+		else
+			startChannel = 2
+		endif
+		return (startChannel+auxIndex)
+	endif
+		
+	return kNoDevice
+End
+
+
+static Function/S IPA_GetAmpHSOutWaveStr(Variable probeIndex)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if (SIPA.numAmps == 0)
+		return ""
+	endif
+	
+	string waveStr = "0" + num2istr(SIPA.ipa.HS[probeIndex].ampIndex) //amp index
+	waveStr+= "0" + num2istr(SIPA.amp[SIPA.ipa.HS[probeIndex].ampIndex].ampType) //amptype
+	waveStr+= "0" + num2istr(SIPA.ipa.HS[probeIndex].HSIndex) //hs index based on amplifier 
+	
+	if (SIPA.ipa.HS[probeIndex].HSIndex == 0)
+		waveStr+= "00"
+	else
+		waveStr+= "01"
+	endif
+	
+	return waveStr
+End
+
+
+static Function/S IPA_GetAmpHSInWaveStr(Variable probeIndex, Variable isCurrent)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if (SIPA.numAmps == 0)
+		return ""
+	endif
+	
+	string waveStr = "0" + num2istr(SIPA.ipa.HS[probeIndex].ampIndex) //amp index
+	waveStr+= "0" + num2istr(SIPA.amp[SIPA.ipa.HS[probeIndex].ampIndex].ampType) //amptype
+	waveStr+= "0" + num2istr(SIPA.ipa.HS[probeIndex].HSIndex) //hs index based on amplifier 
+	
+	if (SIPA.ipa.HS[probeIndex].HSIndex == 0)
+		if (isCurrent)
+			waveStr+= "00"
+		else
+			waveStr+= "01"
+		endif
+	else
+		if (isCurrent)
+			waveStr+= "02"
+		else
+			waveStr+= "03"
+		endif
+	endif
+	
+	return waveStr
+End
+
+static Function/S IPA_GetAmpAuxInWaveStr(Variable amplIndex, Variable auxIndex)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if ((amplIndex < 0) || (amplIndex > SIPA.numAmps)) 
+		return ""
+	endif
+
+	if ((auxIndex < 0) || (auxIndex > 3))
+		return ""
+	endif
+	
+	string waveStr = "0" + num2istr(amplIndex) //amp index
+	waveStr+= "0" + num2istr(SIPA.amp[amplIndex].ampType) //amptype
+	waveStr+= "-1" //no hs index
+	
+	if (SIPA.amp[amplIndex].ampType == kIPASingle)
+		waveStr+= "0" + num2istr(2+auxIndex)
+	else
+		waveStr+= "0" + num2istr(4+auxIndex)
+	endif
+	
+	return waveStr
+End
+
+
+static Function/S IPA_GetAmpAuxOutWaveStr(Variable amplIndex, Variable auxIndex, Variable isDigOut)
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
+	
+	if ((amplIndex < 0) || (amplIndex > SIPA.numAmps)) 
+		return ""
+	endif
+
+	if ((auxIndex < 0) || (auxIndex > 2))
+		return ""
+	endif
+	
+	string waveStr = "0" + num2istr(amplIndex) //amp index
+	waveStr+= "0" + num2istr(SIPA.amp[amplIndex].ampType) //amptype
+	waveStr+= "-1" //no hs index
+	
+	if (SIPA.amp[amplIndex].ampType == kIPASingle)
+		if (isDigOut)
+			waveStr+= "03"
+		else
+			waveStr+= "0" + num2istr(1+auxIndex)
+		endif
+	else
+		if (isDigOut)
+			waveStr+= "04"
+		else
+			waveStr+= "0" + num2istr(2+auxIndex)
+		endif
+	endif
+	
+	return waveStr
+End
+
 
 //-------------------Structure to store amplifier values ------------------------
 //safe the last control states
@@ -109,46 +523,56 @@ static Function GetControls(Struct IPAControls &ipa)
 	
 	// If error or prefs not found or not valid, initialize them.
 	if (V_flag != 0 || V_bytesRead == 0 || ipa.version != IPA_StructVersion )
-		InitControls(ipa)
+		IPA_InitAllControls(ipa)
 	endif
 End
 
 
-static Function InitControls(Struct IPAControls &ipa)
+static Function IPA_InitAllControls(Struct IPAControls &ipa)
 	Variable hsindex
 	ipa.version = IPA_StructVersion
 	for (hsIndex=0; hsIndex<kMaxHeadstages; hsIndex+=1)
-		ipa.hs[hsindex].gainvc = 3
-		ipa.hs[hsindex].gaincc = 3
-		ipa.hs[hsindex].filter = 3
-		ipa.hs[hsindex].lag = 20
-		ipa.hs[hsindex].capneuton = 0
-		ipa.hs[hsindex].hpoton = 0
-		ipa.hs[hsindex].hcurron = 0
-		ipa.hs[hsindex].fastphase = 0.1
-		ipa.hs[hsindex].vc = 0
-		ipa.hs[hsindex].seal	= 0	
-		ipa.hs[hsindex].offset = 0.0
-		ipa.hs[hsindex].offsetlock = 0
-		ipa.hs[hsindex].LJP = 0.0
-		ipa.hs[hsindex].hpot = 0.0
-		ipa.hs[hsindex].hcurr = 0.0
-		ipa.hs[hsindex].fastmag = 0.1
-		ipa.hs[hsindex].compon = 0
-		ipa.hs[hsindex].rscomp = 0
-		ipa.hs[hsindex].cmcomp = 0
-		ipa.hs[hsindex].corron = 0
-		ipa.hs[hsindex].rscorr = 0
-		ipa.hs[hsindex].rspred = 0
-		ipa.hs[hsindex].capneuton = 0
-		ipa.hs[hsindex].bridge = 0.0
-		ipa.hs[hsindex].bridgeon	 = 0
-		ipa.hs[hsindex].trackon = 0
-		ipa.hs[hsindex].track = 0.0
-		ipa.hs[hsindex].DACOffset = 0.0
+		IPA_InitProbeControls(ipa,hsindex)
 	endfor
+	IPA_GetDACOffset()
 End
 
+
+static Function IPA_InitProbeControls(Struct IPAControls &ipa, Variable hsindex)
+	if ( ( hsindex < 0 ) || ( hsindex >= kMaxHeadstages ) )
+		return FALSE
+	endif
+	
+	ipa.hs[hsindex].gainvc = 3
+	ipa.hs[hsindex].gaincc = 3
+	ipa.hs[hsindex].filter = 3
+	ipa.hs[hsindex].lag = 20
+	ipa.hs[hsindex].capneuton = 0
+	ipa.hs[hsindex].hpoton = 0
+	ipa.hs[hsindex].hcurron = 0
+	ipa.hs[hsindex].fastphase = 0.1
+	ipa.hs[hsindex].vc = 0
+	ipa.hs[hsindex].seal	= 0	
+	ipa.hs[hsindex].offset = 0.0
+	ipa.hs[hsindex].offsetlock = 0
+	ipa.hs[hsindex].LJP = 0.0
+	ipa.hs[hsindex].hpot = 0.0
+	ipa.hs[hsindex].hcurr = 0.0
+	ipa.hs[hsindex].fastmag = 0.1
+	ipa.hs[hsindex].compon = 0
+	ipa.hs[hsindex].rscomp = 0
+	ipa.hs[hsindex].cmcomp = 0
+	ipa.hs[hsindex].corron = 0
+	ipa.hs[hsindex].rscorr = 0
+	ipa.hs[hsindex].rspred = 0
+	ipa.hs[hsindex].capneuton = 0
+	ipa.hs[hsindex].bridge = 0.0
+	ipa.hs[hsindex].bridgeon	 = 0
+	ipa.hs[hsindex].trackon = 0
+	ipa.hs[hsindex].track = 0.0
+	
+	return TRUE
+End
 
 //get struct string path
 static Function /S Get_StructPath()
@@ -178,45 +602,74 @@ End
 
 
 //init the local structure
-static Function InitMainStructure()
-	Struct IPASeries SIPA
-	GetStructure(SIPA)	
-	GetControls(SIPA.ipa)
-	
+static Function IPA_InitMainStructure(Struct IPASeries &SIPA)	
 	Variable index = 0
 	Variable hsindex = 0
-	SIPA.numAmps = SutterDAQusbreset()
+
+	Struct Sutter_AmpListStruct device_list
+	Variable total_devices = Sutter_GetDevicesList( device_list )	
+	Variable isdemoMode = FALSE
+
+	NVAR demo_amptype = $(AmpPath + ":demo_amptype")
 	
-	if (SIPA.numAmps == 0)
+	if (total_devices == 0)
+		isdemoMode = TRUE
+	else
+		//if using serial numbers need code to select a device serial number and then store it
+		//for now we will load all connected IPA / Double IPA devices 
+		Variable use_serial_number = FALSE
+		Variable target_device = 0 //all connected
+		String target_serial_number = ""
+		String error_message = ""
+	
+		SIPA.numHeadstages = 0
+		SIPA.numAmps = 0
+		Variable num_amps = IPA_ConnectToDevice( device_list, use_serial_number, target_serial_number, target_device, error_message)
+		if (num_amps == 0)
+			isdemoMode = TRUE
+		else
+			String serial_number = ""
+			Variable amp_type
+			Variable ampl_index = 0
+			for (index=0; index<num_amps; index+=1)
+				serial_number = SutterDAQSN( index )
+				amp_type = IPA_DeviceTypeFromSerialNumber( serial_number )
+				if (amp_type != kSutterInterface)
+					SIPA.amp[index].serialNum = serial_number
+					SIPA.amp[index].ampType = amp_type 
+					SIPA.ipa.HS[hsIndex].ampIndex = ampl_index
+					SIPA.ipa.HS[hsIndex].HSIndex = 0
+					SIPA.numHeadstages+=1
+					hsindex+=1
+					if (amp_type == kIPADouble)
+						SIPA.ipa.HS[hsIndex].ampIndex = ampl_index
+						SIPA.ipa.HS[hsIndex].HSIndex = 1
+						SIPA.numHeadstages+=1
+						hsindex+=1
+					endif
+					ampl_index+=1
+				endif
+			endfor
+			SIPA.numAmps = ampl_index
+			if (SIPA.numAmps == 0)
+				//no devices connected
+				isdemoMode = TRUE
+			endif
+		endif
+	endif
+	
+	if ( isdemoMode ) 
 		//set up demo mode
 		SIPA.numAmps = 1
 		SIPA.numHeadstages = 1
-		NVAR demo_amptype = $(AmpPath + ":demo_amptype")
-		demo_amptype = kIPASingle
 		SIPA.amp[0].serialNum = "demo"
 		SIPA.ipa.HS[0].ampIndex = 0
 		SIPA.ipa.HS[0].HSindex = 0
+		demo_amptype = kIPASingle
 	else
-		String serial
-		for (index=0; index<SIPA.numAmps; index+=1)
-			serial = SutterDAQSN(index)
-			SIPA.amp[index].serialNum = serial
-			if (str2num(serial[6]) == 2)
-				SIPA.amp[index].ampType = kIPADouble
-				SIPA.ipa.HS[hsIndex].ampIndex = index
-				SIPA.ipa.HS[hsIndex].HSIndex = 0
-				hsindex+=1
-				SIPA.ipa.HS[hsIndex].ampIndex = index
-				SIPA.ipa.HS[hsIndex].HSIndex = 1
-				hsindex+=1
-			else
-				SIPA.amp[index].ampType = kIPASingle
-				SIPA.ipa.HS[hsIndex].ampIndex = index
-				SIPA.ipa.HS[hsIndex].HSIndex = 0
-				hsindex+=1
-			endif
-		endfor
-		SIPA.numHeadstages = hsindex
+		demo_amptype = kLiveMode
+		NVAR SD_USB = $(AmpPath + ":SD_USB")
+		SD_USB = SIPA.numAmps
 	endif
 	
 	//reset all remaining none connected
@@ -230,8 +683,22 @@ static Function InitMainStructure()
 	return TRUE
 End
 
+static Function/S IPA_GetActiveSNList()
+	//this list is for device that were opened
+	Struct IPASeries SIPA
+	GetStructure(SIPA)	
 
-static Function ActivateHeadstage(	Struct IPASeries &SIPA, Variable HSindex)
+	Variable index
+	String active_list = ""
+	for (index=0; index<SIPA.numAmps ; index+=1)
+		active_list += SIPA.amp[index].serialNum + ";"
+	endfor
+	
+	return active_list
+End 
+
+
+static Function IPA_ActivateHeadstage(	Struct IPASeries &SIPA, Variable HSindex)
 	DFREF dfr=$AmpPath
 	NVar SD_DIO = dfr:SD_DIO
 
@@ -241,9 +708,9 @@ static Function ActivateHeadstage(	Struct IPASeries &SIPA, Variable HSindex)
 End
 
 
-static Function CheckXOPVersion()
+static Function Sutter_CheckXOPVersion(Variable showDialog)
 	String message = "SutterXOP_Win.xop"
-
+	Variable xop_Status = FALSE
 #if exists( "SutterXOP_GetXOPVersion" )
 	Variable major_version = 0
 	Variable minor_version = 0
@@ -251,6 +718,7 @@ static Function CheckXOPVersion()
 
 	if( major_version == SutterXOP_XOPVersion )
 		message = ""
+		xop_status = TRUE
 	else
 		String xop_version = ""
 		String need_version = ""
@@ -269,27 +737,45 @@ static Function CheckXOPVersion()
 	message += "\r\rThe SutterXOP was not found or is faulty and cannot be used."
 #endif
 
-	if( strlen( message ) > 0 )
+	if ( (showDialog) && ( strlen( message ) > 0 ) )
 		DoAlert /T=( "XOP Error" ) 0, message
-		return FALSE
 	EndIf
 
-	return TRUE
+	return xop_status
 End
 
 
-Function IPA_Initialize()
-	if (CheckXOPVersion() == TRUE)
+Function IPA_DoInitialize()
+	if (Sutter_CheckXOPVersion(FALSE) == TRUE)
 		NewDataFolder /O $(AmpPath)	
 		DFREF dfr=$AmpPath
 		variable /G $(AmpPath + ":SD_Seal") = 0
 		variable /G $(AmpPath + ":SD_USB") = 0
 		variable /G $(AmpPath + ":SD_DIO") = 0
-		variable /G $(AmpPath + ":SD_sweeptime")=0
-		variable /G $(AmpPath + ":demo_amptype") = kIPASingle
-		Make /O/n=(8,2) $(AmpPath + ":SD_Meter") = 0
+		variable /G $(AmpPath + ":SD_sweeptime") = 0
+		variable /G $(AmpPath + ":demo_amptype") = kIPASingle	
+		variable /G $(AmpPath + ":LibUSBError") = 0
+
+		Make /D/O/n=(8,kMaxAmplifiers) $(AmpPath + ":SD_Meter") = 0
+		//SD_Meter column is amplifier index
+		//row 0 = IMon headstage 0
+		//row 1 = VMon headstage 0
+		//row 2 = IMon headstage 1 only for Double IPA
+		//row 3 = VMon headstage 1 only for Double IPA
+		//row 4 = AuxIn1
+		//row 5 = AuxIn2
+		//row 6 = AuxIn3
+		//row 7 = AuxIn4
 		String /G $(AmpPath + ":SD_Struct") = ""
- 		InitMainStructure()
+ 
+	 	Struct IPASeries SIPA
+		GetStructure(SIPA)	
+ 		IPA_InitMainStructure(SIPA)
+ 		IPA_ResetAmplifier(SIPA)
+		SutterDAQreset()
+		SutterDAQUseWaveModify( TRUE )
+ 		
+ 		IPA_StartTimerTask()
  		return TRUE
 	endif
 	
@@ -297,23 +783,29 @@ Function IPA_Initialize()
 End
 
 
-Function IPA_Shutdown()
+Function IPA_DoShutdown()
 	if (IsInitialized() == FALSE)
 		return FALSE
 	endif
 
+	IPA_StopTimerTask()
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
 	SaveControls(SIPA.ipa)
 	
+	//close USB connection
+	if ( IPA_OkToSendCommand() )
+		SutterDAQUSBClose()
+	endif
+	
 	//kill data folder and all SVAR and NVAR
-	KillDataFolder $(AmpPath)	
+	KillDataFolder/Z $(AmpPath)	
 	
 	return TRUE
 End
 
 
-Function IPA_DemoMode()
+static Function IPA_DemoMode()
 	NVAR/Z demo_amptype = $(AmpPath + ":demo_amptype")
 	if ((!NVAR_Exists(demo_amptype)) || (demo_amptype != kLiveMode))
 		return TRUE
@@ -323,7 +815,7 @@ Function IPA_DemoMode()
 End
 
 
-Function IPA_OkToSendCommand()
+static Function IPA_OkToSendCommand()
 	if (IPA_DemoMode() == TRUE)
 		return FALSE
 	else
@@ -332,7 +824,7 @@ Function IPA_OkToSendCommand()
 End
 
 
-Function IPA_USBconnected()
+static Function IPA_USBconnected()
 	Variable usbConnected
 	NVar/Z SD_USB = $(AmpPath + ":SD_USB")
 	
@@ -348,30 +840,36 @@ Function IPA_USBconnected()
 End
 
 
-static Function ResetUSB()
+static Function IPA_ResetUSB()
 	SutterDAQReset()
-	if (SutterDAQUSBReset())
+	if( SutterDAQUSBReset( 0, 0 ) > 0 )
+		NVar/Z LibUSBError = $(AmpPath + ":LibUSBError")
+		LibUSBError = 0
 		Struct IPASeries SIPA
 		GetStructure(SIPA)
-		ResetAmplifier(SIPA)
+		IPA_ResetAmplifier(SIPA)
 	endif
 End
 
 
-static Function ResetAmplifier(Struct IPASeries &SIPA)
+static Function IPA_ResetAmplifier(Struct IPASeries &SIPA)
 	if (IPA_OkToSendCommand() == TRUE)
-		SetDacOffset(SIPA)	
+		IPA_SetDacOffset(SIPA)	
 		variable step
-		sutterdaqwrite(0,11,0,0,3)		//Some dIPAs don't set default filter correctly first time (firmware 207 and earlier)
-		for (step=0; step<SIPA.numHeadstages; step++)
-			 SetDIPA_fromStructure(SIPA,step)			//This sets amplifier control panel based on stored structure.
+		variable ampindex
+		for (ampindex=0; ampindex<SIPA.numAmps;ampindex+=1)
+			sutterdaqwrite(ampindex,11,0,0,3)		//Some dIPAs don't set default filter correctly first time (firmware 207 and earlier)
 		endfor
-		ResetAllOutputs(SIPA) 			// This sets digital and analog aux outs
+		
+		for (step=0; step<SIPA.numHeadstages; step++)
+			 IPA_SetFromStructure(SIPA,step)			//This sets amplifier control panel based on stored structure.
+		endfor
+		IPA_ResetAllOutputs(SIPA) 			// This resets digital and analog aux outs
 	endif	
 End
 
 
-static Function ReSetAllOutputs(Struct IPASeries &SIPA)	
+static Function IPA_ResetAllOutputs(Struct IPASeries &SIPA)	
 	Variable ampIndex
 	Variable v_value
 	variable step
@@ -397,7 +895,7 @@ static Function ReSetAllOutputs(Struct IPASeries &SIPA)
 End
 
 
-static Function SetCompensation(Struct IPASeries &SIPA, variable probeIndex)  // This sets the Rs Cm compensation along with Rs Prediction %  (all are related)
+static Function IPA_SetCompensation(Struct IPASeries &SIPA, variable probeIndex)  // This sets the Rs Cm compensation along with Rs Prediction %  (all are related)
 	if (IPA_OkToSendCommand() == FALSE)
 		return FALSE
 	endif
@@ -440,7 +938,7 @@ static Function SetCompensation(Struct IPASeries &SIPA, variable probeIndex)  //
 End
 
 
-static Function SetCorrection(Struct IPASeries &SIPA, variable probeIndex)
+static Function IPA_SetCorrection(Struct IPASeries &SIPA, variable probeIndex)
 	if (IPA_OkToSendCommand() == FALSE)
 		return FALSE
 	endif
@@ -477,7 +975,7 @@ static Function SetCorrection(Struct IPASeries &SIPA, variable probeIndex)
 End
 
 
-static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeIndex)  
+static Function IPA_SetFromStructure(Struct IPASeries &SIPA, variable probeIndex)  
 // THIS IS CALLED ON STARTUP AND EACH TIME WE SWITCH HS
 	if (IPA_OkToSendCommand() == FALSE)
 		return FALSE
@@ -532,7 +1030,7 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 	//Fast Mag -- may allow a different value for CC?
 	setval=round(SIPA.ipa.HS[probeIndex].fastmag*655.32)
 	if (SIPA.ipa.HS[probeIndex].vc==2)
-		ModifyCapMag(setval)
+		IPA_ModifyCapMag(setval)
 		if (SIPA.ipa.HS[probeIndex].capneuton == 0)
 			setval=0
 		endif
@@ -547,11 +1045,7 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 	//SRs Lag
 	setval=min(1023,round(SIPA.ipa.HS[probeIndex].lag*5.12)) 	//Settings from 20 to 200  (us)
 	setval=max(51,setval)
-	if (HS)
-		SutterDAQwrite(Amp,23,10,(setval&0xff00)/256,setval&0x00ff) //14bit unsigned?
-	else
-		SutterDAQwrite(Amp,2,10,(setval&0xff00)/256,setval&0x00ff)
-	endif
+	SutterDAQwrite(Amp,cmd,10,(setval&0xff00)/256,setval&0x00ff) //14bit unsigned?
 	
 	//Rs corr% turns off in IC
 	// setval is the product of Rs corr% AND Rs
@@ -559,8 +1053,8 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 	//Rs can stay on, Pred value is OK, but need to switch off (SwCtrl2) Cm is off in IC
 
 //THIS NEEDS TO BE HS SPECIFIC AND KNOW SWITCH BETWEEN VC AND CC!
- 	SetCompensation(SIPA,probeIndex)
- 	SetCorrection(SIPA,probeIndex)
+ 	IPA_SetCompensation(SIPA,probeIndex)
+ 	IPA_SetCorrection(SIPA,probeIndex)
 	IPA_usdelay(2000)
 //Short delay to insure injection capacitor is discharged prior to changing to CC
 // We may only want this delay if we are going VC->CC
@@ -587,12 +1081,17 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 		SutterDAQwrite(amp,16,HS,(setval&0xff00)/256,setval&0x00ff)
 	else
 		if (SIPA.ipa.HS[probeIndex].trackon)
-			//Enter code for slow hold here:
+			setval = 32.767*SIPA.ipa.HS[probeIndex].track
+			if (HS)
+		 		SutterDAQwrite(amp,25,1,(setval&0xff00)/256,setval&0x00ff)
+	 		else
+				SutterDAQwrite(Amp,19,1,(setval&0xff00)/256,setval&0x00ff)
+			endif
 		else
-			setval = 1.63835*SIPA.ipa.HS[probeIndex].hcurr*SIPA.ipa.HS[probeIndex].hcurron
+			setval = 1.63834*SIPA.ipa.HS[probeIndex].hcurr*SIPA.ipa.HS[probeIndex].hcurron
 			SutterDAQwrite(amp,16,HS,(setval&0xff00)/256,setval&0x00ff)
 		endif
-	endif			
+	endif
 
 //6. Change to correct gain
 	if(SIPA.ipa.HS[probeIndex].vc==0)  //VC
@@ -616,7 +1115,7 @@ static Function SetDIPA_fromStructure(Struct IPASeries &SIPA, variable probeInde
 End
 
 
-static Function ModifyCapMag (variable &Value)
+static Function IPA_ModifyCapMag (variable &Value)
 	Value +=  (kCC_deltaCap - kStabilityControl)*655.32
 	if (Value<0)
 		Value = 0
@@ -628,7 +1127,7 @@ static Function ModifyCapMag (variable &Value)
 end
 
 
-static Function Auto_WholeCellCompensation(Struct IPASeries &SIPA, Variable probeIndex) 
+static Function IPA_AutoWholeCellCompensation(Struct IPASeries &SIPA, Variable probeIndex) 
 	if (IPA_OkToSendCommand() == FALSE)
 		return FALSE
 	endif
@@ -652,6 +1151,8 @@ static Function Auto_WholeCellCompensation(Struct IPASeries &SIPA, Variable prob
 	endif
 	variable capreturn, rsreturn
 	
+	SutterDAQWrite(Amp,1,0,0,100) //set sampling rate to 50 kHz
+
 	SutterDAQwrite(Amp,13,HS,0,1)
 	ipa_tickdelay(30)
 	if (HS)
@@ -675,11 +1176,12 @@ static Function Auto_WholeCellCompensation(Struct IPASeries &SIPA, Variable prob
 	SIPA.ipa.HS[probeIndex].bridge = rsreturn
 	SIPA.ipa.HS[probeIndex].compon = 1
 	
+	//if acquisition is running reset sampling rate
 	return TRUE
 End
 
 
-static Function Auto_ElectrodeCompensation(Struct IPASeries &SIPA, Variable probeIndex)
+static Function IPA_AutoElectrodeCompensation(Struct IPASeries &SIPA, Variable probeIndex)
 	if (IPA_OkToSendCommand() == FALSE)
 		return FALSE
 	endif
@@ -703,6 +1205,8 @@ static Function Auto_ElectrodeCompensation(Struct IPASeries &SIPA, Variable prob
 	endif
 	variable magreturn, taureturn
 	
+	SutterDAQWrite(Amp,1,0,0,100) //set sampling rate to 50 kHz
+	
 	SutterDAQwrite(Amp,13,HS,0,0)
 	if (HS)
 		magreturn = round(SutterDAQread(Amp,16+HS*7)/6.5532)/100		//16 and 17 for HS2
@@ -713,12 +1217,13 @@ static Function Auto_ElectrodeCompensation(Struct IPASeries &SIPA, Variable prob
 	endif
 	SIPA.ipa.HS[probeIndex].fastmag = magreturn
 	SIPA.ipa.HS[probeIndex].fastphase = taureturn
-	
+
+	//if acquisition is running reset sampling rate	
 	return TRUE
 End
 
 
-static Function SetDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable bit, Variable state)
+static Function IPA_SetDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable bit, Variable state)
 	// Write DIO to Amplifier
 	if ((bit<0) || (bit>=kMaxDigBits))
 		return FALSE
@@ -745,7 +1250,7 @@ static Function SetDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable bi
 End
 
 
-static Function SetAllDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable state)
+static Function IPA_SetAllDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable state)
 	Variable digOutIndex
 	
 	DFREF dfr=$AmpPath
@@ -766,7 +1271,7 @@ static Function SetAllDigOut(Struct IPASeries &SIPA, Variable ampindex, Variable
 End
 
 
-static Function SetAuxOut(Struct IPASeries &SIPA, Variable ampIndex, Variable channel, Variable value)	
+static Function IPA_SetAuxOut(Struct IPASeries &SIPA, Variable ampIndex, Variable channel, Variable value)	
 	if (abs(value)>10)
 		value = 10*sign(value)
 	endif
@@ -794,7 +1299,7 @@ static Function SetAuxOut(Struct IPASeries &SIPA, Variable ampIndex, Variable ch
 End
 
 
-static Function ReadAuxIn(Struct IPASeries &SIPA, Variable ampIndex, Variable channel)
+static Function IPA_ReadAuxIn(Struct IPASeries &SIPA, Variable ampIndex, Variable channel [,Variable use_SDMeter])
 	Variable value = nan
 	if ((ampindex<0) || (ampindex>SIPA.numAmps))
 		return FALSE
@@ -807,36 +1312,52 @@ static Function ReadAuxIn(Struct IPASeries &SIPA, Variable ampIndex, Variable ch
 	Variable ADCin
 	variable Amptype = SIPA.amp[ampindex].amptype
 	
-	switch (Amptype)
-		case kIPASingle:
-			ADCin = 3 + channel //channel one arrives on read(3)
-			break
-		case kIPADouble:
-			switch (channel)
-				case 0: 
-					ADCin = 5
-					break
-				case 1: 
-					ADCin = 6
-					break
-				case 2: 
-					ADCin = 23
-					break
-				case 3: 
-					ADCin = 24
-					break
-			endswitch
-			break
-		case kSutterInterface:
-			//should never get here
-			return FALSE
-	endswitch
-
-	if (IPA_OKToSendCommand())
-		value = SutterDAQread(ampIndex,ADCin)
-	else
-		value = ADCin // fake value
+	if (ParamIsDefault(use_SDMeter))
+		use_SDMeter = FALSE
 	endif
+	
+	if (use_SDMeter)
+		Wave/D/Z SD_Meter = $(AmpPath + ":SD_Meter")
+		if (waveExists(SD_Meter))
+			//AuxIn1 = index 4
+			//channel is 0-based
+			value = SD_Meter[channel+4][ampIndex]
+		else
+			value = nan
+		endif
+	else
+		switch (Amptype)
+			case kIPASingle:
+				ADCin = 3 + channel //channel one arrives on read(3)
+				break
+			case kIPADouble:
+				switch (channel)
+					case 0: 
+						ADCin = 5
+						break
+					case 1: 
+						ADCin = 6
+						break
+					case 2: 
+						ADCin = 23
+						break
+					case 3: 
+						ADCin = 24
+						break
+				endswitch
+				break
+			case kSutterInterface:
+				//should never get here
+				return FALSE
+		endswitch
+	
+		if (IPA_OKToSendCommand())
+			value = SutterDAQread(ampIndex,ADCin)
+		else
+			value = ADCin // fake value
+		endif
+	endif
+	
 	SIPA.amp[ampindex].analogIn[channel] = value
 	SaveStructure(SIPA)
 
@@ -846,7 +1367,7 @@ End
 
 //------------------IPA Delay Functions-------------------------------
 
-Function IPA_tickdelay(timeval) 		//for inaccurate short delays (1 tick ~ 17ms)
+static Function IPA_tickdelay(timeval) 		//for inaccurate short delays (1 tick ~ 17ms)
 	variable timeval
 	variable t0 = ticks
 	
@@ -854,7 +1375,7 @@ Function IPA_tickdelay(timeval) 		//for inaccurate short delays (1 tick ~ 17ms)
 	while(ticks-t0<timeval)
 End
 
-Function IPA_usdelay(timeval)  		//for microsecond delays 
+static Function IPA_usdelay(timeval)  		//for microsecond delays 
 	variable timeval
 	variable t0 = stopmstimer(-2)
 
@@ -866,7 +1387,7 @@ End
 
 //-------------Zero offset for DAC ----------------------------------------------
 
-static Function ZeroOffset(variable ampindex, variable channel, variable value)
+static Function IPA_ZeroOffset(variable ampindex, variable channel, variable value)
 	if (value > 256)
 		value = 255
 	elseif (value < -256)
@@ -880,14 +1401,82 @@ static Function ZeroOffset(variable ampindex, variable channel, variable value)
 End	
 
 
-static Function SetDACOffset(Struct IPASeries &SIPA)	
+static Function IPA_SetDACOffset(Struct IPASeries &SIPA)	
 	Variable hsIndex
 	for (hsIndex=0; hsIndex<SIPA.numHeadstages; hsIndex+=1)
 		if (SIPA.ipa.HS[hsindex].DACoffset !=0)	
-			ZeroOffset(SIPA.ipa.HS[hsindex].ampIndex,SIPA.ipa.HS[hsindex].HSIndex,SIPA.ipa.HS[hsindex].DACoffset)
+			IPA_ZeroOffset(SIPA.ipa.HS[hsindex].ampIndex,SIPA.ipa.HS[hsindex].HSIndex,SIPA.ipa.HS[hsindex].DACoffset)
 		endif
 	endfor
 End
+
+
+static Function IPA_GetDACOffset()
+	if (IPA_OkToSendCommand() == FALSE)
+		Return FALSE
+	endif
+
+	Struct IPASeries SIPA
+	GetStructure(SIPA)
+	
+	variable probeIndex, VCMode, ReadCh, step, offset, singleread
+	Variable ampl_index
+	Variable amp_channel
+
+	for (probeIndex=0; probeIndex<SIPA.numHeadstages; probeIndex+=1)
+		ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
+		amp_channel = SIPA.ipa.HS[probeIndex].HSindex
+
+		IPA_ZeroOffset(ampl_index,amp_channel,0)
+		VCMode = IPA_GetValue(probeIndex+1,"VCMode")
+		ReadCh = 2 + amp_channel*20
+		if (VCMode)
+			IPA_SetValue(probeIndex+1,"VHold",0)
+		else
+			IPA_SetValue(probeIndex+1,"IHold",0)
+		endif	
+		
+		SutterDAQread(ampl_index,ReadCh)
+		IPA_tickdelay(3) 
+
+		offset = 0
+		for (step=0; step<16; step+=1)
+			singleread = SutterDAQread(ampl_index,ReadCh)
+			offset += singleread
+			Sutter_DelaySeconds( 1000e-6 )
+		endfor
+		
+		offset /=16
+		if (!VCMode) //CC
+			offset *= 5e7
+		endif
+		//convert to bits
+		offset *= 2^18
+		SIPA.ipa.HS[probeIndex].DACoffset = -offset
+		IPA_ZeroOffset( ampl_index, amp_channel, SIPA.ipa.HS[probeIndex].DACoffset )
+	endfor
+	
+	SaveStructure(SIPA)
+End	
+
+
+static Function IPA_ResetDACOffset()
+	Struct IPASeries SIPA
+	GetStructure(SIPA)
+
+	variable probeIndex
+	Variable ampl_index
+	Variable amp_channel
+
+	for (probeIndex=0; probeIndex<SIPA.numHeadstages; probeIndex+=1)
+		ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
+		amp_channel = SIPA.ipa.HS[probeIndex].HSindex
+		IPA_ZeroOffset(ampl_index,amp_channel,0)
+		SIPA.ipa.HS[probeIndex].DACoffset = 0
+	endfor
+
+	SaveStructure(SIPA)
+End	
 
 
 Function IPA_GetValue(variable probe_count, string value)
@@ -897,12 +1486,14 @@ Function IPA_GetValue(variable probe_count, string value)
 	if (IsInitialized() == FALSE)
 		return FALSE
 	endif
+	
 	//one based
 	Variable probeIndex = probe_count - 1
 	Variable ampIndex
 	
 	Struct IPASeries SIPA
 	GetStructure(SIPA)
+	//values are read directly from the structure
 
 	if (probeIndex >= SIPA.numHeadstages)
 		return FALSE
@@ -919,6 +1510,7 @@ Function IPA_GetValue(variable probe_count, string value)
 			return SIPA.activeHS+1
 			break
 		case "AmplIndex":
+			//0 based
 			return SIPA.ipa.HS[probeIndex].ampIndex
 			break
 		case "NumHS":
@@ -935,6 +1527,13 @@ Function IPA_GetValue(variable probe_count, string value)
 			return str2num(mystring[7,11])
 			//return str2num(ipa.serial)	//THIS DOESN'T WORK... can't return string.
 			break
+		case "Mode":
+			if( !SIPA.ipa.HS[probeIndex].vc)
+				return !(SIPA.ipa.HS[probeIndex].vc)
+			else
+				return (SIPA.ipa.HS[probeIndex].vc &&1)
+			endif
+			break
 		case "CCMode":
 			return (SIPA.ipa.HS[probeIndex].vc &&1)
 			break
@@ -944,21 +1543,33 @@ Function IPA_GetValue(variable probe_count, string value)
 		case "Filter":
 		case "IFilter":
 		case "VFilter":
-			return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].filter,"500;1000;2000;5000;10000;20000"))
+			return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].filter,FilterList))
 			break
 		case "VGain":
 			if (SIPA.ipa.HS[probeIndex].vc==0) //Voltage Clamp
 				return 10
 			else
-				return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gaincc,"10;20;50;100;200;500"))
+				return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gaincc,VGainList))
 			endif
 			break
 		case "IGain":
 			if (SIPA.ipa.HS[probeIndex].vc==0)
-				return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,"0.5;1;2.5;5;10;25"))*1e9
+				return str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,IGainList))*1e9
 			else
 				return 5e8
 			endif
+			break
+		case "InLimit":
+			if ((SIPA.ipa.HS[probeIndex].vc &&1))
+				return 10/str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gaincc,VGainList))
+			endif
+			return 10/(str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,IGainList)))*1e9
+			break
+		case "ILimit":
+			return 10/(str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gainvc,IGainList)))*1e9
+			break
+		case "VLimit":
+			return 10/str2num(stringfromlist(SIPA.ipa.HS[probeIndex].gaincc,VGainList))
 			break
 		case "OffsetLock":
 			return SIPA.ipa.HS[probeIndex].offsetlock
@@ -967,6 +1578,7 @@ Function IPA_GetValue(variable probe_count, string value)
 			return SIPA.ipa.HS[probeIndex].offset /2^16
 			break
 		case "LJP":
+		case "LiquidJunction":
 			return SIPA.ipa.HS[probeIndex].LJP
 			break	
 		case "DynHoldOn":
@@ -979,7 +1591,8 @@ Function IPA_GetValue(variable probe_count, string value)
 			//return ipa.fastmag*((!ipa.vc)||ipa.capneuton)*1e-12
 			return SIPA.ipa.HS[probeIndex].fastmag*1e-12
 			break
-		case "ECompTau":					// was "ECompPhase"
+		case "ECompTau":
+		case "ECompPhase": //no longer used but just in case
 			//return ipa.fastphase*((!ipa.vc)||ipa.capneuton)*.01
 			return SIPA.ipa.HS[probeIndex].fastphase * 1e-6 //*.01
 			break
@@ -1025,22 +1638,51 @@ Function IPA_GetValue(variable probe_count, string value)
 		case "IHold":
 			if (SIPA.ipa.HS[probeIndex].hcurron == TRUE)
 				return SIPA.ipa.HS[probeIndex].hcurr*1e-12
-			else
-				return 0.0
 			endif
+			return 0.0
+			break
 		case "VHold":
 			if (SIPA.ipa.HS[probeIndex].hpoton == TRUE)
 				return SIPA.ipa.HS[probeIndex].hpot*1e-3
+			endif
+			return 0.0
+			break
+		case "Hold":
+			if (SIPA.ipa.HS[probeIndex].vc==0) //Voltage Clamp
+				if (SIPA.ipa.HS[probeIndex].hpoton == TRUE)
+					return SIPA.ipa.HS[probeIndex].hpot*1e-3
+				endif
 			else
-				return 0.0
+				if (SIPA.ipa.HS[probeIndex].hcurron == TRUE)
+					return SIPA.ipa.HS[probeIndex].hcurr*1e-12
+				endif
+			endif
+			return 0.0
+		case "IMon":
+			//if the background task is running to update the structure the value can be read directy
+			//return (SIPA.ipa.HS[probeIndex].Imon
+			Wave SD_Meter = dfr:SD_Meter
+			if ((SIPA.ipa.HS[probeIndex].ampIndex == kNoDevice) || (SIPA.ipa.HS[probeIndex].HSindex == kNoDevice))
+				return nan
+			endif
+			if (SIPA.ipa.HS[probeIndex].HSindex == 0)
+				return (SD_Meter[0][SIPA.ipa.HS[probeIndex].ampIndex])
+			else
+				return (SD_Meter[2][SIPA.ipa.HS[probeIndex].ampIndex])
 			endif
 			break
-		case "IMon":
-			Wave SD_Meter = dfr:SD_Meter
-			return (SD_Meter[probeIndex][0])
 		case "VMon":
+			//if the background task is running to update the structure the value can be read directy
+			//return (SIPA.ipa.HS[probeIndex].Vmon
 			Wave SD_Meter = dfr:SD_Meter
-			return (SD_Meter[probeIndex+1][1])
+			if ((SIPA.ipa.HS[probeIndex].ampIndex == kNoDevice) || (SIPA.ipa.HS[probeIndex].HSindex == kNoDevice))
+				return nan
+			endif
+			if (SIPA.ipa.HS[probeIndex].HSindex == 0)
+				return (SD_Meter[1][SIPA.ipa.HS[probeIndex].ampIndex])
+			else
+				return (SD_Meter[3][SIPA.ipa.HS[probeIndex].ampIndex])
+			endif
 			break
 		case "DigOutWord":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
@@ -1056,19 +1698,19 @@ Function IPA_GetValue(variable probe_count, string value)
 			break
 		case "AuxIn1":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,0)
+			IPA_ReadAuxIn(SIPA,ampIndex,0,use_SDMeter=TRUE)
 			return SIPA.amp[ampindex].analogIn[0]
 		case "AuxIn2":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,1)
+			IPA_ReadAuxIn(SIPA,ampIndex,1,use_SDMeter=TRUE)
 			return SIPA.amp[ampindex].analogIn[1]
 		case "AuxIn3":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,2)
+			IPA_ReadAuxIn(SIPA,ampIndex,2,use_SDMeter=TRUE)
 			return SIPA.amp[ampindex].analogIn[2]
 		case "AuxIn4":
 			ampIndex = SIPA.ipa.HS[probeIndex].ampIndex
-			ReadAuxIn(SIPA,ampIndex,3)
+			IPA_ReadAuxIn(SIPA,ampIndex,3,use_SDMeter=TRUE)
 			return SIPA.amp[ampindex].analogIn[3]
 	endswitch
 End
@@ -1090,29 +1732,41 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 		return FALSE
 	endif
 
+	//double IPA is a single amplifier device with two headstages.
+	//ampl_index will get us the physical index if more than one amplifier is connected
+	//amp_channel is the local headstage index for that amplifier
+	//for a DIPA its 0 and 1, IPA always uses 0
+	//the second headstage is not treated as a different device
+	
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amptype = SIPA.amp[ampl_index].amptype
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 	Variable oktosend = IPA_OKToSendCommand()
-	
+		
 	Variable StabilityControl
 	variable setval
 		
 	strswitch (setting)
 		case "Reset":
-			ResetControls(SIPA)
+			IPA_ResetControls(SIPA, probeIndex)
 			break
 		case "SelectHS":
 		case "SelectProbe":	
-			ActivateHeadstage(SIPA, probeIndex)
+			IPA_ActivateHeadstage(SIPA, probeIndex)
+			break
+		case "LJP":
+		case "LiquidJunction":
+			//no firmware command just entered in the structure
+			//stored as millivolts
+			SIPA.ipa.HS[probeIndex].LJP = value
 			break
 		case "CCMode":
 		  	SIPA.ipa.HS[probeIndex].vc = 2
-			SetDIPA_fromStructure(SIPA, probeIndex)
+			IPA_SetFromStructure(SIPA, probeIndex)
 			break
 		case "VCMode":
 		  	SIPA.ipa.HS[probeIndex].vc= 0
-			SetDIPA_fromStructure(SIPA, probeIndex)
+			IPA_SetFromStructure(SIPA, probeIndex)
 			break
 		case "IHold":  
 			if (abs(value)>20e-9)
@@ -1156,7 +1810,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif
 			endif
 			if (oktosend)
-				if (amp_channel)
+				if (amp_channel) //DIPA second headstage
 					SutterDAQwrite(ampl_index,23,11,0,5-setval)
 				else
 					SutterDAQwrite(ampl_index,11,0,0,5-setval)
@@ -1182,7 +1836,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif			
 			endif
 			if ((SIPA.ipa.HS[probeIndex].vc == 2) && (oktosend))
-				if (amp_channel)
+				if (amp_channel) //DIPA second headstage
 					SutterDAQwrite(ampl_index,23,12,0,setval)  // 0 for VC; 1 for CC, dval is code for gain
 				else
 					SutterDAQwrite(ampl_index,12,0,0,setval)  // 0 for VC; 1 for CC, dval is code for gain
@@ -1208,7 +1862,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 				endif			
 			endif
 			if ((SIPA.ipa.HS[probeIndex].vc == 0) && (oktosend))
-				if (amp_channel)
+				if (amp_channel) //DIPA second headstage
 					SutterDAQwrite(ampl_index,23,12,0,setval)  // 0 for VC; 1 for CC, dval is code for gain
 				else
 					SutterDAQwrite(ampl_index,12,0,0,setval)
@@ -1241,7 +1895,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			// see ModifyCapMag()
 			setval =  round(value*655.32)
 			if (SIPA.ipa.HS[probeIndex].vc == 2)
-				ModifyCapMag(setval)
+				IPA_ModifyCapMag(setval)
 				// in CC the value is the capacitance neutralization, only active with ECompOn
 				if (SIPA.ipa.HS[probeIndex].capneuton == 0)
 					setval = 0
@@ -1277,8 +1931,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			value *= 1e-6
 			SIPA.ipa.HS[probeIndex].rscomp = value
 			SIPA.ipa.HS[probeIndex].compon = TRUE
-			SetCompensation(SIPA,probeIndex)
-			SetCorrection(SIPA,probeIndex)
+			IPA_SetCompensation(SIPA,probeIndex)
+			IPA_SetCorrection(SIPA,probeIndex)
 			break
 		case "CmComp": 
 			if (value<0)
@@ -1289,8 +1943,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			value *=1e12
 			SIPA.ipa.HS[probeIndex].cmcomp = value
 			SIPA.ipa.HS[probeIndex].compon = TRUE
-			SetCompensation(SIPA,probeIndex)
-			SetCorrection(SIPA,probeIndex)
+			IPA_SetCompensation(SIPA,probeIndex)
+			IPA_SetCorrection(SIPA,probeIndex)
 			break
 		case "RsPred": 
 			if (value<0)
@@ -1302,8 +1956,8 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].rspred = value
 			SIPA.ipa.HS[probeIndex].corron = TRUE
 			SIPA.ipa.HS[probeIndex].compon = TRUE
-			SetCompensation(SIPA,probeIndex)
-			SetCorrection(SIPA,probeIndex)
+			IPA_SetCompensation(SIPA,probeIndex)
+			IPA_SetCorrection(SIPA,probeIndex)
 			break
 		case "RsCorr":  
 			if (value<0)
@@ -1314,7 +1968,7 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			value *=100
 			SIPA.ipa.HS[probeIndex].rscorr = value
 			SIPA.ipa.HS[probeIndex].corron = TRUE
-			SetCorrection(SIPA,probeIndex)
+			IPA_SetCorrection(SIPA,probeIndex)
 			break
 		case "RsLag":	
 			if (value<20e-6)
@@ -1352,19 +2006,19 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].bridgeon = value
 			break	
 		case "AutoEComp":
-			Auto_ElectrodeCompensation(SIPA,probeIndex)
+			IPA_AutoElectrodeCompensation(SIPA,probeIndex)
 			break
 		case "AutoCellComp":
-			Auto_WholeCellCompensation(SIPA,probeIndex)
+			IPA_AutoWholeCellCompensation(SIPA,probeIndex)
 			break				
 		case "RsCompOn":	// Rs Compensation enabled
 			SIPA.ipa.HS[probeIndex].compon = value
-			SetCompensation(SIPA,probeIndex)
+			IPA_SetCompensation(SIPA,probeIndex)
 			break
 		case "RsCorrOn":	//Prediction/Correction enabled
 			SIPA.ipa.HS[probeIndex].corron = value
-			SetCompensation(SIPA,probeIndex)
-			SetCorrection(SIPA,probeIndex)
+			IPA_SetCompensation(SIPA,probeIndex)
+			IPA_SetCorrection(SIPA,probeIndex)
 			break
 		case "DynHold":
 			if (abs(value)>1)
@@ -1421,46 +2075,46 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].hcurron = value
 			break
 		case "DigOutWord": //not amplifier specific
-			SetAllDigOut(SIPA,ampl_index,value)
+			IPA_SetAllDigOut(SIPA,ampl_index,value)
 			break	
 		case "DigOut1":
-			SetDigOut(SIPA,ampl_index, 0, value)
+			IPA_SetDigOut(SIPA,ampl_index, 0, value)
 			break
 		case "DigOut2":
-			SetDigOut(SIPA,ampl_index, 1, value)
+			IPA_SetDigOut(SIPA,ampl_index, 1, value)
 			break
 		case "DigOut3":
-			SetDigOut(SIPA,ampl_index, 2, value)
+			IPA_SetDigOut(SIPA,ampl_index, 2, value)
 			break
 		case "DigOut4":
-			SetDigOut(SIPA,ampl_index, 3, value)
+			IPA_SetDigOut(SIPA,ampl_index, 3, value)
 			break
 		case "DigOut5":
-			SetDigOut(SIPA,ampl_index, 4, value)
+			IPA_SetDigOut(SIPA,ampl_index, 4, value)
 			break
 		case "DigOut6":
-			SetDigOut(SIPA,ampl_index, 5, value)
+			IPA_SetDigOut(SIPA,ampl_index, 5, value)
 			break
 		case "DigOut7":
-			SetDigOut(SIPA,ampl_index, 6, value)
+			IPA_SetDigOut(SIPA,ampl_index, 6, value)
 			break
 		case "DigOut8":
-			SetDigOut(SIPA,ampl_index, 7, value)
+			IPA_SetDigOut(SIPA,ampl_index, 7, value)
 			break
 		case "AuxOut1":
-			SetAuxOut(SIPA, ampl_index,1,value)
+			IPA_SetAuxOut(SIPA, ampl_index,1,value)
 			break
 		case "AuxOut2":
-			SetAuxOut(SIPA, ampl_index,2,value)
+			IPA_SetAuxOut(SIPA, ampl_index,2,value)
 			break
 		case "Reconnect":
-			ResetUSB()
+			IPA_ResetUSB()
 			return TRUE
 		case "AutoOffset":
 			if (SIPA.ipa.HS[probeIndex].offsetlock)
 				return FALSE
 			endif
-			ZeroIPAOffset(SIPA,probeIndex)
+			IPA_ZeroIPAOffset(SIPA,probeIndex)
 			break	// store the new offset
 		case "SealTest":
 			if (oktosend)
@@ -1473,13 +2127,15 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 			SIPA.ipa.HS[probeIndex].seal = value
 			break
 		case "Buzz":
-			Buzz(SIPA,probeIndex,value)
+			IPA_Buzz(SIPA,probeIndex,value)
 			break
-//			case "AutoBridge":
-//				if (IPA_AutoBridge() != TRUE)
-//					return FALSE
-//				endif
-//				return TRUE
+		case "AutoBridge":
+			if (IPA_AutoBridge(SIPA,probeIndex) != TRUE)
+				return FALSE
+			endif
+			//structure values are updated in the IPA_DoSetAutoBridge
+			return TRUE
+			break
 		DEFAULT:
 			return FALSE  //Not a proper keyword
 	endswitch
@@ -1490,19 +2146,23 @@ Function IPA_SetValue(variable probe_count, string setting, variable value )
 End	
 
 
-static Function ResetControls(Struct IPASeries &SIPA)
+static Function IPA_ResetControls(Struct IPASeries &SIPA, Variable probeIndex)
 	//Reset Structure Wave
-	InitControls(SIPA.IPA)	
-	IPA_SetValue(0,"SelectHS",1)
+	IPA_InitProbeControls(SIPA.IPA, probeIndex)	
+	IPA_SetValue(probeIndex+1,"SelectHS",1)
 	
 	return TRUE
 End	
 
 
-static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//This is the automatic offset button
+static Function IPA_ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//This is the automatic offset button
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 	Variable oktosend = IPA_OKToSendCommand()
+	
+	SutterDAQreset()		//Halts acquisition
+	IPA_tickdelay(1)
+	
 	variable readvalue
 	variable myoffset = SIPA.ipa.HS[probeIndex].offset	// already in DAC units, see "Offset" in IPA_SetValue
 	variable myLJP = SIPA.ipa.HS[probeIndex].ljp * 2^16
@@ -1591,14 +2251,15 @@ static Function ZeroIPAOffset(Struct IPASeries &SIPA, Variable probeIndex)	//Thi
 	endif
 	
 	offsetMV =myoffset*1000/2^16  //convert offset to volts
-	SIPA.ipa.HS[probeIndex].offset = myoffset
+	SIPA.ipa.HS[probeIndex].offset = myoffset //stored in DAC units
 	
+	//restart acquisition if it was running
 	return TRUE
 end
 
 //--------------- ZAP, BUZZ and SEALTEST ---------------------------
 
-static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable duration)	//This is the automatic offset button
+static Function IPA_Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable duration)
 	if (IPA_OKToSendCommand() == FALSE)
 		return FALSE
 	endif
@@ -1610,12 +2271,13 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
 	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
 
-	SutterDAQwrite(ampl_index,2+21*amp_channel,1,3,0)
-	SutterDAQwrite(ampl_index,2+21*amp_channel,2,40,0)
+	SutterDAQwrite(ampl_index,2+21*amp_channel,1,3,0) //set ECtau
+	SutterDAQwrite(ampl_index,2+21*amp_channel,2,40,0) //set ECmag
 	
 	variable step, stepsign
 	stepsign=1
 	for (step=0; step<(1*duration); step+=1)
+		//set holding
 		if (stepsign==1)
 			SutterDAQwrite(ampl_index,16,amp_channel,192,0)
 			stepsign= -1
@@ -1636,6 +2298,149 @@ static Function Buzz(Struct IPASeries &SIPA, Variable probeIndex, Variable durat
 
 	return TRUE
 End
+
+
+static Function IPA_AutoBridge(Struct IPASeries &SIPA, Variable probeIndex)
+	if (IPA_OKToSendCommand() == FALSE)
+		return FALSE
+	endif
+	
+ 	if (SIPA.ipa.HS[probeIndex].vc != 2) //CC mode
+ 		return FALSE
+ 	endif
+
+	Variable ampl_index = SIPA.ipa.HS[probeIndex].ampIndex
+	Variable amp_channel = SIPA.ipa.HS[probeIndex].HSindex
+	
+	if (amp_channel==1)
+		SutterDAQWrite(ampl_index,23,11,0,0)
+	else
+		SutterDAQWrite(ampl_index,11,0,0,0)  //switch filter to 20k
+	endif
+
+	DFREF dfr=$AmpPath
+	make /o/n=5 dfr:AutoBridgeOut
+	wave AutoBridgeOut = dfr:AutoBridgeOut
+	AutoBridgeOut = 0
+	AutoBridgeOut[1] = -400e-12
+	SetScale /p x, 0, 0.001, AutoBridgeOut
+	
+	make /o/n=200 dfr:AutoBridgeIn
+	wave AutoBridgeIn = dfr:AutoBridgeIn
+	SetScale /p x, 0, 2e-5, AutoBridgeIn
+	
+	Make /O/T /n=(1,3) dfr:BridgeInputWaveList
+	Wave /T BridgeInputWaveList = dfr:BridgeInputWaveList
+	BridgeInputWaveList[0][0] = AmpPath + ":AutoBridgeIn"
+	if (amp_channel == 0)
+		BridgeInputWaveList[0][1] = "1"		
+	else
+		BridgeInputWaveList[0][1] = "3"
+	endif
+	
+	Make /o/t/n=(1,3) dfr:BridgeOutputWaveList	
+	Wave /T BridgeOutputWaveList = dfr:BridgeOutputWaveList
+	BridgeOutputWaveList[0][0] = AmpPath + ":AutoBridgeOut"
+	if (amp_channel == 0)
+		BridgeOutputWaveList[0][1] = "0"
+	else
+		BridgeOutputWaveList[0][1] = "1"
+	endif
+	
+	SutterDAQWriteWave /T=1 /MULT=1 /CC=3 /RHP=3  BridgeOutputWaveList
+	SutterDAQScanWave /T=1  /B /MULT=1 /H="IPA_DoSetAutoBridge()" dfr:BridgeInputWaveList 
+	SutterDAQClock(ampl_index,0,0)
+
+	//active headstage so that we get the proper probe index in the callback function
+	IPA_ActivateHeadstage(SIPA,probeIndex)
+end
+
+
+Function IPA_DoSetAutoBridge()	//called by the SutterDAQScanWave
+	DFREF dfr=$AmpPath
+	variable Xoffset = 0.96e-3
+	wave AutoBridgeIn = dfr:AutoBridgeIn
+	CurveFit/Q/M=2/W=0 line, AutoBridgeIn[65,90]/D
+	Wave W_Coef
+	
+	Variable probeIndex = IPA_GetValue(0,"ActiveHS")
+	Variable OldBridge = IPA_GetValue(probeIndex,"Bridge")*IPA_GetValue(probeIndex,"BridgeON")
+	Variable Change = ((W_Coef[0]+W_Coef[1]*Xoffset)-IPA_GetValue(probeIndex,"Vmon"))/-4e-10
+	Variable NewBridge = OldBridge + Change
+	
+	IPA_SetValue(probeIndex,"Bridge",NewBridge)
+	IPA_SetValue(probeIndex,"BridgeON",1)
+	IPA_SetValue(probeIndex,"VFilter",IPA_GetValue(0,"VFilter"))
+End
+
+
+Function IPA_UpdateInputs()
+//call from a background task
+//in the xop during idle time SD_Meter is updated every 250 ms
+//during acquisition its updated before the first sweep 
+	if (IPA_USBconnected() == FALSE)
+		return FALSE
+	endif
+
+	Wave/D/Z SD_Meter = $(AmpPath + ":SD_Meter")
+	if (waveExists(SD_Meter) == FALSE)
+		return FALSE
+	endif
+
+	Struct IPASeries SIPA
+	GetStructure(SIPA)
+	
+	//Update all inputs 
+	//first the headstages
+	Variable probe_index
+	for (probe_index=0; probe_index<SIPA.numHeadstages; probe_index+=1)
+		//each headstgae has its own structure, SD_Meter values are shared for up to 2 headstages
+		if (SIPA.ipa.HS[probe_index].HSIndex == 0)
+			SIPA.ipa.HS[probe_index].imon = SD_Meter[0][SIPA.ipa.HS[probe_index].ampIndex]
+			SIPA.ipa.HS[probe_index].vmon = SD_Meter[1][SIPA.ipa.HS[probe_index].ampIndex]
+		else
+			SIPA.ipa.HS[probe_index].imon = SD_Meter[2][SIPA.ipa.HS[probe_index].ampIndex]
+			SIPA.ipa.HS[probe_index].vmon = SD_Meter[3][SIPA.ipa.HS[probe_index].ampIndex]
+		endif
+	endfor	
+	
+	//amplifier auxchannels
+	Variable ampl_index
+	Variable aux_index
+	Variable channel = 0
+	for (ampl_index=0; ampl_index<SIPA.numAmps; ampl_index+=1)
+		channel = 0
+		for (aux_index=4; aux_index<8; aux_index+=1)
+			//indev 4 to 7 for auxin
+			SIPA.amp[ampl_index].analogIn[channel] = SD_Meter[aux_index][ampl_index]
+			channel+=1
+		endfor
+	endfor
+	
+	SaveStructure(SIPA)
+	
+	return TRUE
+End
+
+static StrConstant IPA_TimerTaskName = "IPA_TimerTask"
+static Constant IPA_TimerInterval = 0.250
+
+Function IPA_TimerWorkTask( STRUCT WMBackgroundStruct &TheTask )
+	IPA_UpdateInputs()
+	return 0
+End
+
+
+Function IPA_StartTimerTask()
+	CtrlNamedBackground $IPA_TimerTaskName, period = ( IPA_TimerInterval * 60 ), proc = IPA_TimerWorkTask
+	CtrlNamedBackground $IPA_TimerTaskName, start
+End
+
+
+Function IPA_StopTimerTask()
+	CtrlNamedBackground $IPA_TimerTaskName, stop
+End
+
 // ---------------- MIES specific functions ----------------
 //
 // The following functions were added for MIES, they are not part of the
@@ -1646,57 +2451,78 @@ End
 
 /// @brief Return TRUE if the loaded SutterXOP is compatible with this package
 ///
-/// Same check as CheckXOPVersion() but without showing a dialog.
+/// Same check as Sutter_CheckXOPVersion() but without showing a dialog.
 Function IPA_MIES_IsXOPCompatible()
 
-	variable majorVersion, minorVersion
-
 	PerformSubsystemEntry()
-
-#if exists("SutterXOP_GetXOPVersion")
-	SutterXOP_GetXOPVersion(majorVersion, minorVersion)
-
-	return majorVersion == SutterXOP_XOPVersion
-#else
-	return FALSE
-#endif
+	//no dialog
+	return Sutter_CheckXOPVersion(FALSE)
 End
 
-/// @brief Switch to live mode after IPA_Initialize()
+/// @brief Initialize the package without its background task
 ///
-/// IPA_Initialize() leaves the package in demo mode, where IPA_SetValue() only
-/// changes the stored control values without sending them to the amplifier.
+/// IPA_DoInitialize() starts a background task, which copies SD_Meter into the stored
+/// structure every 250 ms. MIES does not use these values, so the task would only run
+/// alongside the data acquisition.
 ///
-/// @returns TRUE on success and FALSE if no amplifier was found by IPA_Initialize()
-Function IPA_MIES_Connect()
-
-	STRUCT IPASeries SIPA
+/// @returns TRUE on success and FALSE on error
+Function IPA_MIES_Initialize()
 
 	PerformSubsystemEntry()
 
-	GetStructure(SIPA)
-
-	if(!cmpstr(SIPA.amp[0].serialNum, "demo"))
-		// no amplifier found by IPA_Initialize()
+	if(!IPA_DoInitialize())
 		return FALSE
 	endif
 
-	NVAR SD_USB       = $(AmpPath + ":SD_USB")
-	NVAR demo_amptype = $(AmpPath + ":demo_amptype")
-
-	SD_USB       = SIPA.numAmps
-	demo_amptype = kLiveMode
+	IPA_StopTimerTask()
 
 	return TRUE
 End
 
-/// @brief Return TRUE if the package is initialized, i.e. IPA_Initialize() was called
-///        and IPA_Shutdown() was not called afterwards
+/// @brief Return TRUE if commands can be sent to the amplifier
+///
+/// Without a connected amplifier IPA_DoInitialize() leaves the package in demo
+/// mode, where IPA_SetValue() only changes the stored control values.
+Function IPA_MIES_OkToSendCommand()
+
+	PerformSubsystemEntry()
+
+	return IPA_OkToSendCommand()
+End
+
+/// @brief Return TRUE if the package is initialized, i.e. IPA_DoInitialize() was called
+///        and IPA_DoShutdown() was not called afterwards
 Function IPA_MIES_IsInitialized()
 
 	PerformSubsystemEntry()
 
 	return DataFolderExists(AmpPath)
+End
+
+/// @brief Shut down the package without closing the USB connection
+///
+/// In contrast to IPA_DoShutdown() the USB connection stays open, as MIES uses it for the
+/// data acquisition and closes it itself when the device is unlocked.
+///
+/// @returns TRUE on success and FALSE if the package is not initialized
+Function IPA_MIES_Shutdown()
+
+	STRUCT IPASeries SIPA
+
+	PerformSubsystemEntry()
+
+	if(!IsInitialized())
+		return FALSE
+	endif
+
+	IPA_StopTimerTask()
+
+	GetStructure(SIPA)
+	SaveControls(SIPA.ipa)
+
+	KillDataFolder/Z $AmpPath
+
+	return TRUE
 End
 
 /// @brief Reset the stored control values of all probes to the package defaults and send them to the amplifiers
@@ -1720,25 +2546,20 @@ Function IPA_MIES_ResetToDefaults()
 
 	GetStructure(SIPA)
 
-	// InitControls also resets the DAC offset trim, which is a property of the hardware
-	Make/FREE/D/N=(kMaxHeadstages) dacOffsets
+	// IPA_InitAllControls also measures the DAC offset trim on the hardware, which is
+	// a calibration of the hardware and kept, IPA_InitProbeControls does not change it
+	SIPA.ipa.version = IPA_StructVersion
 	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
-		dacOffsets[probeIndex] = SIPA.ipa.HS[probeIndex].DACOffset
-	endfor
-
-	InitControls(SIPA.ipa)
-
-	for(probeIndex = 0; probeIndex < kMaxHeadstages; probeIndex += 1)
-		SIPA.ipa.HS[probeIndex].DACOffset = dacOffsets[probeIndex]
+		IPA_InitProbeControls(SIPA.ipa, probeIndex)
 	endfor
 
 	ret = TRUE
 	for(probeIndex = 0; probeIndex < SIPA.numHeadstages; probeIndex += 1)
-		// the amplifier keeps the dynamic hold across mode switches and SetDIPA_fromStructure does not send it
+		// the amplifier keeps the dynamic hold across mode switches and IPA_SetFromStructure does not switch it off
 		SutterDAQwrite(SIPA.ipa.HS[probeIndex].ampIndex, 19 + 6 * SIPA.ipa.HS[probeIndex].HSindex, 0, 0, 0)
 
 		// returns FALSE on error and nothing otherwise
-		if(SetDIPA_fromStructure(SIPA, probeIndex) == FALSE)
+		if(IPA_SetFromStructure(SIPA, probeIndex) == FALSE)
 			ret = FALSE
 		endif
 	endfor
@@ -1768,17 +2589,21 @@ Function IPA_MIES_SetClampMode(variable probeCount, variable currentClamp)
 
 	PerformSubsystemEntry()
 
+	if(probeCount <= 0)
+		return FALSE
+	endif
+
 	GetStructure(SIPA)
 
 	probeIndex = probeCount - 1
-	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+	if(probeIndex >= SIPA.numHeadstages)
 		return FALSE
 	endif
 
 	SIPA.ipa.HS[probeIndex].vc = currentClamp ? 2 : 0
 
 	// returns FALSE on error and nothing otherwise
-	ret = SetDIPA_fromStructure(SIPA, probeIndex)
+	ret = IPA_SetFromStructure(SIPA, probeIndex)
 	SaveStructure(SIPA)
 
 	return (ret == FALSE) ? FALSE : TRUE
@@ -1797,10 +2622,14 @@ Function IPA_MIES_ReadClampModeFromHardware(variable probeCount)
 
 	PerformSubsystemEntry()
 
+	if(probeCount <= 0)
+		return NaN
+	endif
+
 	GetStructure(SIPA)
 
 	probeIndex = probeCount - 1
-	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+	if(probeIndex >= SIPA.numHeadstages)
 		return NaN
 	endif
 
@@ -1841,10 +2670,14 @@ Function IPA_MIES_SetValue(variable probeCount, string setting, variable value)
 
 	PerformSubsystemEntry()
 
+	if(probeCount <= 0)
+		return FALSE
+	endif
+
 	GetStructure(SIPA)
 
 	probeIndex = probeCount - 1
-	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+	if(probeIndex >= SIPA.numHeadstages)
 		return FALSE
 	endif
 
@@ -1909,10 +2742,14 @@ Function IPA_MIES_GetValue(variable probeCount, string setting)
 
 	PerformSubsystemEntry()
 
+	if(probeCount <= 0)
+		return NaN
+	endif
+
 	GetStructure(SIPA)
 
 	probeIndex = probeCount - 1
-	if(probeIndex < 0 || probeIndex >= SIPA.numHeadstages)
+	if(probeIndex >= SIPA.numHeadstages)
 		return NaN
 	endif
 
