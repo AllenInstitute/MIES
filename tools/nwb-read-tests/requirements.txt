@@ -588,10 +588,12 @@ deno==2.9.8 \
     --hash=sha256:b82eac91d3e3f6fe37d94a12f833550e05029274cb9020b1e3f0f61e1678dc24 \
     --hash=sha256:f050f14d259f1e6f39a86aa8dd85f787df2311fc8ceb0be57485a127567ae137
     # via bids-validator-deno
-dnspython==2.9.1 \
-    --hash=sha256:7c81caf8de1ed57b8cfc7e0ad4f528a0b8ceace473c7eb946df195dc9def751f \
-    --hash=sha256:9a6d30e55f8dc63e6052597666112bff0586b95a2474a9deda03afbbf820d37a
-    # via email-validator
+dnspython==2.9.2 \
+    --hash=sha256:8d4d39a513e649d634004ce4d39ade2352efcea472a0247535a5c2d18a9d7ba9 \
+    --hash=sha256:af15f7d385a6ae2fb35a796fde2138004c8c42c7389090e2addc83e3b3340fd8
+    # via
+    #   -r requirements.in
+    #   email-validator
 donfig==0.8.1.post1 \
     --hash=sha256:2a3175ce74a06109ff9307d90a230f81215cbac9a751f4d1c6194644b8204f9d \
     --hash=sha256:3bef3413a4c1c601b585e8d297256d0c1470ea012afa6e8461dc28bfb7c23f52
