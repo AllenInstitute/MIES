@@ -58,12 +58,20 @@ Function AD_Update(string win)
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
+/// @brief Return the folder with the list, info, help and color waves of the dashboard
+///
+/// The selection wave is in the panel folder of the browser.
+Function/DF AD_GetDashboardFolder(string win)
+
+	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+End
+
 /// @brief Fill the list, info and help waves of the dashboard
 static Function AD_UpdateData(string win)
 
 	variable numEntries
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF dfr = AD_GetDashboardFolder(win)
 
 	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
@@ -87,11 +95,8 @@ static Function AD_UpdateGUI(string win)
 
 	variable numEntries
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-
-	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
-	WAVE   selWave   = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
+	WAVE/T listWave = GetAnaFuncDashboardListWave(AD_GetDashboardFolder(win))
+	WAVE   selWave  = GetAnaFuncDashboardselWave(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
 
 	numEntries = DimSize(listWave, ROWS)
 	Redimension/N=(numEntries, -1, -1) selWave
@@ -1267,7 +1272,7 @@ static Function AD_SelectResult(string win)
 	Duplicate/FREE/RMD=[*][0] selWave, selection
 	Make/FREE/T/N=(DimSize(selection, ROWS)) sweepList
 
-	WAVE/T info = GetAnaFuncDashboardInfoWave(dfr)
+	WAVE/T info = GetAnaFuncDashboardInfoWave(AD_GetDashboardFolder(win))
 
 	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))

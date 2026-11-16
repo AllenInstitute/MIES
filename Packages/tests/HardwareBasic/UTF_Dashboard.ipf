@@ -29,7 +29,7 @@ static Function DAB_Indexing_REENTRY([string str])
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	win = DB_GetBoundDataBrowser(str)
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF dfr = AD_GetDashboardFolder(win)
 
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
@@ -101,7 +101,7 @@ static Function DAB_Skipping_REENTRY([string str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	win = DB_GetBoundDataBrowser(str)
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	DFREF dfr = AD_GetDashboardFolder(win)
 
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)

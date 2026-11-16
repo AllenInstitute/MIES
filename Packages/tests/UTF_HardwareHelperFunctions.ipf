@@ -521,7 +521,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 	variable numEntries, i, state
 
 	databrowser = DB_FindDataBrowser(device)
-	DFREF    dfr      = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
+	DFREF    dfr      = AD_GetDashboardFolder(databrowser)
 	WAVE/Z/T listWave = GetAnaFuncDashboardListWave(dfr)
 	CHECK_WAVE(listWave, TEXT_WAVE)
 

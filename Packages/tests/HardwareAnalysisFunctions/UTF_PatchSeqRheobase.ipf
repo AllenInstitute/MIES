@@ -463,7 +463,7 @@ static Function PS_RB4_REENTRY([string str])
 	browser = DB_FindDataBrowser(str)
 	CHECK_PROPER_STR(browser)
 
-	DFREF dfr = BSP_GetFolder(browser, MIES_BSP_PANEL_FOLDER)
+	DFREF dfr = AD_GetDashboardFolder(browser)
 
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(listWave, NOTE_INDEX), 1)
