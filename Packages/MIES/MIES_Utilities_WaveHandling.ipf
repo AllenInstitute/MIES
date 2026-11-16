@@ -1092,16 +1092,34 @@ End
 
 /// @brief Removes all NaNs from the input wave
 ///
-/// @param data 1D floating point wave
+/// @param data          1D floating point wave
+/// @param dontDuplicate [optional, defaults to false] Remove the NaNs from `data` itself instead of a free copy.
+///                      Saves the copy if `data` is not needed afterwards.
 ///
 /// @returns wave without NaNs, an invalid wave reference if no points remain
-threadsafe Function/WAVE ZapNaNs(WAVE data)
+threadsafe Function/WAVE ZapNaNs(WAVE data, [variable dontDuplicate])
 
 	ASSERT_TS(IsFloatingPointWave(data), "Can only work with floating point waves")
 	ASSERT_TS(GetWaveDimensionality(data) == ROWS, "Can only work with 1D waves")
 
+	if(ParamIsDefault(dontDuplicate))
+		dontDuplicate = 0
+	else
+		dontDuplicate = !!dontDuplicate
+	endif
+
 	if(DimSize(data, ROWS) == 0)
 		return $""
+	endif
+
+	if(dontDuplicate)
+		WaveTransform/O zapNaNs, data
+
+		if(DimSize(data, ROWS) == 0)
+			return $""
+		endif
+
+		return data
 	endif
 
 	MatrixOP/FREE dup = zapNans(data)

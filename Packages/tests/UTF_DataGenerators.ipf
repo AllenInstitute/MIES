@@ -2599,3 +2599,12 @@ static Function/WAVE PulseDurationCases()
 
 	return wv
 End
+
+static Function/WAVE OnOff()
+
+	Make/FREE wv = {1, 0}
+
+	SetDimensionLabels(wv, "On;Off", ROWS)
+
+	return wv
+End
