@@ -792,6 +792,7 @@ static Function PSX_GetGoodTauImpl(WAVE psxEvent)
 
 	idx = FindDimLabel(psxEvent, COLS, "weightedTau")
 	Duplicate/FREE/RMD=[][idx] psxEvent, tauWithNaN
+	Redimension/N=(-1) tauWithNaN
 
 	WAVE/Z taus = ZapNaNs(tauWithNaN)
 

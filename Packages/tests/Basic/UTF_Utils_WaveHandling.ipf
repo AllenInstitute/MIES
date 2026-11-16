@@ -1320,23 +1320,16 @@ Function ZN_RemovesNaNs()
 	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
 End
 
-Function ZN_RemovesNaNs2D()
+static Function ZN_AbortsWith2D()
 
-	// row is NaN
-	Make/FREE wv = {{NaN, Inf}, {NaN, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
-
-	// column is NaN
-	Make/FREE wv = {{NaN, NaN}, {Inf, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
-
-	// single point NaN only
 	Make/FREE wv = {{NaN, 2}, {Inf, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {2, Inf, 1})
 
+	try
+		ZapNaNs(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 /// @}

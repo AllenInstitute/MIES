@@ -1091,9 +1091,14 @@ threadsafe Function/WAVE DuplicateWaveToFree(WAVE w)
 End
 
 /// @brief Removes all NaNs from the input wave
+///
+/// @param data 1D floating point wave
+///
+/// @returns wave without NaNs, an invalid wave reference if no points remain
 threadsafe Function/WAVE ZapNaNs(WAVE data)
 
 	ASSERT_TS(IsFloatingPointWave(data), "Can only work with floating point waves")
+	ASSERT_TS(GetWaveDimensionality(data) == ROWS, "Can only work with 1D waves")
 
 	if(DimSize(data, ROWS) == 0)
 		return $""
