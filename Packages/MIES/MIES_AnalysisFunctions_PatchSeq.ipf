@@ -6275,8 +6275,9 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 		// and we are after the pulse onset
 
 		Make/FREE/D spikePos
-		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                \
-		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
+		WAVE spikeDetection = PSQ_SearchForSpikes(device, PSQ_RAMP, s.scaledDACWave, s.headstage,                                                  \
+		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes, \
+		                                          acquiredEnd = s.lastKnownRowIndexAD * s.sampleIntervalAD)
 
 		if(spikeDetection[s.headstage]                                                                    \
 		   && ((TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !TestOverrideActive()))
