@@ -188,6 +188,9 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
+// number of points for the box smoothing of FindLevel/FindLevels in the spike search
+static Constant PSQ_SPIKE_SEARCH_BOX_SIZE = 3
+
 static Constant PSQ_DA_FALLBACK_DASCALE_RANGE_FAC            = 1.5
 static Constant PSQ_DA_FALLBACK_DASCALE_NEG_SLOPE_PERC       = 10
 static Constant PSQ_DA_FALLBACK_MINIMUM_SPIKES_FOR_MAX_SLOPE = 4
@@ -1551,7 +1554,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 		else
 			if(numberOfSpikesReq == 1)
 				// search the spike from the start till the end
-				FindLevel/Q/R=(first, last)/B=3 singleAD, level
+				FindLevel/Q/R=(first, last)/B=(PSQ_SPIKE_SEARCH_BOX_SIZE) singleAD, level
 				spikeDetection[headstage] = !V_flag
 
 				if(!ParamIsDefault(spikePositions))
@@ -1565,7 +1568,7 @@ static Function/WAVE PSQ_SearchForSpikes(string device, variable type, WAVE swee
 				endif
 			elseif(numberOfSpikesReq > 1)
 				Make/D/FREE/N=0 crossings
-				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=(FINDLEVEL_EDGE_INCREASING)/B=3 singleAD, level
+				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=(FINDLEVEL_EDGE_INCREASING)/B=(PSQ_SPIKE_SEARCH_BOX_SIZE) singleAD, level
 				spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
 
 				if(!ParamIsDefault(spikePositions))
