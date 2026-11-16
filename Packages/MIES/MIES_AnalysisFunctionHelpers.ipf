@@ -382,12 +382,20 @@ End
 /// @param headstageOrChannelNum headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS]
 /// @param channelType           One of @ref XopChannelConstants
 /// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
-Function/WAVE AFH_ExtractOneDimDataFromSweep(string device, WAVE sweep, variable headstageOrChannelNum, variable channelType, [WAVE config])
+/// @param dontDuplicate         [optional, defaults to false] Return the channel wave of `sweep` itself instead of a
+///                              free copy, see ExtractOneDimDataFromSweep()
+Function/WAVE AFH_ExtractOneDimDataFromSweep(string device, WAVE sweep, variable headstageOrChannelNum, variable channelType, [WAVE config, variable dontDuplicate])
 
 	variable channelNum, col
 
 	if(ParamIsDefault(config))
 		WAVE config = GetConfigWave(sweep)
+	endif
+
+	if(ParamIsDefault(dontDuplicate))
+		dontDuplicate = 0
+	else
+		dontDuplicate = !!dontDuplicate
 	endif
 
 	switch(channelType)
@@ -407,7 +415,7 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(string device, WAVE sweep, variable
 	col = AFH_GetDAQDataColumn(config, channelNum, channelType)
 	ASSERT(IsFinite(col), "invalid headstage and/or channelType")
 
-	return ExtractOneDimDataFromSweep(config, sweep, col)
+	return ExtractOneDimDataFromSweep(config, sweep, col, dontDuplicate = dontDuplicate)
 End
 
 /// @brief Get list of possible analysis functions
