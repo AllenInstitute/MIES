@@ -387,6 +387,41 @@ End
 
 /// @}
 
+/// GetListBoxListWave
+/// @{
+
+static Function GLBLW_Works()
+
+	string win
+	string ctrl = "list"
+
+	Make/T listWave
+
+	NewPanel/N=testpanelLB
+	win = S_name
+
+	ListBox $ctrl, listWave=listWave
+	WAVE/Z result = GetListBoxListWave(win, ctrl)
+	CHECK_EQUAL_VAR(WaveRefsEqual(result, listWave), 1)
+
+	ListBox $ctrl, listWave=$""
+	WAVE/Z result = GetListBoxListWave(win, ctrl)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	Button btn
+	try
+		GetListBoxListWave(win, "btn")
+		FAIL()
+	catch
+		CHECK_NO_RTE()
+	endtry
+
+	KillWindow $win
+	KillOrMoveToTrash(wv = listWave)
+End
+
+/// @}
+
 /// ScrollListboxIntoView
 /// @{
 

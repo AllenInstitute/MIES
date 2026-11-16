@@ -2449,6 +2449,23 @@ Function ResizeControlsSafe(STRUCT WMWinHookStruct &s)
 	return 0
 End
 
+/// @brief Return the list wave of the given ListBox
+///
+/// @return wave reference, an invalid wave reference if the ListBox has no list wave
+Function/WAVE GetListBoxListWave(string win, string ctrl)
+
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag == CONTROL_TYPE_LISTBOX, "Expected a listbox")
+
+	if(IsEmpty(S_Value))
+		return $""
+	endif
+
+	WAVE/Z/SDFR=$S_DataFolder listWave = $S_Value
+
+	return listWave
+End
+
 /// @brief Scroll in the given ListBox the row into view
 ///
 /// @retval 0 if scrolling was done, 1 if not
@@ -2456,15 +2473,13 @@ Function ScrollListboxIntoView(string win, string ctrl, variable row)
 
 	variable startRow, numVisRows
 
-	ControlInfo/W=$win $ctrl
-	ASSERT(V_flag == CONTROL_TYPE_LISTBOX, "Expected a listbox")
-
-	WAVE/Z/SDFR=$S_DataFolder listWave = $S_Value
+	WAVE/Z listWave = GetListBoxListWave(win, ctrl)
 	ASSERT(WaveExists(listWave), "Missing list wave")
 
 	ASSERT(!IsNaN(row), "Expected row to be not NaN")
 	row = limit(row, 0, DimSize(listWave, ROWS))
 
+	ControlInfo/W=$win $ctrl
 	numVisRows = trunc(V_height / V_rowHeight)
 
 	if(row < V_startRow)
