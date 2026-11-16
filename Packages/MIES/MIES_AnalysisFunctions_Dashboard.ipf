@@ -90,6 +90,21 @@ static Function AD_UpdateData(string win)
 	endif
 End
 
+/// @brief Bind the dashboard listbox of the given browser to its waves
+Function AD_BindListBoxWaves(string win)
+
+	PerformSubsystemEntry()
+
+	DFREF dfr = AD_GetDashboardFolder(win)
+
+	WAVE/T helpWave  = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
+	WAVE   selWave   = GetAnaFuncDashboardselWave(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
+
+	ListBox list_dashboard, win=$BSP_GetPanel(win), listWave=listWave, colorWave=colorWave, selWave=selWave, helpWave=helpWave
+End
+
 /// @brief Adapt the selection wave and the listbox of the given browser to the dashboard data
 static Function AD_UpdateGUI(string win)
 
