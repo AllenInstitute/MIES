@@ -3237,6 +3237,23 @@ Function/WAVE GetAcqTPStorage()
 	return wv
 End
 
+/// @brief Return a datafolder reference to the folder with the analysis function dashboard waves
+///        shared by all databrowsers of the device
+///
+/// UTF_NOINSTRUMENTATION
+Function/DF GetDeviceDashboardFolder(string device)
+
+	return createDFWithAllParents(GetDeviceDashboardFolderAsString(device))
+End
+
+/// @brief Return the path to the dashboard folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:Dashboard
+///
+/// UTF_NOINSTRUMENTATION
+Function/S GetDeviceDashboardFolderAsString(string device)
+
+	return GetDevicePathAsString(device) + ":Dashboard"
+End
+
 /// @brief Return a datafolder reference to the test pulse folder
 ///
 /// UTF_NOINSTRUMENTATION
