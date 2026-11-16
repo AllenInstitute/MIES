@@ -2482,3 +2482,29 @@ static Function AnalysisFunctionNotCalledForAbortedIndexing_REENTRY([STRUCT IUTF
 
 	CheckDAQStopReason(md.s0, DQ_STOP_REASON_CONFIG_FAILED)
 End
+
+static Function SpikeSearchStateIsClearedBeforeSweep_PreAcq(string device)
+
+	WAVE state     = GetAnalysisFuncSpikeSearchState(device)
+	WAVE positions = GetAnalysisFuncSpikeSearchPositions(device)
+
+	state     = 1
+	positions = 1
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function SpikeSearchStateIsClearedBeforeSweep([string str])
+
+	[STRUCT ACD_DAQSettings s] = ACD_InitDAQSettingsFromString("MD1_RA0_I0_L0_BKG1"                      + \
+	                                                           "__HS0_DA0_AD0_CM:IC:_ST:StimulusSetA_DA_0:")
+	ACD_AcquireData(s, str)
+End
+
+static Function SpikeSearchStateIsClearedBeforeSweep_REENTRY([string str])
+
+	WAVE state     = GetAnalysisFuncSpikeSearchState(str)
+	WAVE positions = GetAnalysisFuncSpikeSearchPositions(str)
+
+	CHECK_EQUAL_VAR(HasOneValidEntry(state), 0)
+	CHECK_EQUAL_VAR(HasOneValidEntry(positions), 0)
+End
