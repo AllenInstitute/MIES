@@ -11,6 +11,9 @@
 
 static StrConstant AD_OOR_DASCALE_MSG = "Failure as the future DAScale would be out of range"
 
+/// Wave note key of the list wave, see AD_GetInputState()
+static StrConstant AD_NOTE_INPUT_STATE = "InputState"
+
 /// @brief Update the dashboards of all databrowsers
 Function AD_UpdateAllDatabrowser()
 
@@ -42,10 +45,14 @@ static Function AD_GetColorForResultMessage(string result)
 End
 
 /// @brief Update the dashboards of the given sweepbrowser/databrowser
+///
+/// The databrowsers of a device share the dashboard data. When it was filled, the selection
+/// waves of all of them are adapted, as a listbox with differing list and selection wave sizes
+/// is not drawn.
 Function AD_Update(string win)
 
-	string mainPanel
-	variable numEntries, refTime
+	variable refTime
+	string   browser
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -53,33 +60,146 @@ Function AD_Update(string win)
 
 	refTime = DEBUG_TIMER_START()
 
-	mainPanel = BSP_GetPanel(win)
+	if(AD_UpdateData(win) && BSP_IsDataBrowser(win))
+		WAVE/T databrowsers = DB_FindAllDataBrowser(BSP_GetDevice(win), mode = BROWSER_MODE_ALL)
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-
-	WAVE/T helpWave  = GetAnaFuncDashboardHelpWave(dfr)
-	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
-	WAVE   selWave   = GetAnaFuncDashboardselWave(dfr)
-	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
-	WAVE/T infoWave  = GetAnaFuncDashboardInfoWave(dfr)
-
-	if(BSP_IsActive(mainPanel, MIES_BSP_DS))
-		numEntries = AD_FillWaves(win, listWave, infoWave)
+		for(browser : databrowsers)
+			AD_UpdateGUI(browser)
+		endfor
+	else
+		AD_UpdateGUI(win)
 	endif
 
-	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
+	DEBUGPRINT_ELAPSED(refTime)
+End
+
+/// @brief Return the folder with the list, info, help and color waves of the dashboard
+///
+/// All databrowsers of a device share these waves in the dashboard folder of the device, a
+/// sweepbrowser has its own in its panel folder. The selection wave is always in the panel
+/// folder of the browser.
+Function/DF AD_GetDashboardFolder(string win)
+
+	PerformSubsystemEntry()
+
+	if(BSP_IsDataBrowser(win))
+		return GetDeviceDashboardFolder(BSP_GetDevice(win))
+	endif
+
+	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+End
+
+/// @brief Return the inputs of the dashboard data of the given device
+///
+/// The dashboard data only needs to be filled again if they changed.
+static Function/S AD_GetInputState(string device)
+
+	string state
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	sprintf state, "%d,%d,%d,%d,%d,%g", WaveModCountWrapper(numericalValues), GetNumberFromWaveNote(numericalValues, NOTE_INDEX), WaveModCountWrapper(textualValues), GetNumberFromWaveNote(textualValues, NOTE_INDEX), ROVar(GetAcquisitionState(device)), AFH_GetLastSweepAcquired(device)
+
+	return state
+End
+
+/// @brief Fill the list, info and help waves of the dashboard
+///
+/// The databrowsers of a device share these waves, so only the first one
+/// after a change of the inputs fills them.
+///
+/// @return 1 if the waves were filled, 0 otherwise
+static Function AD_UpdateData(string win)
+
+	variable numEntries
+	string   inputState
+
+	if(!BSP_IsActive(BSP_GetPanel(win), MIES_BSP_DS))
+		return 0
+	endif
+
+	DFREF dfr = AD_GetDashboardFolder(win)
+
+	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
+	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
+
+	if(BSP_IsDataBrowser(win))
+		inputState = AD_GetInputState(BSP_GetDevice(win))
+
+		if(!cmpstr(inputState, GetStringFromWaveNote(listWave, AD_NOTE_INPUT_STATE)))
+			return 0
+		endif
+	endif
+
+	numEntries = AD_FillWaves(win, listWave, infoWave)
+
+	Redimension/N=(numEntries, -1) listWave, infoWave, helpWave
 
 	if(numEntries > 0)
-		selWave[][][%$LISTBOX_LAYER_FOREGROUND] = AD_GetColorForResultMessage(listWave[p][%Result])
-
 		helpWave[] = "Result:\r" + listWave[p][%Result]
-
-		ScrollListboxIntoView(mainPanel, "list_dashboard", Inf)
 	else
 		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
 	endif
 
-	DEBUGPRINT_ELAPSED(refTime)
+	if(BSP_IsDataBrowser(win))
+		SetStringInWaveNote(listWave, AD_NOTE_INPUT_STATE, inputState)
+	endif
+
+	return 1
+End
+
+/// @brief Bind the dashboard listbox of the given browser to its waves while the dashboard is
+///        active, unbind it otherwise
+///
+/// Unbinding keeps the waves shared with other databrowsers untouched. The binding only changes
+/// when the browser gets its device and when the dashboard is toggled.
+Function AD_BindListBoxWaves(string win)
+
+	string bsPanel
+
+	PerformSubsystemEntry()
+
+	bsPanel = BSP_GetPanel(win)
+
+	if(!BSP_IsActive(bsPanel, MIES_BSP_DS))
+		ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$"", helpWave=$""
+		return NaN
+	endif
+
+	DFREF dfr = AD_GetDashboardFolder(win)
+
+	WAVE/T helpWave  = GetAnaFuncDashboardHelpWave(dfr)
+	WAVE   colorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE/T listWave  = GetAnaFuncDashboardListWave(dfr)
+	WAVE   selWave   = GetAnaFuncDashboardselWave(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
+
+	Redimension/N=(DimSize(listWave, ROWS), -1, -1) selWave
+
+	ListBox list_dashboard, win=$bsPanel, listWave=listWave, colorWave=colorWave, selWave=selWave, helpWave=helpWave
+End
+
+/// @brief Adapt the selection wave and the listbox of the given browser to the dashboard data
+static Function AD_UpdateGUI(string win)
+
+	variable numEntries
+
+	if(!BSP_IsActive(BSP_GetPanel(win), MIES_BSP_DS))
+		return NaN
+	endif
+
+	WAVE/T listWave = GetAnaFuncDashboardListWave(AD_GetDashboardFolder(win))
+	WAVE   selWave  = GetAnaFuncDashboardselWave(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
+
+	numEntries = DimSize(listWave, ROWS)
+	Redimension/N=(numEntries, -1, -1) selWave
+
+	if(numEntries > 0)
+		selWave[][][%$LISTBOX_LAYER_FOREGROUND] = AD_GetColorForResultMessage(listWave[p][%Result])
+
+		ScrollListboxIntoView(BSP_GetPanel(win), "list_dashboard", Inf)
+	endif
 End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, DFREF sweepDFR, variable headstage, variable ongoingDAQ, variable waMode)
@@ -1246,7 +1366,7 @@ static Function AD_SelectResult(string win)
 	Duplicate/FREE/RMD=[*][0] selWave, selection
 	Make/FREE/T/N=(DimSize(selection, ROWS)) sweepList
 
-	WAVE/T info = GetAnaFuncDashboardInfoWave(dfr)
+	WAVE/T info = GetAnaFuncDashboardInfoWave(AD_GetDashboardFolder(win))
 
 	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
@@ -1419,6 +1539,7 @@ Function AD_CheckProc_Toggle(STRUCT WMCheckboxAction &cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			win = cba.win
+			AD_BindListBoxWaves(win)
 			AD_Update(win)
 
 			AdaptDependentControls(win, "check_BrowserSettings_OVS;check_BrowserSettings_ADC;check_BrowserSettings_DAC", CHECKBOX_UNSELECTED, cba.checked, DEP_CTRLS_SAME)
