@@ -5886,6 +5886,8 @@ End
 Function/S PSQ_Ramp_GetParams()
 
 	return "AsyncQCChannels:wave,"                 + \
+	       "[AutobiasTargetV:variable],"           + \
+	       "[AutobiasTargetVAtSetEnd:variable],"   + \
 	       "[BaselineRMSLongThreshold:variable],"  + \
 	       "[BaselineRMSShortThreshold:variable]," + \
 	       "[BaselineTargetVThreshold:variable],"  + \
@@ -5899,6 +5901,8 @@ Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "BaselineRMSLongThreshold": // fallthrough
 		case "BaselineRMSShortThreshold": // fallthrough
 		case "BaselineTargetVThreshold": // fallthrough
@@ -5922,6 +5926,8 @@ Function/S PSQ_Ramp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "BaselineRMSLongThreshold": // fallthrough
 		case "BaselineRMSShortThreshold": // fallthrough
 		case "BaselineTargetVThreshold": // fallthrough
@@ -6037,12 +6043,15 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 				return 1
 			endif
 
-			val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
+			// AutobiasTargetV is checked in PSQ_Ramp_CheckParam() and set in PRE_SET_EVENT
+			if(IsNaN(AFH_GetAnalysisParamNumerical("AutobiasTargetV", s.params)))
+				val = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
-			if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
-				printf "(%s): Autobias value is zero or non-finite\r", device
-				ControlWindowToFront()
-				return 1
+				if(!IsFinite(val) || CheckIfSmall(val, tol = DEFAULT_TOL))
+					printf "(%s): Autobias value is zero or non-finite\r", device
+					ControlWindowToFront()
+					return 1
+				endif
 			endif
 
 			DAC     = AFH_GetDACFromHeadstage(device, s.headstage)
@@ -6057,6 +6066,8 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_RAMP, s.headstage, s.sweepNo)
+
+			PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetV")
 
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 
@@ -6114,6 +6125,10 @@ Function PSQ_Ramp(string device, STRUCT AnalysisFunction_V3 &s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key                     = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			if(setPassed)
+				PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
+			endif
 
 			AD_UpdateAllDatabrowser()
 
