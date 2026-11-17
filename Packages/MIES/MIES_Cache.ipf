@@ -112,7 +112,7 @@ Function/S CA_KeyRecreatedEpochs(WAVE numericalValues, WAVE/T textualValues, DFR
 	crc = StringCRC(crc, num2istr(sweepNo))
 	crc = StringCRC(crc, num2istr(SWEEP_EPOCH_VERSION))
 
-	return "Recreated epochs:" + num2istr(crc) + ":Version 2"
+	return "Recreated epochs:" + num2istr(crc) + ":Version 3"
 End
 
 /// @brief Cache key generator for oodDAQ offset waves
