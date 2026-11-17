@@ -5168,8 +5168,10 @@ End
 /// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
 
-	return "AsyncQCChannels:wave,"         + \
-	       "[SamplingFrequency:variable]," + \
+	return "AsyncQCChannels:wave,"               + \
+	       "[AutobiasTargetV:variable],"         + \
+	       "[AutobiasTargetVAtSetEnd:variable]," + \
+	       "[SamplingFrequency:variable],"       + \
 	       "SamplingMultiplier:variable"
 End
 
@@ -5177,6 +5179,8 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
@@ -5191,6 +5195,8 @@ Function/S PSQ_SquarePulse_CheckParam(string name, STRUCT CheckParametersStruct 
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "SamplingFrequency": // fallthrough
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s)
@@ -5274,6 +5280,8 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 			break
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(device, PSQ_SQUARE_PULSE, s.headstage, s.sweepNo)
+
+			PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetV")
 
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 
@@ -5411,6 +5419,10 @@ Function PSQ_SquarePulse(string device, STRUCT AnalysisFunction_V3 &s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key                     = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			if(setPassed)
+				PSQ_SetAutobiasTargetVIfPresent(device, s.headstage, s.params, "AutobiasTargetVAtSetEnd")
+			endif
 
 			AD_UpdateAllDatabrowser()
 
