@@ -1320,23 +1320,46 @@ Function ZN_RemovesNaNs()
 	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
 End
 
-Function ZN_RemovesNaNs2D()
+// UTF_TD_GENERATOR DataGenerators#OnOff
+static Function ZN_AbortsWith2D([variable var])
 
-	// row is NaN
-	Make/FREE wv = {{NaN, Inf}, {NaN, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
-
-	// column is NaN
-	Make/FREE wv = {{NaN, NaN}, {Inf, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
-
-	// single point NaN only
 	Make/FREE wv = {{NaN, 2}, {Inf, 1}}
-	WAVE/Z reduced = ZapNaNs(wv)
-	CHECK_EQUAL_WAVES(reduced, {2, Inf, 1})
 
+	try
+		ZapNaNs(wv, dontDuplicate = var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function ZN_KeepsInputByDefault()
+
+	Make/FREE wv = {NaN, Inf, 1}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_VAR(WaveRefsEqual(reduced, wv), 0)
+	CHECK_EQUAL_WAVES(wv, {NaN, Inf, 1})
+End
+
+static Function ZN_DontDuplicateRemovesNaNsInPlace()
+
+	Make/FREE wv = {NaN, Inf, 1}
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = 1)
+	CHECK_EQUAL_VAR(WaveRefsEqual(reduced, wv), 1)
+	CHECK_EQUAL_WAVES(reduced, {Inf, 1})
+End
+
+// UTF_TD_GENERATOR DataGenerators#OnOff
+static Function ZN_AllNaNOrEmptyToNull([variable var])
+
+	Make/FREE/N=2 wv = {NaN, NaN}
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = var)
+	CHECK_WAVE(reduced, NULL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), var ? 0 : 2)
+
+	Make/FREE/N=0 wv
+	WAVE/Z reduced = ZapNaNs(wv, dontDuplicate = var)
+	CHECK_WAVE(reduced, NULL_WAVE)
 End
 
 /// @}

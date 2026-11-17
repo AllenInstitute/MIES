@@ -87,20 +87,13 @@ Function SB_GetIndexFromSweepDataPath(string win, DFREF dataDFR)
 
 	sweepNo = ExtractSweepNumber(sweepFolder)
 
-	WAVE/Z indizesDataFolder = FindIndizes(sweepMap, colLabel = "DataFolder", str = expFolder)
-	WAVE/Z indizesDevice     = FindIndizes(sweepMap, colLabel = "Device", str = device)
-	WAVE/Z indizesSweep      = FindIndizes(sweepMap, colLabel = "Sweep", str = num2str(sweepNo))
+	WAVE/Z indizesSweep  = FindIndizes(sweepMap, colLabel = "Sweep", str = num2str(sweepNo))
+	WAVE/Z indizesDevice = FindIndizes(sweepMap, colLabel = "Device", str = device, rowIndizes = indizesSweep)
+	WAVE/Z indizes       = FindIndizes(sweepMap, colLabel = "DataFolder", str = expFolder, rowIndizes = indizesDevice)
 
-	ASSERT(WaveExists(indizesDevice) && WaveExists(indizesSweep) && WaveExists(indizesDataFolder), "Map could not be queried")
+	ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) == 1, "Unexpected number of matches")
 
-	// indizesSweep is the shortest one
-	Duplicate/FREE indizesSweep, matches
-	matches[] = (IsFinite(GetRowIndex(indizesDevice, val = indizesSweep[p])) && IsFinite(GetRowIndex(indizesDataFolder, val = indizesSweep[p]))) ? indizesSweep[p] : NaN
-
-	WAVE reduced = ZapNaNs(matches)
-	ASSERT(Dimsize(reduced, ROWS) == 1, "Unexpected number of matches")
-
-	return reduced[0]
+	return indizes[0]
 End
 
 /// @brief set graph userdata similar to DB_SetUserData()
