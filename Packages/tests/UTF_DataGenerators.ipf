@@ -173,6 +173,24 @@ static Function/WAVE SpikeCountsStateValues()
 	return wv
 End
 
+static Function/WAVE ValidNumbersOfSpikes()
+
+	Make/FREE/D wv = {1, 3, Inf}
+
+	SetDimensionLabels(wv, "One;Three;Infinite", ROWS)
+
+	return wv
+End
+
+static Function/WAVE InvalidNumbersOfSpikes()
+
+	Make/FREE/D wv = {0, 0.5, 1.5, -1, NaN}
+
+	SetDimensionLabels(wv, "Zero;Half;OneAndAHalf;MinusOne;NotANumber", ROWS)
+
+	return wv
+End
+
 static Function/WAVE GenerateBaselineValues()
 
 	Make/FREE wv = {25, 35, 45}
@@ -2513,6 +2531,15 @@ static Function/WAVE IVSCCAPFrequencyOffsets()
 	Make/FREE/T wv = {"first", "min", "max", "none"}
 
 	SetDimensionLabelsFromWaveContents(wv)
+
+	return wv
+End
+
+static Function/WAVE SpikeSearchNumbersOfSpikes()
+
+	Make/FREE/D wv = {1, 3, Inf}
+
+	SetDimensionLabels(wv, "OneSpike;ThreeSpikes;AllSpikes", ROWS)
 
 	return wv
 End
