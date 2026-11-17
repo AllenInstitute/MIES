@@ -4032,6 +4032,10 @@ static Function/S PSQ_GetHelpCommon(variable type, string name)
 	strswitch(name)
 		case "AsyncQCChannels":
 			return "List of asynchronous channels with alarm enabled, which must *not* be in alarm state."
+		case "AutobiasTargetV":
+			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
+		case "AutobiasTargetVAtSetEnd":
+			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
 		case "BaselineChunkLength":
 			return "Length of a baseline QC chunk to evaluate (defaults to " + num2str(PSQ_BL_EVAL_RANGE) + ")"
 		case "BaselineRMSLongThreshold":
@@ -4087,6 +4091,13 @@ static Function/S PSQ_CheckParamCommon(string name, STRUCT CheckParametersStruct
 
 			if(WaveExists(diff))
 				return "Invalid entries in wave: " + NumericWaveToList(wv, ";")
+			endif
+			break
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || val == 0)
+				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "BaselineChunkLength":
@@ -6733,6 +6744,8 @@ Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "BaselineRMSLongThreshold": // fallthrough
 		case "BaselineRMSShortThreshold": // fallthrough
 		case "BaselineTargetVThreshold": // fallthrough
@@ -6747,10 +6760,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			       + " Sutter amplifiers support only the values " + SUTTER_LPF_VALUES + " [Hz] and no \"Bypass\"."
 		case "AmpBesselFilterRestore":
 			return "Restores the previously active bessel filter in POST_SET_EVENT. Defaults to ON."
-		case "AutobiasTargetV":
-			return "Autobias targetV [mV] value set in PRE_SET_EVENT"
-		case "AutobiasTargetVAtSetEnd":
-			return "Autobias targetV [mV] value set in POST_SET_EVENT (only set if set QC passes)."
 		case "BoundsEvaluationMode":
 			return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 		case "DAScaleOperator":
@@ -6784,6 +6793,8 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 
 	strswitch(name)
 		case "AsyncQCChannels": // fallthrough
+		case "AutobiasTargetV": // fallthrough
+		case "AutobiasTargetVAtSetEnd": // fallthrough
 		case "BaselineRMSLongThreshold": // fallthrough
 		case "BaselineRMSShortThreshold": // fallthrough
 		case "BaselineTargetVThreshold": // fallthrough
@@ -6811,13 +6822,6 @@ Function/S PSQ_Chirp_CheckParam(string name, STRUCT CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "AutobiasTargetV": // fallthrough
-		case "AutobiasTargetVAtSetEnd":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsFinite(val) || val == 0)
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "BoundsEvaluationMode":
