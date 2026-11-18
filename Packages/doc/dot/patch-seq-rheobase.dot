@@ -99,6 +99,7 @@ digraph G {
 	"Set \"ITI\" to 4s" -> n59;
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"	[label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	[label=Failed];
+	"Early sweep stop, repurpose ITI and add 10s to ITI" -> "End the ITI as soon as autobias reached the target voltage\n(at the earliest when the regular ITI is over)";
 	"Mark set as passed" -> "Skip to end of active set";
 	"Store DAScale stepsize of 2pA in LBN" -> "Spike detected? (queried from labnotebook)";
 	"Offset DAScale by minus\nstepsize from LBN" -> "DAScale is zero?";

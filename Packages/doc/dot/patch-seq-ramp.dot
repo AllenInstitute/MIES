@@ -107,6 +107,7 @@ digraph G {
 	"Check if no TTL channels are active" -> "All checks passed";
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	[label=Failed];
+	"Early sweep stop, repurpose ITI and add 10s to ITI" -> "End the ITI as soon as autobias reached the target voltage\n(at the earliest when the regular ITI is over)";
 	"Set AD channel to zero for the duration of the DAQ restart" -> "Recalculate pulse duration and\nstore in labnotebook";
 	n58	[label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it"];
 	"Enable \"Repeated Acquisition\"" -> n58;
