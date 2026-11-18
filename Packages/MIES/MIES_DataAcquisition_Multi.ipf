@@ -147,7 +147,10 @@ Function DQM_FIFOMonitor(STRUCT BackgroundStruct &s)
 
 		result = AS_HandlePossibleTransition(device, AS_MID_SWEEP)
 
-		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+		NVAR midSweepResult = $GetMidSweepAnalysisFunctionResult(device)
+		midSweepResult = result
+
+		if(result == ANALYSIS_FUNC_RET_REPURP_TIME || result == ANALYSIS_FUNC_RET_AUTOBIAS)
 			UpdateLeftOverSweepTime(device, fifoLatest)
 			isFinished = 1
 		elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
@@ -297,6 +300,28 @@ Function DQM_StopBackgroundTimer(string device)
 	if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
 		CtrlNamedBackground $TASKNAME_TIMERMD, Stop
 	endif
+End
+
+/// @brief End the ITI of the given device at the next call of DQM_Timer(), which then executes
+///        the list of functions as at the regular end
+///
+/// @return elapsed ITI time in seconds
+Function DQM_FinishBackgroundTimerEarly(string device)
+
+	variable row, elapsedTime
+
+	WAVE   ActiveDevTimeParam    = GetDQMTimerParam()
+	WAVE/T TimerFunctionListWave = GetDQMTimerFunctionList()
+
+	WAVE/Z indizes = FindIndizes(TimerFunctionListWave, colLabel = "Device", str = device)
+	ASSERT(WaveExists(indizes), "Missing ITI timer of the device")
+	row = indizes[0]
+
+	elapsedTime                       = RelativeNowHighPrec() - ActiveDevTimeParam[row][%StartTime]
+	ActiveDevTimeParam[row][%RunTime] = elapsedTime
+	ActiveDevTimeParam[row][%EndTime] = ActiveDevTimeParam[row][%StartTime] + elapsedTime
+
+	return elapsedTime
 End
 
 /// @brief Background function for tracking ITI

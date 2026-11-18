@@ -72,6 +72,8 @@
 /// 1                                        Pre Sweep Config  DAQ is stopped
 /// :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep         Current sweep is immediately stopped. Left over time is repurposed for ITI.
 /// :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep         Current sweep is immediately stopped without honouring the left over time in a special way.
+/// :cpp:var:`ANALYSIS_FUNC_RET_AUTOBIAS`    Mid Sweep         Same as :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME`, but the ITI with the repurposed time ends
+///                                                            as soon as autobias reached the target voltage, see RA_EvaluateAutobiasForEarlyITIEnd().
 /// ======================================== ================= ============================================================================================
 ///
 /// \endrst

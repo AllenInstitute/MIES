@@ -7,6 +7,7 @@
 
 // keep sorted
 #include "UTF_AnalysisFunctionManagement"
+#include "UTF_AutobiasEarlyITI"
 #include "UTF_AutoTestpulse"
 #include "UTF_BasicHardwareTests"
 #include "UTF_ConfigurationHardware"

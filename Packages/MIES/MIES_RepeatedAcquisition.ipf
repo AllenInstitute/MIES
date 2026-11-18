@@ -13,29 +13,142 @@
 /// @brief __RA__ Repated acquisition functionality
 
 /// @brief Recalculate the Inter trial interval (ITI) for the given device.
-static Function RA_RecalculateITI(string device)
+///
+/// After a sweep stopped with #ANALYSIS_FUNC_RET_AUTOBIAS, autobias may end the ITI early, but
+/// not before the ITI without the repurposed time is over, see RA_EvaluateAutobiasForEarlyITIEnd().
+///
+/// @param device        device
+/// @param allowEarlyEnd [optional, defaults to true] whether the ITI can be ended early at all,
+///                      requires the test pulse during the ITI and a background timer
+static Function RA_RecalculateITI(string device, [variable allowEarlyEnd])
 
-	variable ITI, sweepNo
+	variable ITI, earlyEnd
+
+	if(ParamIsDefault(allowEarlyEnd))
+		allowEarlyEnd = 1
+	else
+		allowEarlyEnd = !!allowEarlyEnd
+	endif
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(device)
-	ITI            = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
-	repurposedTime = 0
+	NVAR midSweepResult = $GetMidSweepAnalysisFunctionResult(device)
 
+	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
 	ASSERT(IsFinite(ITI), "The recalculated ITI must be finite")
+
+	earlyEnd = allowEarlyEnd && midSweepResult == ANALYSIS_FUNC_RET_AUTOBIAS && repurposedTime > 0 && ITI > 0
+
+	RA_ResetEarlyITIEnd(device)
+
+	if(earlyEnd)
+		NVAR earliestEnd = $GetAutobiasEarlyITIEarliestEnd(device)
+		earliestEnd = RelativeNowHighPrec() + max(ITI - repurposedTime, 0)
+	endif
+
+	repurposedTime = 0
+	midSweepResult = 0
+
+	if(earlyEnd)
+		RA_AddITIToLabnotebook(device, ITI, finishedEarly = 0)
+	else
+		RA_AddITIToLabnotebook(device, ITI)
+	endif
+
+	return ITI
+End
+
+/// @brief Add the effective ITI to the labnotebook
+///
+/// @param device        device
+/// @param ITI           effective ITI in seconds
+/// @param finishedEarly [optional, defaults to no entry] whether autobias finished the ITI early
+static Function RA_AddITIToLabnotebook(string device, variable ITI, [variable finishedEarly])
+
+	variable sweepNo, numEntries
 
 	sweepNo = AS_GetSweepNumber(device)
 	ASSERT(IsValidSweepNumber(sweepNo), "Invalid sweep nuber")
 
-	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	numEntries = ParamIsDefault(finishedEarly) ? 1 : 2
+
+	Make/FREE/D/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	Make/T/FREE/N=(3, numEntries) keys
+
 	vals[0][0][INDEP_HEADSTAGE] = ITI
-	Make/T/FREE/N=(3, 1) keys
-	keys[0] = "Inter-trial interval (effective)"
-	keys[1] = "s"
-	keys[2] = LABNOTEBOOK_NO_TOLERANCE
+	keys[0][0]                  = "Inter-trial interval (effective)"
+	keys[1][0]                  = "s"
+	keys[2][0]                  = LABNOTEBOOK_NO_TOLERANCE
+
+	if(!ParamIsDefault(finishedEarly))
+		vals[0][1][INDEP_HEADSTAGE] = !!finishedEarly
+		keys[0][1]                  = ITI_FINISHED_EARLY_KEY
+		keys[1][1]                  = LABNOTEBOOK_BINARY_UNIT
+		keys[2][1]                  = LABNOTEBOOK_NO_TOLERANCE
+	endif
 
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
+End
 
-	return ITI
+/// @brief Reset the state for ending the ITI early, see RA_EvaluateAutobiasForEarlyITIEnd()
+static Function RA_ResetEarlyITIEnd(string device)
+
+	NVAR earliestEnd = $GetAutobiasEarlyITIEarliestEnd(device)
+	NVAR passes      = $GetAutobiasEarlyITIPasses(device)
+
+	earliestEnd = NaN
+	passes      = 0
+End
+
+/// @brief End the current ITI early once autobias brought all headstages to the target voltage
+///
+/// Called from DQ_ApplyAutoBias() with the result of each autobias check. Only active during the
+/// test pulse of an ITI after a sweep stopped with #ANALYSIS_FUNC_RET_AUTOBIAS, see
+/// RA_RecalculateITI(). The ITI ends once #AUTOBIAS_EARLY_ITI_NUM_PASSES consecutive checks found
+/// all headstages within the target voltage range, but not before the ITI without the repurposed
+/// time is over. The ITI timer then runs its list of functions as at the regular end.
+///
+/// @param device     device
+/// @param allInRange whether all headstages evaluated by autobias are within the target voltage range
+Function RA_EvaluateAutobiasForEarlyITIEnd(string device, variable allInRange)
+
+	variable runMode, elapsedTime
+
+	NVAR earliestEnd = $GetAutobiasEarlyITIEarliestEnd(device)
+	NVAR passes      = $GetAutobiasEarlyITIPasses(device)
+
+	if(IsNaN(earliestEnd))
+		return NaN
+	endif
+
+	runMode = ROVar(GetTestpulseRunMode(device))
+	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
+		return NaN
+	endif
+
+	if(!allInRange)
+		passes = 0
+		return NaN
+	endif
+
+	passes += 1
+
+	if(passes < AUTOBIAS_EARLY_ITI_NUM_PASSES || RelativeNowHighPrec() < earliestEnd)
+		return NaN
+	endif
+
+	switch(ROVar(GetDataAcqRunMode(device)))
+		case DAQ_BG_MULTI_DEVICE:
+			elapsedTime = DQM_FinishBackgroundTimerEarly(device)
+			break
+		case DAQ_BG_SINGLE_DEVICE:
+			elapsedTime = DQS_FinishBackgroundTimerEarly()
+			break
+		default:
+			FATAL_ERROR("Unsupported data acquisition mode")
+	endswitch
+
+	RA_ResetEarlyITIEnd(device)
+	RA_AddITIToLabnotebook(device, elapsedTime, finishedEarly = 1)
 End
 
 static Function RA_HandleITI_MD(string device)
@@ -47,7 +160,7 @@ static Function RA_HandleITI_MD(string device)
 
 	AS_HandlePossibleTransition(device, AS_ITI)
 
-	ITI = RA_RecalculateITI(device)
+	ITI = RA_RecalculateITI(device, allowEarlyEnd = DAG_GetNumericalValue(device, "check_Settings_ITITP"))
 
 	if(!DAG_GetNumericalValue(device, "check_Settings_ITITP") || ITI <= 0)
 
@@ -99,8 +212,8 @@ static Function RA_HandleITI(string device)
 	DAP_ApplyDelayedClampModeChange(device)
 	AS_HandlePossibleTransition(device, AS_ITI)
 
-	ITI        = RA_RecalculateITI(device)
 	background = DAG_GetNumericalValue(device, "Check_Settings_BackgrndDataAcq")
+	ITI        = RA_RecalculateITI(device, allowEarlyEnd = background && DAG_GetNumericalValue(device, "check_Settings_ITITP"))
 	funcList   = "RA_Counter(\"" + device + "\")"
 
 	if(!DAG_GetNumericalValue(device, "check_Settings_ITITP") || ITI <= 0)
@@ -194,6 +307,8 @@ Function RA_Counter(string device)
 		return NaN
 	endif
 
+	RA_ResetEarlyITIEnd(device)
+
 	DAP_ApplyDelayedClampModeChange(device)
 
 	NVAR count          = $GetCount(device)
@@ -243,6 +358,7 @@ static Function RA_FinishAcquisition(string device, [variable stopReason, variab
 	endif
 
 	DQ_StopDAQDeviceTimer(device)
+	RA_ResetEarlyITIEnd(device)
 
 #ifdef PERFING_RA
 	RA_PerfFinish(device)
@@ -297,6 +413,8 @@ Function RA_CounterMD(string device)
 	if(runMode == DAQ_NOT_RUNNING)
 		return NaN
 	endif
+
+	RA_ResetEarlyITIEnd(device)
 
 	DAP_ApplyDelayedClampModeChange(device)
 

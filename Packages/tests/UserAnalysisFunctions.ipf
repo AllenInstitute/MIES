@@ -874,6 +874,20 @@ Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3 &s)
 	return 0
 End
 
+/// Stops the first sweep in its first mid sweep event with the analysis parameter
+/// "MidSweepReturnValue" and adds the analysis parameter "RepurposedTime" to the ITI
+Function StopFirstSweepForAutobias_V3(string device, STRUCT AnalysisFunction_V3 &s)
+
+	if(s.eventType != MID_SWEEP_EVENT || s.sweepNo != 0)
+		return 0
+	endif
+
+	NVAR repurposedTime = $GetRepurposedSweepTime(device)
+	repurposedTime = AFH_GetAnalysisParamNumerical("RepurposedTime", s.params)
+
+	return AFH_GetAnalysisParamNumerical("MidSweepReturnValue", s.params)
+End
+
 Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3 &s)
 
 	variable DAC

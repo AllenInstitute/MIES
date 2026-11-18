@@ -106,6 +106,7 @@ static Function RD_CompareLabnotebooks_Impl(WAVE values_new, WAVE values_replay,
 	                            "High precision sweep start",               \
 	                            "MIES version",                             \
 	                            "Inter-trial interval (effective)",         \
+	                            "ITI finished early by autobias",           \
 	                            "Igor Pro version",                         \
 	                            "Digitizer Serial Numbers",                 \
 	                            "JSON config file [path]",                  \
