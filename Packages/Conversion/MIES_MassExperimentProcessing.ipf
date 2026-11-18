@@ -28,6 +28,38 @@
 ///
 /// In the output folder there will be a `conversion.json` file with results of
 /// the conversion process. Search for the `error` key for failed conversions.
+///
+/// File format of `conversion.json:
+///
+/// \rst
+/// .. code-block:: json
+///
+///    {
+///      "errors": 17,
+///      "index": 407,
+///      "inputFiles": [
+///        "fileA",
+///        "..."
+///      ],
+///      "inputFolder": "folderA",
+///      "log": [
+///        {
+///          "from": "fileA",
+///          "output": "...",
+///          "to": "basePathA"
+///        },
+///        {}
+///      ],
+///      "outputFolder": "folderB",
+///      "processed": 275,
+///      "skipped": 132,
+///      "total": 407,
+///      "startTime": "2026-10-31T16:38:08-07:00",
+///      "elapsedSec": 123123,
+///      "endTimeEst": "2026-10-31T16:38:08-07:00"
+///    }
+///
+/// \endrst
 
 // #define MEP_DEBUGGING
 
@@ -144,6 +176,8 @@ static Function ProcessCurrentExperiment(STRUCT MultiExperimentProcessPrefs &pre
 		JSON_SetVariable(jsonID, "/skipped", JSON_GetVariable(jsonID, "/skipped") + 1)
 	endif
 
+	UpdateFinishedTimeEstimate(jsonID)
+
 	JSON_SetVariable(jsonID, "/index", JSON_GetVariable(jsonID, "/index") + 1)
 
 	StoreJSON(prefs, jsonID)
@@ -153,15 +187,13 @@ static Function PerformMiesTasks(string outputFileTemplate)
 
 	string folder
 
-	printf "Free Memory: %g GB\r", GetFreeMemory()
-
 	folder = GetFolder(outputFileTemplate)
 
 	if(!FolderExists(folder))
 		CreateFolderOnDisk(folder)
 	endif
 
-	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate)
+	NWB_ExportAllData(NWB_VERSION_LATEST, overrideFileTemplate = outputFileTemplate, verbose = 0)
 	HDF5CloseFile/A/Z 0
 End
 
@@ -277,7 +309,7 @@ End
 Function StartMultiExperimentProcessWrapper()
 
 	string message, settingsFile, inputFolder, outputFolder
-	variable jsonID
+	variable jsonID, numFiles
 
 	STRUCT MultiExperimentProcessPrefs prefs
 	LoadPackagePrefs(prefs)
@@ -301,12 +333,19 @@ Function StartMultiExperimentProcessWrapper()
 	if(!cmpstr(OUTPUT_FOLDER, ""))
 		NewPath/O/Q/M=message MultiExperimentOutputFolder
 	else
-		NewPath/O/Q/M=message MultiExperimentOutputFolder, OUTPUT_FOLDER
+
+#ifdef MEP_DEBUGGING
+		DeleteFolder/Z OUTPUT_FOLDER
+#endif // MEP_DEBUGGING
+
+		NewPath/O/Q/M=message/C MultiExperimentOutputFolder, OUTPUT_FOLDER
 	endif
 
 	if(V_flag != 0)
 		return -1 // User canceled from New Path dialog
 	endif
+
+	DisableDebugger()
 
 	PathInfo MultiExperimentOutputFolder
 	outputFolder = S_Path
@@ -320,6 +359,8 @@ Function StartMultiExperimentProcessWrapper()
 		Make/FREE/T/N=0 files
 	endif
 
+	numFiles = DimSize(files, ROWS)
+
 	jsonID = JSON_New()
 	JSON_AddWave(jsonID, "/inputFiles", files)
 	JSON_AddString(jsonID, "/inputFolder", inputFolder)
@@ -328,10 +369,12 @@ Function StartMultiExperimentProcessWrapper()
 	JSON_AddVariable(jsonID, "/processed", 0)
 	JSON_AddVariable(jsonID, "/errors", 0)
 	JSON_AddVariable(jsonID, "/skipped", 0)
-	JSON_AddVariable(jsonID, "/total", DimSize(files, ROWS))
+	JSON_AddVariable(jsonID, "/total", numFiles)
+
+	UpdateFinishedTimeEstimate(jsonID)
 
 	JSON_AddTreeArray(jsonID, "/log")
-	JSON_AddObjects(jsonID, "/log", objCount = DimSize(files, ROWS))
+	JSON_AddObjects(jsonID, "/log", objCount = numFiles)
 
 	prefs.settingsFile = outputFolder + "conversion.json"
 	StoreJSON(prefs, jsonID)
@@ -345,6 +388,43 @@ Function StartMultiExperimentProcessWrapper()
 	SavePackagePrefs(prefs)
 
 	return 0
+End
+
+static Function UpdateFinishedTimeEstimate(variable jsonID)
+
+	variable endTimeEst, startTime, numFiles, numProcessed
+	variable numSkipped, numLeft, numDone, elapsedSec, now
+	string timestamp
+
+	if(!JSON_Exists(jsonID, "/startTime"))
+		startTime = DateTimeHighPrec()
+		timestamp = GetISO8601TimeStamp(secondsSinceIgorEpoch = startTime, localTimeZone = 1)
+		JSON_AddString(jsonID, "/startTime", timestamp)
+	else
+		timestamp = JSON_GetString(jsonID, "/startTime")
+		startTime = UTCTimeToLocal(ParseISO8601TimeStamp(timestamp))
+	endif
+
+	numFiles     = JSON_GetVariable(jsonID, "/total")
+	numProcessed = JSON_GetVariable(jsonID, "/processed")
+	numSkipped   = JSON_GetVariable(jsonID, "/skipped")
+	numDone      = numProcessed + numSkipped
+	numLeft      = numFiles - numDone
+
+	if(numLeft == numFiles)
+		// initial estimate is 10s per file
+		elapsedSec = 0
+		endTimeEst = startTime + 10 * numFiles
+	else
+		now        = DateTimeHighPrec()
+		elapsedSec = trunc(now - startTime)
+		endTimeEst = now + (elapsedSec / numDone * numLeft)
+	endif
+
+	JSON_SetVariable(jsonID, "/elapsedSec", elapsedSec)
+
+	timestamp = GetISO8601TimeStamp(secondsSinceIgorEpoch = endTimeEst, localTimeZone = 1)
+	JSON_SetString(jsonID, "/endTimeEst", timestamp)
 End
 
 Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
