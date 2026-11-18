@@ -715,7 +715,6 @@ Function/S CONF_RestoreDAEphys(variable jsonID, string fullFilePath, [variable m
 			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
 			ASSERT(!err, "Specified StimSet file at " + StimSetPath + " could not be loaded!", extendedOutput = 0)
 
-			print "Specified StimSet file at " + StimSetPath + " loaded successfully."
 			SetWindow $device, userData($EXPCONFIG_UDATA_STIMSET_NWB_PATH)=StimSetPath
 		endif
 

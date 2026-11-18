@@ -503,8 +503,6 @@ static Function P_OpenDevice(string mainDevice, string pressureDevice)
 		P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 	endif
 
-	printf "Device used for pressure regulation: %s (%s)\r", pressureDevice, StringFromList(hwType, HARDWARE_DAC_TYPES)
-
 	// update pressure data wave with locked device info
 	numLocked = ItemsInList(ListOfLockedDA_Ephys)
 	for(j = 0; j < numLocked; j += 1)
