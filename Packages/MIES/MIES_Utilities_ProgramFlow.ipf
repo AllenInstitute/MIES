@@ -9,6 +9,8 @@
 /// @file MIES_Utilities_ProgramFlow.ipf
 /// @brief utility functions for program flow
 
+static StrConstant STACKTRACE_DEFAULT_HEADER = "Stacktrace"
+
 /// @brief Helper function to ensure that there is no pending RTE before entering a critical section.
 ///        If there is a pending RTE then a BUG message is output (which is a CI error).
 ///
@@ -198,6 +200,27 @@ threadsafe Function/S GetStackTrace([string prefix])
 	return output
 End
 
+/// @brief Get the stacktrace header
+///
+/// This takes into account the information provided by the ZeroMQ XOP interceptor, see ZeroMQ_Interceptor()
+threadsafe Function/S GetStacktraceHeader()
+
+	string stacktraceHeader
+
+	SVAR zmqXOPInfo = $GetZeroMQXOPCallInfo()
+
+	if(!cmpstr(zmqXOPInfo, ZeroMQ_INFO_UNDEFINED))
+		return STACKTRACE_DEFAULT_HEADER
+	endif
+
+	sprintf stacktraceHeader, "%s (%s)", STACKTRACE_DEFAULT_HEADER, zmqXOPInfo
+
+	// the interceptor function is not called after an abort, so we need to reset it here
+	zmqXOPInfo = ZeroMQ_INFO_UNDEFINED
+
+	return stacktraceHeader
+End
+
 /// @brief Low overhead function to check assertions
 ///
 /// @param var            if zero an error message is printed into the history and procedure execution is aborted,
@@ -219,6 +242,7 @@ End
 /// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
+	string stacktraceHeader
 	variable doCallDebugger
 
 	try
@@ -245,6 +269,12 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
 
+		stacktraceHeader = GetStacktraceHeader()
+
+		if(cmpstr(stacktraceHeader, STACKTRACE_DEFAULT_HEADER))
+			doCallDebugger = 0
+		endif
+
 		// Recursion detection, if ASSERT appears multiple times in StackTrace
 		if(IsFunctionCalledRecursively())
 
@@ -266,7 +296,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 
 		if(extendedOutput)
 
-			printf "%s", GetVerboseMIESState()
+			printf "%s", GetVerboseMIESState(stackTraceHeader = stackTraceHeader)
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 
 			ControlWindowToFront()
@@ -302,6 +332,8 @@ End
 /// UTF_NOINSTRUMENTATION
 threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
 
+	string stacktraceHeader
+
 	try
 		AbortOnValue var == 0, 1
 	catch
@@ -322,6 +354,8 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 #endif // AUTOMATED_TESTING_DEBUGGING
 #endif // AUTOMATED_TESTING
 
+		stacktraceHeader = GetStacktraceHeader()
+
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
 		if(IsFunctionCalledRecursively())
 
@@ -337,7 +371,7 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 
 		if(extendedOutput)
 
-			printf "%s", GetVerboseMIESState_TS()
+			printf "%s", GetVerboseMIESState_TS(stackTraceHeader = stackTraceHeader)
 			LOG_AddEntry(PACKAGE_MIES, LOG_ACTION_ASSERT, stacktrace = 1, keys = {LOG_MESSAGE_KEY}, values = {errorMsg})
 		endif
 
@@ -346,11 +380,15 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 End
 
 /// @brief Returns a string with MIES state information
-static Function/S GetVerboseMIESState()
+static Function/S GetVerboseMIESState([string stackTraceHeader])
 
 	string msg, device, miesVersionStr, lockedDevicesStr
 	variable i, numLockedDevices
-
+	
+	if(ParamIsDefault(stackTraceHeader))
+		stackTraceHeader = STACKTRACE_DEFAULT_HEADER
+	endif
+	
 	// hard coding the path here so that we don't depend on GetMiesVersion()
 	// in MIES_GlobalStringAndVariableAccess.ipf
 	SVAR/Z miesVersion = root:MIES:version
@@ -394,7 +432,7 @@ static Function/S GetVerboseMIESState()
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s:\r", msg, stackTraceHeader
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
@@ -414,14 +452,18 @@ static Function/S GetVerboseMIESState()
 End
 
 /// @brief Returns a string with MIES state information that can be gathered in a threadsafe call
-threadsafe static Function/S GetVerboseMIESState_TS()
+threadsafe static Function/S GetVerboseMIESState_TS([string stackTraceHeader])
 
 	string msg
+
+	if(ParamIsDefault(stackTraceHeader))
+		stackTraceHeader = STACKTRACE_DEFAULT_HEADER
+	endif
 
 	sprintf msg, "Please provide the following information if you contact the MIES developers:\r"
 	sprintf msg, "%s################################\r", msg
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
-	sprintf msg, "%sStacktrace:\r", msg
+	sprintf msg, "%s%s:\r", msg, stackTraceHeader
 	sprintf msg, "%s%s\r", msg, GetStackTrace()
 	sprintf msg, "%s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r", msg
 	sprintf msg, "%sTime: %s\r", msg, GetIso8601TimeStamp(localTimeZone = 1, numFracSecondsDigits = 3)
