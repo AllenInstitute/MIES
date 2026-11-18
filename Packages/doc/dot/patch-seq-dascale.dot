@@ -159,6 +159,7 @@ in the labnotebook"];
 	"Get OperationMode" -> n110	[label="Adaptive Supra"];
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	[label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	[label=Failed];
+	"Early sweep stop, repurpose ITI and add 10s to ITI" -> "End the ITI as soon as autobias reached the target voltage\n(at the earliest when the regular ITI is over)";
 	n122	[label="Add \"DAScale out of range\" labnotebook entry"];
 	"Use next DAScale value" -> n122	[label=Yes];
 	n123	[label="Set DAScale"];

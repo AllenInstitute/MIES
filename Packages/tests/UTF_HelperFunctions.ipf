@@ -2289,6 +2289,7 @@ static Function/S GetDefaultTestSuitesForExperiment()
 		case "UTF_HardwareBasic.ipf":
 			// sorted list
 			list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+			list = AddListItem("UTF_AutobiasEarlyITI.ipf", list, ";", Inf)
 			list = AddListItem("UTF_AutoTestpulse.ipf", list, ";", Inf)
 			list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
 			list = AddListItem("UTF_ConfigurationHardware.ipf", list, ";", Inf)

@@ -4917,10 +4917,8 @@ static Function DAP_UnlockDevice(string device)
 		WAVE/Z/SDFR=dfr ActiveDeviceList
 		DAP_ClearWaveIfExists(ActiveDeviceList)
 
-		DFREF dfr = GetActiveDAQDevicesTimerFolder()
-		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
-		DAP_ClearWaveIfExists(ActiveDevTimeParam)
-		DAP_ClearWaveIfExists(TimerFunctionListWave)
+		DAP_ClearWaveIfExists(GetDQMTimerParam())
+		DAP_ClearWaveIfExists(GetDQMTimerFunctionList())
 
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif

@@ -39,7 +39,7 @@ Constant SWEEP_EPOCH_VERSION = 9
 /// - New/Changed layers of entries
 ///
 ///@{
-Constant LABNOTEBOOK_VERSION = 86
+Constant LABNOTEBOOK_VERSION = 87
 Constant RESULTS_VERSION     = 4
 ///@}
 
@@ -47,10 +47,10 @@ Constant RESULTS_VERSION     = 4
 ///@{
 Constant PSQ_PIPETTE_BATH_VERSION    = 4
 Constant PSQ_ACC_RES_SMOKE_VERSION   = 2
-Constant PSQ_CHIRP_VERSION           = 14
-Constant PSQ_DA_SCALE_VERSION        = 19
-Constant PSQ_RAMP_VERSION            = 10
-Constant PSQ_RHEOBASE_VERSION        = 6
+Constant PSQ_CHIRP_VERSION           = 15
+Constant PSQ_DA_SCALE_VERSION        = 20
+Constant PSQ_RAMP_VERSION            = 11
+Constant PSQ_RHEOBASE_VERSION        = 7
 Constant PSQ_SQUARE_PULSE_VERSION    = 5
 Constant PSQ_SEAL_EVALUATION_VERSION = 3
 Constant PSQ_TRUE_REST_VM_VERSION    = 2
@@ -779,7 +779,15 @@ StrConstant ANALYSIS_FUNCTION_PARAMS_TYPES = "variable;string;wave;textwave"
 ///@{
 Constant ANALYSIS_FUNC_RET_REPURP_TIME = -100
 Constant ANALYSIS_FUNC_RET_EARLY_STOP  = -101
+Constant ANALYSIS_FUNC_RET_AUTOBIAS    = -102
 ///@}
+
+/// Number of consecutive autobias checks with all headstages within the target voltage range,
+/// required to end an ITI early after #ANALYSIS_FUNC_RET_AUTOBIAS
+Constant AUTOBIAS_EARLY_ITI_NUM_PASSES = 2
+
+/// Labnotebook key for an ITI which was finished early by autobias, see #ANALYSIS_FUNC_RET_AUTOBIAS
+StrConstant ITI_FINISHED_EARLY_KEY = "ITI finished early by autobias"
 
 /// @name Constants for differentiating between different analysis function versions
 /// @anchor AnalysisFunctionVersions

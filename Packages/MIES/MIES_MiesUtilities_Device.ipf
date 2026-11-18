@@ -264,13 +264,9 @@ Function IsDeviceActiveWithBGTask(string device, string task)
 			WAVE deviceList = GetActiveDevicesTPMD()
 			break
 		case TASKNAME_TIMERMD:
-			WAVE/Z/T/SDFR=GetActiveDAQDevicesTimerFolder() deviceNameList = TimerFunctionListWave
-			if(!WaveExists(deviceNameList))
-				DEBUGPRINT("Inconsistent state encountered in IsDeviceActiveWithBGTask")
-				return 1
-			endif
+			WAVE/T deviceNameList = GetDQMTimerFunctionList()
 
-			WAVE/Z indizes = FindIndizes(deviceNameList, col = 0, str = device)
+			WAVE/Z indizes = FindIndizes(deviceNameList, colLabel = "Device", str = device)
 			return WaveExists(indizes)
 		case TASKNAME_FIFOMONMD:
 			WAVE deviceList = GetDQMActiveDeviceList()

@@ -173,6 +173,7 @@ digraph G {
 	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook"	 [label=Found];
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
+	"Early sweep stop, repurpose ITI and add 10s to ITI" -> "End the ITI as soon as autobias reached the target voltage\n(at the earliest when the regular ITI is over)";
 	n82	 [label="Store \"Delay onset user\" in labnotebook"];
 	n78 -> n82;
 	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook";
