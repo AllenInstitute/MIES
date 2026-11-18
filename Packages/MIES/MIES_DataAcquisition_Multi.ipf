@@ -290,7 +290,7 @@ End
 /// @brief Stop the background timer used for ITI tracking
 Function DQM_StopBackgroundTimer(string device)
 
-	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
+	WAVE ActiveDevTimeParam = GetDQMTimerParam()
 
 	DQM_MakeOrUpdateTimerParamWave(device, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
@@ -304,23 +304,21 @@ End
 /// @ingroup BackgroundFunctions
 Function DQM_Timer(STRUCT WMBackgroundStruct &s)
 
-	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
-	// column 0 = deviceID; column 1 = Start time; column 2 = run time; column 3 = end time
-	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
-	// column 0 = panel title; column 1 = list of functions
+	WAVE   ActiveDevTimeParam    = GetDQMTimerParam()
+	WAVE/T TimerFunctionListWave = GetDQMTimerFunctionList()
 	variable i
 	string   device
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1) // NOLINT
-		ActiveDevTimeParam[i][4] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][1])
-		timeLeft                 = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
-		device                   = TimerFunctionListWave[i][0]
+		ActiveDevTimeParam[i][%ElapsedTime] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][%StartTime])
+		timeLeft                            = max(ActiveDevTimeParam[i][%RunTime] - ActiveDevTimeParam[i][%ElapsedTime], 0)
+		device                              = TimerFunctionListWave[i][%Device]
 
 		SetValDisplay(device, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
 		if(timeLeft == 0)
-			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
+			ExecuteListOfFunctions(TimerFunctionListWave[i][%FunctionList])
 			DQM_MakeOrUpdateTimerParamWave(device, "", 0, 0, 0, -1)
 
 			// restart iterating over the remaining devices
@@ -443,45 +441,31 @@ static Function DQM_MakeOrUpdateTimerParamWave(string device, string listOfFunct
 	variable rowToRemove = NaN
 	variable numberOfRows
 
-	NVAR  deviceID = $GetDAQDeviceID(device)
-	DFREF dfr      = GetActiveDAQDevicesTimerFolder()
+	NVAR deviceID = $GetDAQDeviceID(device)
 
-	WAVE/Z/SDFR=dfr ActiveDevTimeParam
+	WAVE   ActiveDevTimeParam    = GetDQMTimerParam()
+	WAVE/T TimerFunctionListWave = GetDQMTimerFunctionList()
+
 	if(addOrRemoveDevice == 1) // add a DAQ device
-		if(!WaveExists(ActiveDevTimeParam))
-			Make/N=(1, 5) dfr:ActiveDevTimeParam/WAVE=ActiveDevTimeParam
-			ActiveDevTimeParam[0][0] = deviceID
-			ActiveDevTimeParam[0][1] = startTime
-			ActiveDevTimeParam[0][2] = RunTime
-			ActiveDevTimeParam[0][3] = EndTime
-			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
-		else
-			numberOfRows = DimSize(ActiveDevTimeParam, ROWS)
-			Redimension/N=(numberOfRows + 1, 5) ActiveDevTimeParam
-			ActiveDevTimeParam[numberOfRows][0] = deviceID
-			ActiveDevTimeParam[numberOfRows][1] = startTime
-			ActiveDevTimeParam[numberOfRows][2] = RunTime
-			ActiveDevTimeParam[numberOfRows][3] = EndTime
-			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
-		endif
+		numberOfRows = DimSize(ActiveDevTimeParam, ROWS)
+		Redimension/N=(numberOfRows + 1, -1) ActiveDevTimeParam
+		ActiveDevTimeParam[numberOfRows][%DeviceID]  = deviceID
+		ActiveDevTimeParam[numberOfRows][%StartTime] = startTime
+		ActiveDevTimeParam[numberOfRows][%RunTime]   = RunTime
+		ActiveDevTimeParam[numberOfRows][%EndTime]   = EndTime
 	elseif(addOrRemoveDevice == -1) // remove a DAQ device
 		// ActiveDevTimeParam has no hardware type, and device IDs are only
 		// unique per hardware type
-		WAVE/Z/T/SDFR=dfr deviceNameList = TimerFunctionListWave
-		ASSERT(WaveExists(deviceNameList), "Missing wave TimerFunctionListWave")
-		WAVE/Z indizes = FindIndizes(deviceNameList, col = 0, str = device)
+		WAVE/Z indizes = FindIndizes(TimerFunctionListWave, colLabel = "Device", str = device)
 		ASSERT(WaveExists(indizes), "Trying to remove a non existing device")
 		rowToRemove = indizes[0]
-		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
+		DeleteWavePoint(ActiveDevTimeParam, ROWS, index = rowToRemove)
 	else
 		FATAL_ERROR("Invalid addOrRemoveDevice value")
 	endif
 
 	DQM_MakeOrUpdtDevTimerTxtWv(device, ListOfFunctions, rowToRemove, addOrRemoveDevice)
 
-	WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
-	ASSERT(WaveExists(ActiveDevTimeParam), "Missing wave ActiveDevTimeParam")
-	ASSERT(WaveExists(TimerFunctionListWave), "Missing wave TimerFunctionListWave")
 	ASSERT(DimSize(TimerFunctionListWave, ROWS) == DimSize(ActiveDevTimeParam, ROWS), "Number of rows in ActiveDevTimeParam and TimerFunctionListWave must be equal")
 End
 
@@ -489,23 +473,16 @@ static Function DQM_MakeOrUpdtDevTimerTxtWv(string device, string listOfFunction
 
 	variable numberOfRows
 
-	DFREF dfr = GetActiveDAQDevicesTimerFolder()
-	WAVE/Z/T/SDFR=dfr TimerFunctionListWave
+	WAVE/T TimerFunctionListWave = GetDQMTimerFunctionList()
 
 	if(addOrRemoveDevice == 1) // Add a device
-		if(!WaveExists(TimerFunctionListWave))
-			Make/T/N=(1, 2) dfr:TimerFunctionListWave/WAVE=TimerFunctionListWave
-			TimerFunctionListWave[0][0] = device
-			TimerFunctionListWave[0][1] = listOfFunctions
-		else
-			numberOfRows = DimSize(TimerFunctionListWave, ROWS)
-			Redimension/N=(numberOfRows + 1, 2) TimerFunctionListWave
-			TimerFunctionListWave[numberOfRows][0] = device
-			TimerFunctionListWave[numberOfRows][1] = listOfFunctions
-		endif
+		numberOfRows = DimSize(TimerFunctionListWave, ROWS)
+		Redimension/N=(numberOfRows + 1, -1) TimerFunctionListWave
+		TimerFunctionListWave[numberOfRows][%Device]       = device
+		TimerFunctionListWave[numberOfRows][%FunctionList] = listOfFunctions
 	elseif(addOrRemoveDevice == -1) // remove a device
 		ASSERT(rowToRemove >= 0 && rowToRemove < DimSize(TimerFunctionListWave, ROWS), "Trying to remove a non existing index")
-		DeletePoints/M=(ROWS) rowToRemove, 1, TimerFunctionListWave
+		DeleteWavePoint(TimerFunctionListWave, ROWS, index = rowToRemove)
 	else
 		FATAL_ERROR("Invalid addOrRemoveDevice value")
 	endif

@@ -1232,6 +1232,87 @@ Function/WAVE GetDQMActiveDeviceList()
 	return wv
 End
 
+static Constant DQM_TIMER_PARAM_WAVE_VERSION = 1
+
+/// @brief Return the wave with the ITI timers of the devices in multi device data acquisition
+///
+/// Rows:
+/// - One per device with a running ITI timer, in the same order as in GetDQMTimerFunctionList()
+///
+/// Columns:
+/// - DeviceID: ID of the device, only unique per hardware type
+/// - StartTime: start of the ITI in seconds of RelativeNowHighPrec()
+/// - RunTime: duration of the ITI in seconds
+/// - EndTime: end of the ITI in seconds of RelativeNowHighPrec()
+/// - ElapsedTime: elapsed time of the ITI in seconds, updated by DQM_Timer()
+///
+/// Version changes:
+/// - 1: Added the getter, double precision and dimension labels
+Function/WAVE GetDQMTimerParam()
+
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
+
+	WAVE/Z/D/SDFR=dfr wv = ActiveDevTimeParam
+
+	if(ExistsWithCorrectLayoutVersion(wv, DQM_TIMER_PARAM_WAVE_VERSION))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		Redimension/D/N=(-1, 5) wv
+	else
+		Make/D/N=(0, 5) dfr:ActiveDevTimeParam/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, DeviceID, wv
+	SetDimLabel COLS, 1, StartTime, wv
+	SetDimLabel COLS, 2, RunTime, wv
+	SetDimLabel COLS, 3, EndTime, wv
+	SetDimLabel COLS, 4, ElapsedTime, wv
+
+	SetWaveVersion(wv, DQM_TIMER_PARAM_WAVE_VERSION)
+
+	return wv
+End
+
+static Constant DQM_TIMER_FUNCTION_LIST_WAVE_VERSION = 1
+
+/// @brief Return the wave with the functions which the ITI timers of the devices in multi
+///        device data acquisition execute at their end
+///
+/// Rows:
+/// - One per device with a running ITI timer, in the same order as in GetDQMTimerParam()
+///
+/// Columns:
+/// - Device: name of the device
+/// - FunctionList: list of functions, see ExecuteListOfFunctions()
+///
+/// Version changes:
+/// - 1: Added the getter and dimension labels
+Function/WAVE GetDQMTimerFunctionList()
+
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
+
+	WAVE/Z/T/SDFR=dfr wv = TimerFunctionListWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, DQM_TIMER_FUNCTION_LIST_WAVE_VERSION))
+		return wv
+	endif
+
+	if(WaveExists(wv))
+		Redimension/N=(-1, 2) wv
+	else
+		Make/T/N=(0, 2) dfr:TimerFunctionListWave/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, Device, wv
+	SetDimLabel COLS, 1, FunctionList, wv
+
+	SetWaveVersion(wv, DQM_TIMER_FUNCTION_LIST_WAVE_VERSION)
+
+	return wv
+End
+
 /// @brief Return the intermediate storage wave for the TTL data
 Function/WAVE GetTTLWave(string device)
 

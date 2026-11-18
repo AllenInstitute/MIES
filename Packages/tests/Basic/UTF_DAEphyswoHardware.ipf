@@ -273,9 +273,9 @@ static Function RegisterDeviceForBGTask_IGNORE(string device, string task)
 			SetNumberInWaveNote(activeDevicesTPMD, NOTE_INDEX, 1)
 			break
 		case TASKNAME_TIMERMD:
-			DFREF dfr = GetActiveDAQDevicesTimerFolder()
-			Make/O/T/N=(1, 2) dfr:TimerFunctionListWave/WAVE=timerFunctionList
-			timerFunctionList[0][0] = device
+			WAVE/T timerFunctionList = GetDQMTimerFunctionList()
+			Redimension/N=(1, -1) timerFunctionList
+			timerFunctionList[0][%Device] = device
 			break
 		case TASKNAME_FIFOMONMD:
 			WAVE activeDeviceList = GetDQMActiveDeviceList()
@@ -346,13 +346,13 @@ static Function DQMRemoveTimerDistinguishesHardwareTypes()
 
 	MIES_DAQ_MD#DQM_MakeOrUpdateTimerParamWave(DEVICE_NI, "", 0, 0, 0, -1)
 
-	WAVE/SDFR=GetActiveDAQDevicesTimerFolder()   ActiveDevTimeParam
-	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
+	WAVE   ActiveDevTimeParam    = GetDQMTimerParam()
+	WAVE/T TimerFunctionListWave = GetDQMTimerFunctionList()
 
 	CHECK_EQUAL_VAR(DimSize(ActiveDevTimeParam, ROWS), 1)
-	CHECK_EQUAL_VAR(ActiveDevTimeParam[0][2], 1)
+	CHECK_EQUAL_VAR(ActiveDevTimeParam[0][%RunTime], 1)
 
 	CHECK_EQUAL_VAR(DimSize(TimerFunctionListWave, ROWS), 1)
-	CHECK_EQUAL_STR(TimerFunctionListWave[0][0], DEVICE_ITC)
-	CHECK_EQUAL_STR(TimerFunctionListWave[0][1], "FuncITC")
+	CHECK_EQUAL_STR(TimerFunctionListWave[0][%Device], DEVICE_ITC)
+	CHECK_EQUAL_STR(TimerFunctionListWave[0][%FunctionList], "FuncITC")
 End
