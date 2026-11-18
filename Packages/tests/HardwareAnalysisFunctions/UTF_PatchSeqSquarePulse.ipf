@@ -78,6 +78,13 @@ static Function/WAVE GetOORDAScale_IGNORE(variable sweepNo, string device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetAutobiasTargetV_IGNORE(variable sweepNo, string device)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, "Autobias Vcom", PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+End
+
 static Function PS_SP1_preAcq(string device)
 
 	Make/FREE asyncChannels = {2, 3}
@@ -782,6 +789,156 @@ static Function PS_SP10_REENTRY([string str])
 	Make/FREE/N=(numEntriesRef) oorDAScaleRef = 0
 	oorDAScaleRef[Inf] = 1
 	CHECK_EQUAL_WAVES(oorDAScale, oorDAScaleRef, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
+End
+
+static Function PS_SP11_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_SP11([string str])
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
+	// spike detected on first and third sweep -> success
+	wv[]       = 0
+	wv[][1][0] = 1
+	wv[][3][0] = 1
+	wv[][][1]  = 1
+End
+
+static Function PS_SP11_REENTRY([string str])
+
+	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
+	string key
+
+	sweepNo = 3
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	key         = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 1)
+
+	key       = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
+
+	key          = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, 160e-12)
+
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	WAVE/Z daScaleZero = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK(!WaveExists(daScaleZero))
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, tol = 1e-14, mode = WAVE_DATA)
+
+	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z autobiasTargetV = GetAutobiasTargetV_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(autobiasTargetV, {45, 45, 45, 45}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 55)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
+End
+
+static Function PS_SP12_preAcq(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AutobiasTargetVAtSetEnd", var = 55)
+
+	Make/FREE asyncChannels = {2, 3}
+	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "AsyncQCChannels", wv = asyncChannels)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// UTF_TD_GENERATOR DataGenerators#DeviceNameGeneratorMD1
+static Function PS_SP12([string str])
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(str)
+	ACD_AcquireData(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
+	// all tests fail
+	wv = 0
+End
+
+static Function PS_SP12_REENTRY([string str])
+
+	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
+	string key
+
+	sweepNo = 19
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	key         = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
+
+	key       = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	key          = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
+
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	WAVE/Z daScaleZero = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK(!WaveExists(daScaleZero))
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetStimScaleFactor_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
+
+	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	WAVE/Z oorDAScale = GetOORDAScale_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(oorDAScale, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z autobiasTargetV = GetAutobiasTargetV_IGNORE(sweepNo, str)
+	Make/FREE/N=20 autobiasTargetVRef = 45
+	CHECK_EQUAL_WAVES(autobiasTargetV, autobiasTargetVRef, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, "setvar_DataAcq_AutoBiasV"), 45)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 	Make/FREE/N=0 chunkTimes

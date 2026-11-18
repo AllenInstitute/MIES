@@ -52,6 +52,8 @@ digraph G {
 	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"	[label=Yes];
 	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"	[label=No];
 	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"	[label=Failure];
+	n94	[label="Is the analysis parameter \"AutobiasTargetVAtSetEnd\" present?\n If yes, set the autobias target voltage to it."];
+	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> n94	[label=Passed];
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled";
 	"Check if no TTL channels are active" -> "Check if only one headstage is active";
 	n38	[label="Check if the acquired data\n has that sampling interval"];
@@ -76,7 +78,9 @@ digraph G {
 	"Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
 	n39 -> "Skip to end of active set";
 	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
-	"All checks passed" -> "Set DAScale to 100pA"	[label=Yes];
+	n93	[label="Is the analysis parameter \"AutobiasTargetV\" present?\n If yes, set the autobias target voltage to it."];
+	"All checks passed" -> n93	[label=Yes];
+	n93 -> "Set DAScale to 100pA";
 	"All checks passed" -> Abort	[label=No];
 	"Store DAScale\nin labnotebook" -> "Mark sweep as passed";
 	"Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]";
