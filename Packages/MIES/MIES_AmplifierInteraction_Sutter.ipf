@@ -321,7 +321,7 @@ Function AI_SU_Initialize(string device)
 		return 1
 	endif
 
-	if(!IPA_Initialize() || !IPA_MIES_Connect())
+	if(!IPA_MIES_Initialize() || !IPA_MIES_OkToSendCommand())
 		printf "(%s) Could not connect to the Sutter amplifiers.\r", device
 		ControlWindowToFront()
 		return 1
@@ -387,7 +387,7 @@ Function AI_SU_Shutdown(string device)
 	PerformSubsystemEntry()
 
 	if(IPA_MIES_IsInitialized())
-		IPA_Shutdown()
+		IPA_MIES_Shutdown()
 	endif
 End
 
@@ -412,9 +412,8 @@ End
 ///
 /// The Sutter amplifiers have one pipette offset for both clamp modes, and the electrode
 /// compensation magnitude is the fast capacitance compensation in voltage clamp and the
-/// capacitance neutralization in current clamp. The automatic whole cell compensation also
-/// sets the bridge balance. MIES stores these values separately, so update the other entries
-/// to the values of the amplifier.
+/// capacitance neutralization in current clamp. MIES stores these values separately, so update
+/// the other entries to the values of the amplifier.
 ///
 /// @param device    device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES[
@@ -439,11 +438,6 @@ Function AI_SU_UpdateDependentSettings(string device, variable headStage, variab
 			dependentFunc      = MCC_NEUTRALIZATIONCAP_FUNC
 			dependentClampMode = I_CLAMP_MODE
 			value              = IPA_MIES_GetValue(headStage + 1, IPA_SET_E_COMP_MAG) * ONE_TO_PICO
-			break
-		case MCC_AUTOWHOLECELLCOMP_FUNC:
-			dependentFunc      = MCC_BRIDGEBALRESIST_FUNC
-			dependentClampMode = I_CLAMP_MODE
-			value              = IPA_MIES_GetValue(headStage + 1, IPA_SET_BRIDGE) * ONE_TO_MEGA
 			break
 		default:
 			return NaN
@@ -545,7 +539,7 @@ Function AI_SU_SelectMultiClamp(string device, variable headstage)
 		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
-	if(!IPA_OkToSendCommand())
+	if(!IPA_MIES_OkToSendCommand())
 		return AMPLIFIER_CONNECTION_MCC_FAILED
 	endif
 

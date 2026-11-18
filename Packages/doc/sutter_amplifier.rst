@@ -10,7 +10,7 @@ MultiClamp 700B amplifiers, with the differences described below.
 Requirements
 ------------
 
-- The Sutter XOP (``SutterXOP``, version 2.60) must be installed. Without it MIES can not use Sutter devices
+- The Sutter XOP (``SutterXOP``, version 2.87) must be installed. Without it MIES can not use Sutter devices
   and the amplifier control procedures ``IPA_Control.ipf`` from Sutter Instrument are not loaded.
 - There is no separate amplifier control software like the MultiClamp Commander. The amplifiers are
   initialized when the device is locked in the DA_Ephys panel and released when it is unlocked. Locking
@@ -28,6 +28,14 @@ IPA, its first and second headstage. The DA channel, AD channel and amplifier of
 assigned automatically when locking the device. Therefore the following controls of the Hardware tab are
 disabled for Sutter devices: the DA/AD channel popups, ``Amplfier (700B)``, ``Clear Associations`` and
 ``Query connected Amp(s)``.
+
+Several IPA devices
+^^^^^^^^^^^^^^^^^^^
+
+With several IPA devices the first device is the master device. For a synchronized acquisition connect the
+``Trigger Out`` of the master device to the ``Trigger In`` of all other devices with BNC cables. The TTL
+channels of MIES are the digital outputs of the master device. Auxiliary and digital outputs which are set
+outside of the data acquisition are not synchronized between the devices.
 
 Gains and units
 ^^^^^^^^^^^^^^^
@@ -79,7 +87,9 @@ The amplifier controls of the Data Acquisition tab work for Sutter amplifiers, w
    * - Pipette offset
      - The amplifier has **one** pipette offset for both clamp modes, changing it in one clamp mode also
        changes it in the other one. The range is -250 mV to +249.98 mV. The automatic pipette offset
-       (``Auto``) is meant to be used with the pipette in the bath.
+       (``Auto``) is meant to be used with the pipette in the bath. MIES disables the holding during the
+       automatic pipette offset and enables it again afterwards, as the amplifier would otherwise also
+       compensate the holding.
    * - Bridge balance
      - 0 to 200 MΩ. There is no automatic bridge balance, its ``Auto`` button is disabled.
    * - Capacitance neutralization (I-Clamp)
@@ -92,8 +102,7 @@ The amplifier controls of the Data Acquisition tab work for Sutter amplifiers, w
      - Not available, the button is disabled.
    * - Whole cell compensation
      - Capacitance 0 to 100 pF, resistance 0 to 100 MΩ, only active in V-Clamp. The automatic whole cell
-       compensation (``Auto``) requires the fast capacitance compensation (``Cp Fast``) first. It also sets
-       the bridge balance to the resulting series resistance.
+       compensation (``Auto``) requires the fast capacitance compensation (``Cp Fast``) first.
    * - Rs compensation
      - The enable checkbox enables correction and prediction together. ``Chain`` works as for MCC
        amplifiers.
@@ -122,7 +131,8 @@ The following amplifier settings have no control in the DA_Ephys panel yet. They
    * - Primary output low pass filter
      - ``Filter``
      - 500 Hz, 1 kHz, 2 kHz, 5 kHz, 10 kHz or 20 kHz, one filter for both clamp modes. Other values are
-       rounded to the next one, there is no bypass.
+       rounded to the next one, there is no bypass. The 10-90 % rise time is about 0.35 divided by the
+       cutoff frequency, e.g. 70 µs at 5 kHz.
    * - Primary output gain
      - ``IGain`` (V-Clamp), ``VGain`` (I-Clamp)
      - 0.5 to 25 mV/pA in V-Clamp and 10 to 500 mV/mV in I-Clamp. As the data is acquired in SI units, the
@@ -187,4 +197,5 @@ Analysis functions
 Known limitations
 -----------------
 
-- The double IPA is supported by the headstage assignment, but has not been tested with hardware yet.
+- The double IPA is supported by the headstage assignment, but has not been tested with hardware yet. The
+  same applies to several IPA devices.

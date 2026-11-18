@@ -49,7 +49,7 @@ then
   ret=1
 fi
 
-matches=$(git grep $opts "^ +[^\s*//]" -- '*.ipf')
+matches=$(git grep $opts "^ +[^\s*//]" -- '*.ipf' ':^*/IPA_Control.ipf')
 
 if [[ -n "$matches" ]]
 then

@@ -83,7 +83,7 @@ Initialization
 
 :cpp:func:`AI_InitializeAmplifiers` and :cpp:func:`AI_ShutdownAmplifiers` are called when locking and unlocking a
 device. MCC amplifiers are independent of the device and need no initialization. For Sutter devices the IPA
-control procedures are initialized and switched to live mode. As the package stores its control values in
+control procedures are initialized, which connects them to the amplifiers. As the package stores its control values in
 its preferences on disk, they are then reset to the package defaults with ``IPA_MIES_ResetToDefaults`` and
 sent to the amplifiers, otherwise the settings of the previous session would be applied. Afterwards the
 clamp modes of MIES are sent and the amp storage wave and the DA_Ephys GUI are updated to the reset values,
@@ -238,7 +238,8 @@ Settings available for MCC and Sutter amplifiers
      - --
      - --
      - ``AutoOffset``; writes ``offset``
-     - Adds the liquid junction potential, refused with ``OffsetLock``. Meant for the bath.
+     - Adds the liquid junction potential, refused with ``OffsetLock``. Meant for the bath. Also compensates
+       the holding, ``IPA_MIES_SetValue`` disables it meanwhile.
      - In "Bath" -0.2 to -0.5 mV within 1 to 2 s, in "Cell" unreliable.
    * - Bridge balance
      - IC
@@ -246,7 +247,8 @@ Settings available for MCC and Sutter amplifiers
      - ``BridgeBalance``
      - ``Bridge Bal Value``
      - ``Bridge``; ``bridge`` (MΩ), 0 to 200 MΩ
-     - ``Bridge`` also enables it. ``AutoCellComp`` sets it to the series resistance.
+     - ``Bridge`` also enables it. ``AutoCellComp`` sets it to the series resistance, which
+       ``IPA_MIES_SetValue`` reverts.
      - 50 MΩ at 100 pA: -5.05 mV.
    * - Bridge balance enable
      - IC
@@ -306,7 +308,7 @@ Settings available for MCC and Sutter amplifiers
      - --
      - ``AutoCellComp``; result read back from the hardware
      - The amplifier applies the result immediately. Requires the fast compensation first. Also sets the
-       bridge balance to the series resistance.
+       stored bridge balance to the series resistance, ``IPA_MIES_SetValue`` keeps it unchanged as with MCC.
      - After ``AutoEComp``: 27.2 pF and 10.3 MΩ in "Cell", without it wrong.
    * - Rs compensation enable
      - VC
@@ -531,4 +533,6 @@ Consequences for the implementation
   ``RsCorr``, ``RsPred``), while MIES sends value and enable state separately. ``IPA_MIES_SetValue`` sets the
   value without changing the enable state.
 - ``AutoEComp`` needs the cell attached configuration and ``AutoCellComp`` needs the fast compensation first.
-  ``AutoCellComp`` also overwrites the bridge balance.
+- ``IPA_MIES_SetValue`` runs the automatic functions as MCC amplifiers do: ``AutoCellComp`` keeps the bridge
+  balance and ``AutoOffset`` is done with the holding disabled, as it would otherwise also compensate the
+  holding.
