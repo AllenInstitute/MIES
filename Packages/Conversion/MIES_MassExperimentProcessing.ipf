@@ -440,6 +440,15 @@ static Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
 	SavePackagePrefs(prefs)
 End
 
+/// @brief Continue a previously stopped/aborted run
+Function ContinuePreviousRun()
+
+	STRUCT MultiExperimentProcessPrefs prefs
+
+	LoadPackagePrefs(prefs)
+	NextFile(prefs)
+End
+
 #ifdef MEP_DEBUGGING
 
 Function TestMe()
