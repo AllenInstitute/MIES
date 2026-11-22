@@ -381,11 +381,7 @@ Function StartMultiExperimentProcessWrapper()
 
 	prefs.processRunning = 1 // Flag process is started.
 
-	// Start the process off by loading the first experiment.
-	string nextExperimentFullPath = FindNextExperiment(prefs)
-	PostLoadNextExperiment(nextExperimentFullPath) // Start the process off
-
-	SavePackagePrefs(prefs)
+	NextFile(prefs)
 
 	return 0
 End
