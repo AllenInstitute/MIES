@@ -427,7 +427,7 @@ static Function UpdateFinishedTimeEstimate(variable jsonID)
 	JSON_SetString(jsonID, "/endTimeEst", timestamp)
 End
 
-Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
+static Function NextFile(STRUCT MultiExperimentProcessPrefs &prefs)
 
 	// See if there are more experiments to process.
 	string nextExperimentFullPath = FindNextExperiment(prefs)
