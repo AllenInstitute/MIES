@@ -1802,7 +1802,7 @@ static Function CONF_NotebookToJSON(string wName, variable jsonID)
 	if(!CmpStr(GetUserData(wName, "", EXPCONFIG_UDATA_EXCLUDE_SAVE), "1"))
 		return NaN
 	endif
-	nbText = GetNotebookText(wName, mode = 2)
+	nbText = GetNotebookText(wName, mode = NB_PLAINTEXT_ENTIRE)
 	JSON_AddString(jsonID, EXPCONFIG_FIELD_NOTEBOOKTEXT, nbText)
 End
 

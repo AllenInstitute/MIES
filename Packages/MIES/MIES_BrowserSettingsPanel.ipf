@@ -1038,7 +1038,7 @@ Function BSP_UpdateHelpNotebook(string helpNotebook)
 	variable helpVersion
 	string name, text, path
 
-	text = GetNotebookText(helpNotebook, mode = 2)
+	text = GetNotebookText(helpNotebook, mode = NB_PLAINTEXT_ENTIRE)
 
 	if(!IsEmpty(text))
 		return NaN
@@ -1801,7 +1801,7 @@ Function BSP_SFHelpWindowHook(STRUCT WMWinHookStruct &s)
 			if((s.eventMod & modMask) != modMask)
 				return 0
 			endif
-			cmdStr = LowerStr(GetNotebookText(sfWin, mode = 4))
+			cmdStr = LowerStr(GetNotebookText(sfWin, mode = NB_PLAINTEXT_SELECTION))
 
 			WAVE/T knownOps = SF_GetNamedOperations()
 			if(GetRowIndex(knownOps, str = cmdStr) >= 0)

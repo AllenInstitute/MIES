@@ -296,7 +296,7 @@ static Function WRB_CountNotebookParagraphs(string nbName)
 
 	variable para
 
-	string txt = GetNotebookText(nbName, mode = 2)
+	string txt = GetNotebookText(nbName, mode = NB_PLAINTEXT_ENTIRE)
 
 	WAVE/T tmp = ListToTextWave(txt, "\r")
 	para = DimSize(tmp, ROWS) - 1

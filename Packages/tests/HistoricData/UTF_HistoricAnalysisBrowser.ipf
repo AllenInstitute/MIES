@@ -456,3 +456,64 @@ static Function TestTagControl()
 
 	KillWindow/Z sweepBrowser
 End
+
+static Function TestPastePanel()
+
+	string abWin, content, path, symbPath, homePath, hist, refMsg, sweepBrowser
+	variable historyRef
+
+	Make/FREE/T files = {"input:NWB_V1_single_device.nwb"}
+	DownloadFilesIfRequired(files)
+	files[] = PrependExperimentFolder_IGNORE(files[p])
+
+	PathInfo home
+	homePath = S_path
+	path     = S_path + "testPastePanel:"
+	symbPath = GetUniqueSymbolicPath()
+	NewPath/Q/C $symbPath, path
+	CopyFile/D/Z=1/O/P=$symbPath files[0]
+	CHECK_EQUAL_VAR(V_flag, 0)
+
+	abWin = AB_OpenAnalysisBrowser(restoreSettings = 0)
+	PGC_SetAndActivateControl(abWin, "button_show_pastewindow")
+
+	content = "file:\r" + TextWaveToList(files, "\r", trailSep = 0) + "\tmyTag\r"
+
+	content += "folder:\r" + GetWindowsPath(path) + "\r"
+
+	content += "cell_specimen:\r" + "fake"
+	ReplaceNotebookText("AnalysisBrowser#PasteWindow#data", content)
+
+	historyRef = CaptureHistoryStart()
+	PGC_SetAndActivateControl("AnalysisBrowser#PasteWindow", "button_add")
+	hist   = CaptureHistory(historyRef, 1)
+	refMsg = "Querying LIMS with cell names is not supported on Igor Pro 9."
+
+	WAVE/T locations = GetAnalysisBrowserGUIFolderList()
+
+#if IgorVersion() >= 10
+	CHECK_EQUAL_VAR(strsearch(hist, refMsg, 0), -1)
+
+	Make/FREE/T ref = {homePath + "input:NWB_V1_single_device.nwb",                                                        \
+	                   homePath + "testPastePanel:",                                                                       \
+	                   "\\\\allen\\programs\\celltypes\\production\\mousecelltypes\\prod174\\Ephys_Roi_Result_1429085938\\"}
+
+	CHECK_EQUAL_TEXTWAVES(locations, ref, mode = WAVE_DATA)
+#else
+	CHECK_GE_VAR(strsearch(hist, refMsg, 0), 0)
+
+	Make/FREE/T ref = {homePath + "input:NWB_V1_single_device.nwb", \
+	                   homePath + "testPastePanel:"}
+
+	CHECK_EQUAL_TEXTWAVES(locations, ref, mode = WAVE_DATA)
+#endif
+
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = LISTBOX_CLEAR_SELECTION, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+	PGC_SetAndActivateControl(abWin, "list_experiment_contents", val = 0, eventCode = EVENT_LISTBOXACTION_CELL_SELECTION)
+
+	PGC_SetAndActivateControl(abWin, "button_load_sweeps")
+	sweepBrowser = GetCurrentWindow()
+
+	WAVE/Z experiments = SB_GetExperimentsFromTags(sweepBrowser, {"myTag"})
+	CHECK_EQUAL_TEXTWAVES(experiments, {"NWB_V1_single_device.nwb"})
+End

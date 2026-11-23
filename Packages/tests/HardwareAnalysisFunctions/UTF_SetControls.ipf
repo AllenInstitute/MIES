@@ -462,7 +462,7 @@ static Function SC_SetControls8_REENTRY([string str])
 		nb = BSP_GetSFFormula(databrowser)
 
 		expected = "1 + 2"
-		actual   = GetNotebookText(nb, mode = 2)
+		actual   = GetNotebookText(nb, mode = NB_PLAINTEXT_ENTIRE)
 		CHECK_EQUAL_STR(expected, actual)
 	endfor
 End

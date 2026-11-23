@@ -1816,7 +1816,7 @@ static Function TestOnlyVariablesNotebookFixup()
 		PASS()
 	endtry
 
-	nbText = GetNotebookText(sfWin, mode = 2)
+	nbText = GetNotebookText(sfWin, mode = NB_PLAINTEXT_ENTIRE)
 	CHECK(StringEndsWith(nbText, "\r"))
 End
 
