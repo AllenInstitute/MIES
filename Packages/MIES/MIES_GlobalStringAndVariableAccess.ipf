@@ -682,6 +682,31 @@ Function/S GetRepurposedSweepTime(string device)
 	return GetNVARAsString(GetDevicePath(device), "additionalITI", initialValue = 0)
 End
 
+/// @brief Return the absolute path to the global variable with the result of the last mid sweep
+///        analysis function call, see AS_HandlePossibleTransition() with #AS_MID_SWEEP
+///
+/// Only #ANALYSIS_FUNC_RET_AUTOBIAS is evaluated, see RA_RecalculateITI().
+Function/S GetMidSweepAnalysisFunctionResult(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "midSweepAnaFuncResult", initialValue = 0)
+End
+
+/// @brief Return the absolute path to the global variable with the earliest time, in seconds
+///        of RelativeNowHighPrec(), at which autobias may end the current ITI
+///
+/// NaN if autobias can not end the current ITI, see RA_EvaluateAutobiasForEarlyITIEnd().
+Function/S GetAutobiasEarlyITIEarliestEnd(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "autobiasEarlyITIEarliestEnd", initialValue = NaN)
+End
+
+/// @brief Return the absolute path to the global variable with the number of consecutive
+///        autobias checks with all headstages within the target voltage range in the current ITI
+Function/S GetAutobiasEarlyITIPasses(string device)
+
+	return GetNVARAsString(GetDevicePath(device), "autobiasEarlyITIPasses", initialValue = 0)
+End
+
 /// @brief Return the list of functions to be executed after ITI in repeated acquisition
 Function/S GetRepeatedAcquisitionFuncList()
 

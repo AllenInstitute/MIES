@@ -147,7 +147,10 @@ Function DQS_FIFOMonitor(STRUCT WMBackgroundStruct &s)
 
 	result = AS_HandlePossibleTransition(runningDevice, AS_MID_SWEEP)
 
-	if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+	NVAR midSweepResult = $GetMidSweepAnalysisFunctionResult(runningDevice)
+	midSweepResult = result
+
+	if(result == ANALYSIS_FUNC_RET_REPURP_TIME || result == ANALYSIS_FUNC_RET_AUTOBIAS)
 		UpdateLeftOverSweepTime(runningDevice, fifoPos)
 		moreData = 0
 	elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
@@ -199,6 +202,20 @@ End
 Function DQS_StopBackgroundTimer()
 
 	CtrlNamedBackground $TASKNAME_TIMER, stop
+End
+
+/// @brief End the ITI at the next call of DQS_Timer(), which then executes the list of
+///        functions as at the regular end
+///
+/// @return elapsed ITI time in seconds
+Function DQS_FinishBackgroundTimerEarly()
+
+	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
+	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
+
+	repeatedAcqDuration = RelativeNowHighPrec() - repeatedAcqStart
+
+	return repeatedAcqDuration
 End
 
 /// @brief Keep track of time during ITI

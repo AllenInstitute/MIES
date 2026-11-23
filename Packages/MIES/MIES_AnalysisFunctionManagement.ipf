@@ -201,7 +201,7 @@ Function AFM_CallAnalysisFunctions(string device, variable eventType)
 
 		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT) && ret == 1)
 			return ret
-		elseif(eventType == MID_SWEEP_EVENT && (ret == ANALYSIS_FUNC_RET_REPURP_TIME || ret == ANALYSIS_FUNC_RET_EARLY_STOP))
+		elseif(eventType == MID_SWEEP_EVENT && (ret == ANALYSIS_FUNC_RET_REPURP_TIME || ret == ANALYSIS_FUNC_RET_EARLY_STOP || ret == ANALYSIS_FUNC_RET_AUTOBIAS))
 			return ret
 		endif
 	endfor

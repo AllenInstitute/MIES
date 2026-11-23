@@ -227,7 +227,8 @@ End
 Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime
+	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime, numEvaluated
+	variable allInRange = 1
 
 	if(DAP_DeviceIsUnlocked(device))
 		return NaN
@@ -280,10 +281,14 @@ Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 		DEBUGPRINT("setVoltage[V]=", var = setVoltage)
 		DEBUGPRINT("targetVoltage[V]=", var = targetVoltage)
 
+		numEvaluated += 1
+
 		// if we are in the desired voltage region, check the next headstage
 		if(abs(targetVoltage - setVoltage) < targetVoltageTol)
 			continue
 		endif
+
+		allInRange = 0
 
 		// neuron needs a current shot
 		// I = U / R
@@ -319,6 +324,10 @@ Function DQ_ApplyAutoBias(string device, WAVE TPResults)
 		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDINGENABLE_FUNC, 1, sendToAll = 0)
 		AI_WriteToAmplifier(device, headStage, I_CLAMP_MODE, MCC_HOLDING_FUNC, current * ONE_TO_PICO, sendToAll = 0)
 	endfor
+
+	if(numEvaluated > 0)
+		RA_EvaluateAutobiasForEarlyITIEnd(device, allInRange)
+	endif
 End
 
 /// @brief Return the number of devices which have DAQ running
