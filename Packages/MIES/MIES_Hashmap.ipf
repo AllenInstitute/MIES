@@ -482,7 +482,25 @@ End
 ///
 /// Version 1:
 /// - One wave for all keys and one for values instead of one for each bucket, rows for buckets and columns for filled entries
+///
+/// @return hashmap with latest wave layout or a null wave reference in case of error
 threadsafe Function/WAVE HM_Upgrade(WAVE/WAVE hashmap)
+
+	variable err
+
+	AssertOnAndClearRTError()
+	try
+		WAVE wv = HM_UpgradeImpl(hashmap); AbortOnRTE
+		return wv
+	catch
+		err = ClearRTError()
+		printf "Upgrading the hashmap failed with error %d.\r", err
+	endtry
+
+	return $""
+End
+
+threadsafe static Function/WAVE HM_UpgradeImpl(WAVE/WAVE hashmap)
 
 	variable size, valueType, i, isStr, numEntries, newSize
 
