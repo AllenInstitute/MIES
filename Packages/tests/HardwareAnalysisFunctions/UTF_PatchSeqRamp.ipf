@@ -161,6 +161,13 @@ static Function/WAVE FindUserEpochs(WAVE/T userEpochs)
 	return foundIt
 End
 
+static Function/WAVE GetAutobiasTargetV_IGNORE(variable sweepNo, string device)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	return GetLastSettingEachRAC(numericalValues, sweepNo, "Autobias Vcom", PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+End
+
 static Function/WAVE GetSamplingIntervalQCResults_IGNORE(variable sweepNo, string device)
 
 	string key
@@ -1027,4 +1034,190 @@ static Function PS_RA7_REENTRY([STRUCT IUTF_mData &m])
 
 	CommonAnalysisFunctionChecks(device, sweepNo, setPassed)
 	CheckPSQChunkTimes(device, {20, 520, 16020, 16520})
+End
+
+static Function PS_RA8_preAcq(string device)
+
+	string stimset
+
+	Make/FREE asyncChannels = {2, 3}
+
+	stimset = PS_GetStimsetName(device)
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
+	AFH_AddAnalysisParameter(stimset, "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter(stimset, "AutobiasTargetVAtSetEnd", var = 55)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA8([STRUCT IUTF_mData &m])
+
+	string device, setname
+
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
+	ACD_AcquireData(s, device)
+
+	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
+	// baseline QC passes, no spikes at all, async QC passes
+	wv            = 0
+	wv[0, 2][][0] = 1
+	wv[][][2]     = 1
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA8_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
+
+	variable sweepNo, i, numEntries
+
+	sweepNo = 2
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(asyncQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, device)
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
+
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, device)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0, 0})
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(durations, {15000, 15000, 15000}, mode = WAVE_DATA, tol = 1)
+
+	WAVE/Z autobiasTargetV = GetAutobiasTargetV_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(autobiasTargetV, {45, 45, 45}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV"), 55)
+
+	CommonAnalysisFunctionChecks(device, sweepNo, setPassed)
+	CheckPSQChunkTimes(device, {20, 520, 16020, 16520})
+End
+
+static Function PS_RA9_preAcq(string device)
+
+	string stimset
+
+	Make/FREE asyncChannels = {2, 3}
+
+	stimset = PS_GetStimsetName(device)
+	AFH_AddAnalysisParameter(stimset, "AsyncQCChannels", wv = asyncChannels)
+	AFH_AddAnalysisParameter(stimset, "AutobiasTargetV", var = 45)
+	AFH_AddAnalysisParameter(stimset, "AutobiasTargetVAtSetEnd", var = 55)
+
+	SetAsyncChannelProperties(device, asyncChannels, -1e6, +1e6)
+
+	// AutobiasTargetV replaces the invalid autobias voltage
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 0)
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA9([STRUCT IUTF_mData &m])
+
+	string device, setname
+	device  = m.s0
+	setname = m.s1
+
+	[STRUCT ACD_DAQSettings s] = PS_GetDAQSettings(device, setname)
+	ACD_AcquireData(s, device)
+
+	WAVE wv = PSQ_CreateOverrideResults(device, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
+	// all tests fail, baseline QC fails, spike search inconclusive, async QC passes
+	wv[][][0] = 0
+	wv[][][1] = NaN
+	wv[][][2] = 0
+End
+
+// IUTF_TD_GENERATOR s0:DataGenerators#DeviceNameGeneratorMD1
+// IUTF_TD_GENERATOR s1:PatchSeqTestRamp#PossibleRampStimsets
+static Function PS_RA9_REENTRY([STRUCT IUTF_mData &m])
+
+	string device = m.s0
+	variable sweepNo, i, numEntries, DAScale, onsetDelay
+
+	sweepNo    = 1
+	numEntries = sweepNo + 1
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(sweepQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z asyncQCWave = GetAsyncQCResults_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(asyncQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, device)
+	CHECK_WAVE(spikeDetectionWave, NULL_WAVE)
+
+	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, device)
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
+
+	WAVE/Z/T userEpochs = GetUserEpochs_IGNORE(sweepNo, device)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0})
+
+	WAVE/Z DAScaleWave = GetStimscaleFactor_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(DAScaleWave, {PSQ_RA_DASCALE_DEFAULT, PSQ_RA_DASCALE_DEFAULT}, mode = WAVE_DATA)
+
+	// no early abort on BL QC failure
+	onsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
+
+	WAVE/Z stimSetLengths = GetStimsetLengths_IGNORE(sweepNo, device)
+
+	Make/FREE/N=(numEntries) sweepLengths
+	for(i = 0; i < numEntries; i += 1)
+		WAVE sweepT  = GetSweepWave(device, i)
+		WAVE channel = ResolveSweepChannel(sweepT, 0)
+		sweepLengths[i] = DimSize(channel, ROWS) - onsetDelay / DimDelta(channel, ROWS)
+	endfor
+	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(durations, {15000, 15000}, mode = WAVE_DATA, tol = 1)
+
+	WAVE/Z autobiasTargetV = GetAutobiasTargetV_IGNORE(sweepNo, device)
+	CHECK_EQUAL_WAVES(autobiasTargetV, {45, 45}, mode = WAVE_DATA)
+	CHECK_EQUAL_VAR(DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV"), 45)
+
+	CommonAnalysisFunctionChecks(device, sweepNo, setPassed)
+	CheckPSQChunkTimes(device, {20, 520})
 End

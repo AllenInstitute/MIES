@@ -32,6 +32,8 @@ digraph G {
 	"Mid Sweep Event" -> "BL QC passed?";
 	"Mid Sweep Event" -> "Search spike result in labnotebook";
 	"Post Set Event" -> "Mark set as passed if \"NumberOfPassingSweeps\" sweeps passed, as failure otherwise";
+	n96	[label="Is the analysis parameter \"AutobiasTargetVAtSetEnd\" present?\n If yes, set the autobias target voltage to it."];
+	"Mark set as passed if \"NumberOfPassingSweeps\" sweeps passed, as failure otherwise" -> n96	[label=Passed];
 	n92	[URL="../_static/images/async-qc-channels.svg",
 		label="Standard AsyncQCChannels handling",
 		target=_graphviz];
@@ -42,7 +44,7 @@ digraph G {
 	"Post Sweep Event" -> n91;
 	"Post DAQ Event" -> "Update Dashboard";
 	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
-	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)\nor analysis parameter \"AutobiasTargetV\" present";
 	"BL QC passed?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=No];
 	"Search spike result in labnotebook" -> "Get pulse duration from labnotebook (calculate if not present)"	[label="Not Found"];
 	n61	[label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
@@ -50,7 +52,7 @@ digraph G {
 	n61 -> n63;
 	n91 -> n61;
 	"Enable \"Autobias\"" -> "Enable \"Inserted TP\"";
-	"Valid Autobias voltage (finite and non-zero)" -> "Stimset is longer than 1.5s";
+	"Valid Autobias voltage (finite and non-zero)\nor analysis parameter \"AutobiasTargetV\" present" -> "Stimset is longer than 1.5s";
 	"Grab next completely acquired chunk (500ms) of stimset baseline" -> "Chunk already evaluated?"	[label="Have one"];
 	"Grab next completely acquired chunk (500ms) of stimset baseline" -> "Last chunk?"	[label="None left"];
 	"Get pulse duration from labnotebook (calculate if not present)" -> "After pulse onset";
@@ -97,7 +99,9 @@ digraph G {
 	"Mark Sweep/BL QC as passed"	[label="Mark BL QC as passed"];
 	"Mark chunk as passed/failed [2]" -> "Mark Sweep/BL QC as passed"	[label=Passed];
 	"Write spike position in ms into labnotebook" -> "Set DA channel to zero from here to the end\n(implies DAQ restart)";
-	"Set ITI to zero" -> "Set DAScale to 1pA";
+	n95	[label="Is the analysis parameter \"AutobiasTargetV\" present?\n If yes, set the autobias target voltage to it."];
+	"Set ITI to zero" -> n95;
+	n95 -> "Set DAScale to 1pA";
 	"Check if mode is IC" -> "Check if no TTL channels are active";
 	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
 	"Mark Sweep/BL QC as passed" -> "Early Sweep stop";
