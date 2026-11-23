@@ -69,6 +69,8 @@ Function DC_Configure(string device, variable dataAcqOrTP, [variable multiDevice
 	KillOrMoveToTrash(wv = GetSweepSettingsTextWave(device))
 	KillOrMoveToTrash(wv = GetSweepSettingsKeyWave(device))
 	KillOrMoveToTrash(wv = GetSweepSettingsTextKeyWave(device))
+	KillOrMoveToTrash(wv = GetAnalysisFuncSpikeSearchState(device))
+	KillOrMoveToTrash(wv = GetAnalysisFuncSpikeSearchPositions(device))
 
 	EP_ClearEpochs(device)
 

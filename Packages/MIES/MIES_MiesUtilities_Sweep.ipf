@@ -105,31 +105,45 @@ End
 
 /// @brief Extract an one dimensional wave from the given sweep/hardware data wave and column
 ///
-/// @param config config wave
-/// @param sweep  sweep wave or hardware data wave from all hardware types
-/// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
+/// @param config        config wave
+/// @param sweep         sweep wave or hardware data wave from all hardware types
+/// @param index         index into `sweep`, can be queried with #AFH_GetDAQDataColumn
+/// @param dontDuplicate [optional, defaults to false] Return the channel wave of `sweep` itself instead of a free
+///                      copy, for callers which only read the data. Requires a `sweep` with one wave per channel.
 ///
-/// @returns a reference to a free wave with the single channel data
-threadsafe Function/WAVE ExtractOneDimDataFromSweep(WAVE config, WAVE sweep, variable index)
+/// @returns a reference to a free wave with the single channel data, or to the channel wave with `dontDuplicate`
+threadsafe Function/WAVE ExtractOneDimDataFromSweep(WAVE config, WAVE sweep, variable index, [variable dontDuplicate])
+
+	if(ParamIsDefault(dontDuplicate))
+		dontDuplicate = 0
+	else
+		dontDuplicate = !!dontDuplicate
+	endif
 
 	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
 	WAVE/T units = AFH_GetChannelUnits(config)
-	if(IsWaveRefWave(sweep))
+	if(IsWaveRefWave(sweep) || IsTextWave(sweep))
 		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
-		WAVE/WAVE sweepRef = sweep
-		Duplicate/FREE sweepRef[index], data
-		if(index < DimSize(units, ROWS))
-			ASSERT_TS(!CmpStr(WaveUnits(data, DATADIMENSION), units[index]), "wave units for data in config wave are different from wave units in channel wave (" + WaveUnits(data, DATADIMENSION) + " and " + units[index] + ")")
+
+		if(IsWaveRefWave(sweep))
+			WAVE/WAVE sweepRef = sweep
+			WAVE      channel  = sweepRef[index]
+		else
+			WAVE channel = ResolveSweepChannel(sweep, index)
 		endif
-	elseif(IsTextWave(sweep))
-		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
-		WAVE channel = ResolveSweepChannel(sweep, index)
+
+		if(index < DimSize(units, ROWS))
+			ASSERT_TS(!CmpStr(WaveUnits(channel, DATADIMENSION), units[index]), "wave units for data in config wave are different from wave units in channel wave (" + WaveUnits(channel, DATADIMENSION) + " and " + units[index] + ")")
+		endif
+
+		if(dontDuplicate)
+			return channel
+		endif
+
 		Duplicate/FREE channel, data
-		if(index < DimSize(units, ROWS))
-			ASSERT_TS(!CmpStr(WaveUnits(data, DATADIMENSION), units[index]), "wave units for data in config wave are different from wave units in channel wave (" + WaveUnits(data, DATADIMENSION) + " and " + units[index] + ")")
-		endif
 	else
+		ASSERT_TS(!dontDuplicate, "dontDuplicate requires a sweep with one wave per channel")
 		ASSERT_TS(index < DimSize(sweep, COLS), "The index is out of range")
 		MatrixOP/FREE data = col(sweep, index)
 		SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
