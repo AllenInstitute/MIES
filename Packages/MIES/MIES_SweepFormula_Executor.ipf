@@ -165,7 +165,7 @@ Function/S SFE_ExecuteVariableAssignments(string graph, string preProcCode, [var
 	if(!allowEmptyCode && IsEmpty(code))
 		if(!StringEndsWith(preProcCode, SF_CHAR_CR))
 			sfWin   = BSP_GetSFFormula(graph)
-			nbText  = GetNotebookText(sfWin, mode = 2)
+			nbText  = GetNotebookText(sfWin, mode = NB_PLAINTEXT_ENTIRE)
 			nbText += SF_CHAR_CR
 			ReplaceNotebookText(sfWin, nbText)
 		endif

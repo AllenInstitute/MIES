@@ -1734,12 +1734,18 @@ Function GetControlCoordinates(string win, string ctrl, STRUCT RectF &s)
 End
 
 /// @brief Get the text (plain or formatted) from the notebook
+///
+/// @param win  window name
+/// @param mode [optional, defaults to 1] 1: autodetect plain/formatted text format from entire notebook
+///                                       2: plain text from entire notebook
+///                                       3: autodetect plain/formatted text format from selection
+///                                       4: plain text from selection
 Function/S GetNotebookText(string win, [variable mode])
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
 	if(ParamIsDefault(mode))
-		mode = 1
+		mode = NB_AUTODETECT_ENTIRE
 	endif
 
 	Notebook $win, getData=mode

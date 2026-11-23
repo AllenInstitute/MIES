@@ -32,7 +32,7 @@ static Function TestSweepFormulaButtons(string device)
 	PGC_SetAndActivateControl(dbPanel, "check_BrowserSettings_SF", val = 1)
 	PGC_SetAndActivateControl(dbPanel, "button_sweepFormula_check")
 	sfPanel = BSP_GetSFJSON(graph)
-	jsonStr = GetNotebookText(sfPanel, mode = 2)
+	jsonStr = GetNotebookText(sfPanel, mode = NB_PLAINTEXT_ENTIRE)
 	try
 		JSON_Parse(jsonStr, ignoreErr = 0)
 		PASS()

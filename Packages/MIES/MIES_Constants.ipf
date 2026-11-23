@@ -2945,3 +2945,12 @@ StrConstant IPA_SET_V_HOLD         = "VHold"
 StrConstant IPA_SET_V_HOLD_ON      = "VHoldOn"
 StrConstant IPA_SET_V_MON          = "VMon"
 ///@}
+
+/// Notebook mode flags for getData
+/// @anchor NotebookModeFlags
+///@{
+Constant NB_AUTODETECT_ENTIRE    = 1 ///< autodetect plain/formatted text format from entire notebook
+Constant NB_PLAINTEXT_ENTIRE     = 2 ///< plain text from entire notebook
+Constant NB_AUTODETECT_SELECTION = 3 ///< autodetect plain/formatted text format from selection
+Constant NB_PLAINTEXT_SELECTION  = 4 ///< plain text from selection
+///@}

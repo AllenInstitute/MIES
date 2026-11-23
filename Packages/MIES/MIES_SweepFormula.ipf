@@ -2066,7 +2066,7 @@ Function SF_button_sweepFormula_check(STRUCT WMButtonAction &ba) : ButtonControl
 			endif
 
 			formula_nb = BSP_GetSFFormula(ba.win)
-			formula    = GetNotebookText(formula_nb, mode = 2)
+			formula    = GetNotebookText(formula_nb, mode = NB_PLAINTEXT_ENTIRE)
 
 			NVAR jsonID = $GetSweepFormulaJSONid(SF_GetBrowserDF(mainPanel))
 			SF_ClearSFOutputState()
@@ -2362,7 +2362,7 @@ Function [string raw, string preProc] SF_GetCode(string win)
 	string formula_nb, code
 
 	formula_nb = BSP_GetSFFormula(win)
-	code       = GetNotebookText(formula_nb, mode = 2)
+	code       = GetNotebookText(formula_nb, mode = NB_PLAINTEXT_ENTIRE)
 
 	return [code, SF_PreprocessInput(code)]
 End
@@ -2952,7 +2952,7 @@ static Function [variable paragraph, variable charPosition] SF_CalculateErrorLoc
 	variable line, i, lineNr, offset, lineOffset, numCR, formOffset, inFormOffset
 
 	sfWin = BSP_GetSFFormula(win)
-	text  = GetNotebookText(sfWin, mode = 2)
+	text  = GetNotebookText(sfWin, mode = NB_PLAINTEXT_ENTIRE)
 	text  = SF_PreprocessInput(text)
 	WAVE/T wText = ListToTextWave(text, SF_CHAR_CR)
 
